@@ -117,7 +117,7 @@
         .page {
             display: none;
             padding: 30px;
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
         }
         .page.active { display: block; }
@@ -140,20 +140,22 @@
         }
         .post-media {
             width: 100%;
-            max-height: 500px;
+            max-height: 600px;
             border-radius: 8px;
             object-fit: contain;
             background: #000;
             margin-top: 10px;
         }
-        .text-content {
-            background: #111;
-            padding: 15px;
-            border-radius: 5px;
-            border-left: 3px solid #ff0000;
-            margin-top: 10px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+        video.post-media {
+            max-height: 500px;
+            background: #000;
+        }
+        .media-info {
+            color: #aaa;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: flex;
+            gap: 15px;
         }
 
         /* Upload Form */
@@ -198,16 +200,53 @@
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 10px;
+            position: relative;
+            overflow: hidden;
         }
         #submitPost:hover {
             background: linear-gradient(to right, #ff3333, #ff0000);
             box-shadow: 0 0 25px rgba(255, 0, 0, 0.7);
+        }
+        #submitPost:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .upload-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 0, 0, 0.3), rgba(255, 0, 0, 0.6));
+            width: 0%;
+            transition: width 0.3s;
         }
         #uploadStatus {
             text-align: center;
             margin-top: 20px;
             min-height: 25px;
             color: #ff9999;
+        }
+        .progress-text {
+            margin-top: 10px;
+            color: #ffaa00;
+        }
+
+        /* File Preview */
+        #filePreview {
+            max-width: 300px;
+            margin-top: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        #filePreview.active {
+            display: block;
+        }
+
+        /* File Size Warning */
+        .file-warning {
+            color: #ffaa00;
+            font-size: 0.9em;
+            margin-top: 5px;
         }
 
         @media (max-width: 768px) {
@@ -221,11 +260,14 @@
             .header-buttons { width: 100%; justify-content: center; }
             .nav-button { flex: 1; max-width: 150px; }
             body { padding-top: 130px; }
+            .post-media {
+                max-height: 400px;
+            }
+            video.post-media {
+                max-height: 300px;
+            }
         }
     </style>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <!-- Floating Animated Header -->
@@ -242,36 +284,55 @@
 
     <!-- HOME PAGE -->
     <section id="homePage" class="page active">
-        <h2 style="margin-bottom: 25px; text-align: center; color: #ff5555;">Recent Posts</h2>
+        <h2 style="margin-bottom: 25px; text-align: center; color: #ff5555;">Recent Media Posts</h2>
         <div id="postsContainer">
             <div class="post-card">
                 <div class="post-card-title">Welcome to Leakstream!</div>
-                <p style="color: #ccc;">Posts with images or text will appear here. Use the Post button to share.</p>
+                <p style="color: #ccc; margin-bottom: 10px;">Upload videos (up to 1GB), images, or audio files. All media will appear here.</p>
+                <div class="media-info">
+                    <span>🎬 MP4, AVI, MOV, MKV</span>
+                    <span>🖼️ PNG, JPEG, GIF</span>
+                    <span>🎵 MP3, WAV, OGG</span>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- POST PAGE -->
     <section id="postPage" class="page">
-        <h2 style="margin-bottom: 30px; text-align: center; color: #ff5555;">Create a New Post</h2>
+        <h2 style="margin-bottom: 30px; text-align: center; color: #ff5555;">Upload Media (Up to 1GB)</h2>
         <form id="uploadForm">
             <div class="form-group">
-                <label class="form-label" for="postTitle">Post Title</label>
-                <input type="text" id="postTitle" class="form-input" placeholder="Enter a title..." required>
+                <label class="form-label" for="postTitle">Post Title *</label>
+                <input type="text" id="postTitle" class="form-input" placeholder="Enter a title for your media..." required>
             </div>
+            
             <div class="form-group">
-                <label class="form-label" for="fileInput">Upload Image (PNG, JPEG)</label>
-                <input type="file" id="fileInput" class="form-input" accept="image/*">
-                <p style="color: #888; font-size: 0.9em; margin-top: 5px;">Small images only (max 1MB)</p>
+                <label class="form-label" for="fileInput">Upload Media File *</label>
+                <input type="file" id="fileInput" class="form-input" accept="video/*, image/*, audio/*" required>
+                <p class="file-warning">Max file size: 1GB. Supported: Videos (MP4, AVI, MOV, MKV, WEBM), Images (PNG, JPEG, GIF), Audio (MP3, WAV, OGG)</p>
+                <img id="filePreview" class="" alt="File preview">
+                <div id="fileInfo" style="color: #aaa; margin-top: 5px;"></div>
             </div>
+
             <div class="form-group">
-                <label class="form-label" for="textContent">Or Add Text Content</label>
-                <textarea id="textContent" class="form-input" placeholder="Enter text content..." rows="4"></textarea>
+                <label class="form-label" for="mediaDescription">Description (Optional)</label>
+                <textarea id="mediaDescription" class="form-input" placeholder="Describe your media..." rows="3"></textarea>
             </div>
-            <button type="submit" id="submitPost">🚀 PUBLISH POST</button>
+
+            <button type="submit" id="submitPost">
+                <div class="upload-progress" id="uploadProgressBar"></div>
+                <span id="submitText">🚀 UPLOAD & PUBLISH</span>
+            </button>
             <div id="uploadStatus"></div>
+            <div id="progressPercentage" class="progress-text"></div>
         </form>
     </section>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
     <script>
         // Firebase Configuration
@@ -279,23 +340,26 @@
             apiKey: "AIzaSyAyTSyWhLVe22jynP94cp9OEg6IC5-OhdE",
             authDomain: "leakstream-4f62f.firebaseapp.com",
             projectId: "leakstream-4f62f",
+            storageBucket: "leakstream-4f62f.firebasestorage.app",
             messagingSenderId: "886997714546",
             appId: "1:886997714546:web:977c83c90684e7dfc564eb",
             measurementId: "G-ZFWWZ2L23W"
         };
 
         // Firebase Initialization
-        let app, db;
+        let app, db, storage;
         
         function initializeFirebase() {
             try {
                 app = firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore();
+                storage = firebase.storage();
                 console.log("Firebase initialized!");
                 loadPosts();
             } catch (error) {
                 console.error("Firebase init error:", error);
-                document.getElementById('uploadStatus').textContent = "Firebase init failed";
+                document.getElementById('uploadStatus').textContent = "Firebase initialization failed. Check console.";
+                document.getElementById('uploadStatus').style.color = "#ff5555";
             }
         }
 
@@ -303,27 +367,62 @@
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
+            
+            if (pageId === 'postPage') {
+                document.getElementById('fileInfo').textContent = '';
+                document.getElementById('filePreview').classList.remove('active');
+                document.getElementById('filePreview').src = '';
+            }
         }
 
-        // Convert image to Base64 data URL
-        function convertImageToDataURL(file) {
-            return new Promise((resolve, reject) => {
-                if (!file) {
-                    resolve(null);
-                    return;
-                }
-                
-                // Check file size (max 1MB for Firestore)
-                if (file.size > 1024 * 1024) {
-                    reject(new Error("Image too large. Max 1MB."));
-                    return;
-                }
-                
+        // File Preview and Info
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const fileInfo = document.getElementById('fileInfo');
+            const preview = document.getElementById('filePreview');
+            
+            if (!file) {
+                fileInfo.textContent = '';
+                preview.classList.remove('active');
+                return;
+            }
+            
+            // Check file size (1GB = 1073741824 bytes)
+            const maxSize = 1073741824;
+            if (file.size > maxSize) {
+                fileInfo.innerHTML = `<span style="color:#ff5555">File too large! ${formatFileSize(file.size)} > 1GB limit</span>`;
+                document.getElementById('fileInput').value = '';
+                preview.classList.remove('active');
+                return;
+            }
+            
+            // Show file info
+            fileInfo.innerHTML = `
+                📁 <strong>${file.name}</strong><br>
+                📏 Size: ${formatFileSize(file.size)}<br>
+                🏷️ Type: ${file.type || 'Unknown'}
+            `;
+            
+            // Show preview for images
+            if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.onerror = (e) => reject(new Error("Failed to read file"));
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.add('active');
+                };
                 reader.readAsDataURL(file);
-            });
+            } else {
+                preview.classList.remove('active');
+            }
+        });
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
         // Handle Form Submission
@@ -332,51 +431,134 @@
             
             const title = document.getElementById('postTitle').value;
             const file = document.getElementById('fileInput').files[0];
-            const textContent = document.getElementById('textContent').value;
+            const description = document.getElementById('mediaDescription').value;
             const statusEl = document.getElementById('uploadStatus');
+            const submitBtn = document.getElementById('submitPost');
+            const submitText = document.getElementById('submitText');
+            const progressBar = document.getElementById('uploadProgressBar');
+            const progressText = document.getElementById('progressPercentage');
             
-            if (!title) {
+            // Validation
+            if (!title.trim()) {
                 statusEl.textContent = "Please enter a title";
                 statusEl.style.color = "#ff5555";
                 return;
             }
             
-            if (!file && !textContent.trim()) {
-                statusEl.textContent = "Please add an image or text content";
+            if (!file) {
+                statusEl.textContent = "Please select a file";
                 statusEl.style.color = "#ff5555";
                 return;
             }
             
-            statusEl.textContent = "Publishing...";
+            // Check file size again
+            const maxSize = 1073741824; // 1GB
+            if (file.size > maxSize) {
+                statusEl.textContent = `File too large! Maximum size is 1GB`;
+                statusEl.style.color = "#ff5555";
+                return;
+            }
+            
+            // Disable button and show uploading state
+            submitBtn.disabled = true;
+            submitText.textContent = "UPLOADING...";
+            statusEl.textContent = "Starting upload...";
             statusEl.style.color = "#ffff99";
+            progressBar.style.width = "0%";
+            progressText.textContent = "0%";
             
             try {
-                let imageDataUrl = null;
+                // Generate unique filename
+                const timestamp = Date.now();
+                const fileExtension = file.name.split('.').pop();
+                const fileName = `media_${timestamp}_${Math.random().toString(36).substr(2, 9)}.${fileExtension}`;
+                const storageRef = storage.ref().child('media/' + fileName);
                 
-                if (file) {
-                    imageDataUrl = await convertImageToDataURL(file);
-                }
+                // Start upload with progress tracking
+                const uploadTask = storageRef.put(file);
                 
-                // Save to Firestore
-                await db.collection('posts').add({
-                    title: title,
-                    imageData: imageDataUrl, // Base64 string or null
-                    textContent: textContent || "",
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    type: file ? 'image' : 'text'
-                });
-                
-                statusEl.textContent = "✅ Post published successfully!";
-                statusEl.style.color = "#55ff55";
-                
-                document.getElementById('uploadForm').reset();
-                loadPosts();
-                showPage('homePage');
+                // Track upload progress
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        // Progress tracking
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        const roundedProgress = Math.round(progress);
+                        progressBar.style.width = `${progress}%`;
+                        progressText.textContent = `${roundedProgress}% uploaded`;
+                        
+                        if (roundedProgress < 100) {
+                            submitText.textContent = `UPLOADING ${roundedProgress}%`;
+                            statusEl.textContent = `Uploading: ${formatFileSize(snapshot.bytesTransferred)} of ${formatFileSize(snapshot.totalBytes)}`;
+                        }
+                    },
+                    (error) => {
+                        // Upload error
+                        console.error("Upload error:", error);
+                        statusEl.textContent = `❌ Upload failed: ${error.message}`;
+                        statusEl.style.color = "#ff5555";
+                        submitBtn.disabled = false;
+                        submitText.textContent = "🚀 TRY AGAIN";
+                        progressBar.style.width = "0%";
+                        progressText.textContent = "";
+                    },
+                    async () => {
+                        // Upload complete, get download URL
+                        try {
+                            const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                            
+                            // Save to Firestore
+                            await db.collection('posts').add({
+                                title: title,
+                                fileName: file.name,
+                                fileType: file.type,
+                                fileSize: file.size,
+                                mediaUrl: downloadURL,
+                                description: description || "",
+                                storagePath: `media/${fileName}`,
+                                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                views: 0
+                            });
+                            
+                            // Success!
+                            progressBar.style.width = "100%";
+                            progressText.textContent = "100% - Processing...";
+                            
+                            setTimeout(() => {
+                                statusEl.textContent = "✅ Media published successfully!";
+                                statusEl.style.color = "#55ff55";
+                                submitBtn.disabled = false;
+                                submitText.textContent = "🚀 PUBLISH ANOTHER";
+                                progressBar.style.width = "0%";
+                                progressText.textContent = "";
+                                
+                                // Reset form
+                                document.getElementById('uploadForm').reset();
+                                document.getElementById('fileInfo').textContent = '';
+                                document.getElementById('filePreview').classList.remove('active');
+                                
+                                // Load new posts and switch to home
+                                loadPosts();
+                                setTimeout(() => showPage('homePage'), 1500);
+                            }, 1000);
+                            
+                        } catch (dbError) {
+                            console.error("Database error:", dbError);
+                            statusEl.textContent = `❌ Failed to save post: ${dbError.message}`;
+                            statusEl.style.color = "#ff5555";
+                            submitBtn.disabled = false;
+                            submitText.textContent = "🚀 TRY AGAIN";
+                        }
+                    }
+                );
                 
             } catch (error) {
-                console.error("Publish error:", error);
-                statusEl.textContent = "❌ Error: " + error.message;
+                console.error("Upload process error:", error);
+                statusEl.textContent = `❌ Error: ${error.message}`;
                 statusEl.style.color = "#ff5555";
+                submitBtn.disabled = false;
+                submitText.textContent = "🚀 TRY AGAIN";
+                progressBar.style.width = "0%";
+                progressText.textContent = "";
             }
         });
 
@@ -385,15 +567,15 @@
             if (!db) return;
             
             const postsContainer = document.getElementById('postsContainer');
-            postsContainer.innerHTML = '<p style="text-align:center;color:#888">Loading...</p>';
+            postsContainer.innerHTML = '<div class="post-card" style="text-align:center;color:#888"><p>Loading posts...</p></div>';
             
             db.collection('posts')
                 .orderBy('timestamp', 'desc')
-                .limit(50)
+                .limit(20)
                 .get()
                 .then((snapshot) => {
                     if (snapshot.empty) {
-                        postsContainer.innerHTML = '<div class="post-card"><p style="text-align:center">No posts yet.</p></div>';
+                        postsContainer.innerHTML = '<div class="post-card"><p style="text-align:center">No posts yet. Be the first to upload!</p></div>';
                         return;
                     }
                     
@@ -404,27 +586,51 @@
                         postEl.className = 'post-card';
                         
                         let mediaHtml = '';
-                        if (post.imageData) {
-                            mediaHtml = `<img class="post-media" src="${post.imageData}" alt="${post.title}" onerror="this.style.display='none'">`;
+                        const isVideo = post.fileType && post.fileType.startsWith('video');
+                        const isAudio = post.fileType && post.fileType.startsWith('audio');
+                        const isImage = post.fileType && post.fileType.startsWith('image');
+                        
+                        if (isVideo) {
+                            mediaHtml = `
+                                <video class="post-media" controls preload="metadata">
+                                    <source src="${post.mediaUrl}" type="${post.fileType}">
+                                    Your browser does not support video tag.
+                                </video>
+                            `;
+                        } else if (isAudio) {
+                            mediaHtml = `
+                                <audio class="post-media" controls style="width:100%; margin-top:10px;">
+                                    <source src="${post.mediaUrl}" type="${post.fileType}">
+                                    Your browser does not support audio element.
+                                </audio>
+                            `;
+                        } else if (isImage) {
+                            mediaHtml = `<img class="post-media" src="${post.mediaUrl}" alt="${post.title}" loading="lazy">`;
+                        } else {
+                            mediaHtml = `<div style="padding:20px; background:#222; border-radius:5px; text-align:center;">
+                                📁 <a href="${post.mediaUrl}" target="_blank" style="color:#ff5555;">Download ${post.fileName || 'File'}</a>
+                            </div>`;
                         }
                         
-                        if (post.textContent) {
-                            mediaHtml += `<div class="text-content">${post.textContent}</div>`;
-                        }
+                        const formattedSize = post.fileSize ? formatFileSize(post.fileSize) : 'Unknown size';
+                        const timestamp = post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString() : 'Recently';
                         
                         postEl.innerHTML = `
                             <div class="post-card-title">${post.title}</div>
+                            ${post.description ? `<p style="color:#ccc; margin-bottom:10px;">${post.description}</p>` : ''}
                             ${mediaHtml}
-                            <p style="color:#666; font-size:0.8em; margin-top:10px;">
-                                ${post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString() : ''}
-                            </p>
+                            <div class="media-info">
+                                <span>📁 ${post.fileName || 'Media file'}</span>
+                                <span>📏 ${formattedSize}</span>
+                                <span>🕒 ${timestamp}</span>
+                            </div>
                         `;
                         postsContainer.appendChild(postEl);
                     });
                 })
                 .catch(error => {
                     console.error("Load error:", error);
-                    postsContainer.innerHTML = '<div class="post-card"><p style="color:#ff5555">Error loading posts</p></div>';
+                    postsContainer.innerHTML = '<div class="post-card"><p style="color:#ff5555">Error loading posts. Please refresh.</p></div>';
                 });
         }
 
