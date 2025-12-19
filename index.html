@@ -1,201 +1,613 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LeakStream</title>
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #000;
-    color: #fff;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeakStream</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  /* Floating, wiggly, glowing title bar */
-  .title-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: #111;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    box-shadow: 0 0 20px red;
-    animation: wiggle 2s infinite;
-    z-index: 1000;
-  }
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            padding-top: 100px;
+        }
 
-  .title-bar img {
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-  }
+        /* Floating Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1200px;
+            background: linear-gradient(90deg, 
+                rgba(255, 0, 0, 0.1) 0%,
+                rgba(0, 0, 0, 0.9) 20%,
+                rgba(0, 0, 0, 0.9) 80%,
+                rgba(255, 0, 0, 0.1) 100%);
+            border: 2px solid #ff0000;
+            border-radius: 15px;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.5),
+                0 0 40px rgba(255, 0, 0, 0.3),
+                0 0 60px rgba(255, 0, 0, 0.1);
+            z-index: 1000;
+            animation: wiggle 3s ease-in-out infinite, glow 2s ease-in-out infinite alternate;
+        }
 
-  .title-bar h1 {
-    margin: 0;
-    font-size: 24px;
-    color: red;
-    text-shadow: 0 0 10px red;
-  }
+        @keyframes wiggle {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            25% { transform: translateX(-50%) rotate(-0.5deg); }
+            75% { transform: translateX(-50%) rotate(0.5deg); }
+        }
 
-  @keyframes wiggle {
-    0%, 100% { transform: rotate(-2deg); }
-    50% { transform: rotate(2deg); }
-  }
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+            to { box-shadow: 0 0 30px rgba(255, 0, 0, 0.8), 0 0 50px rgba(255, 0, 0, 0.4); }
+        }
 
-  .nav-buttons {
-    display: flex;
-    gap: 10px;
-  }
+        .nav-bar::before, .nav-bar::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            width: 50px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ff0000);
+            animation: finishLine 3s linear infinite;
+        }
 
-  .nav-buttons button {
-    background: none;
-    border: 1px solid red;
-    color: white;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
+        .nav-bar::before {
+            left: -2px;
+        }
 
-  .container {
-    padding: 80px 20px 20px 20px;
-    max-width: 900px;
-    margin: auto;
-  }
+        .nav-bar::after {
+            right: -2px;
+            background: linear-gradient(90deg, #ff0000, transparent);
+        }
 
-  .video-card {
-    margin-bottom: 20px;
-    background: #111;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px red;
-  }
+        @keyframes finishLine {
+            0% { background-position: -50px 0; }
+            100% { background-position: 50px 0; }
+        }
 
-  video {
-    max-width: 100%;
-    border-radius: 10px;
-  }
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-  input[type="text"], input[type="file"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    background: #222;
-    border: 1px solid #555;
-    color: #fff;
-    border-radius: 5px;
-  }
+        .logo-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
 
-  button.post-btn {
-    background: red;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff0000, #ff6666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
 
-</style>
+        .nav-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-button {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.5);
+            background: linear-gradient(45deg, #ff3333, #ff0000);
+        }
+
+        .content {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Home Page Styles */
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .video-card {
+            background: #111;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            border: 1px solid #333;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff0000;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #000;
+        }
+
+        .video-title {
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(90deg, #111, #222);
+        }
+
+        /* Post Page Styles */
+        .post-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #111;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #333;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #ff6666;
+            font-weight: bold;
+        }
+
+        .title-input {
+            width: 100%;
+            padding: 15px;
+            background: #222;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .title-input:focus {
+            outline: none;
+            border-color: #ff0000;
+        }
+
+        .upload-area {
+            border: 3px dashed #333;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #1a1a1a;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #ff0000;
+            background: #222;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #ff0000;
+            margin-bottom: 15px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .post-button {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+        }
+
+        .post-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+        }
+
+        .post-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: #ff6666;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .message.error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            color: #ff6666;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .back-button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #444;
+        }
+    </style>
 </head>
 <body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="logo-section">
+            <img src="https://i.pinimg.com/736x/d2/ba/23/d2ba23dc373c9ca95a1231c785222e80.jpg" 
+                 alt="LeakStream Logo" 
+                 class="logo-image"
+                 onerror="this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"%23ff0000\"/><text x=\"50\" y=\"50\" font-size=\"40\" fill=\"white\" text-anchor=\"middle\" dy=\".3em\">LS</text></svg>'">
+            <div class="title">LEAKSTREAM</div>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-button" onclick="showPage('home')">Home</button>
+            <button class="nav-button" onclick="showPage('post')">Post Video</button>
+        </div>
+    </nav>
 
-<div class="title-bar">
-  <img src="https://i.pinimg.com/736x/d2/ba/23/d2ba23dc373c9ca95a1231c785222e80.jpg" alt="Logo">
-  <h1>LeakStream</h1>
-  <div class="nav-buttons">
-    <button onclick="showPage('home')">Home</button>
-    <button onclick="showPage('post')">Post</button>
-  </div>
-</div>
+    <!-- Home Page -->
+    <div id="home" class="page active content">
+        <h1 style="margin-bottom: 20px; color: #ff6666;">Latest Videos</h1>
+        <div id="videos-container" class="videos-grid">
+            <!-- Videos will be loaded here -->
+        </div>
+    </div>
 
-<div class="container" id="home-page">
-  <h2>All Videos</h2>
-  <div id="videos-list">
-    <!-- Videos will be loaded here -->
-  </div>
-</div>
+    <!-- Post Page -->
+    <div id="post" class="page content">
+        <button class="back-button" onclick="showPage('home')">← Back to Home</button>
+        <div class="post-container">
+            <h1 style="margin-bottom: 30px; color: #ff6666; text-align: center;">Upload Your Video</h1>
+            
+            <div class="input-group">
+                <label class="input-label">Video Title</label>
+                <input type="text" 
+                       id="videoTitle" 
+                       class="title-input" 
+                       placeholder="Enter a title for your video..."
+                       maxlength="100">
+            </div>
 
-<div class="container" id="post-page" style="display:none;">
-  <h2>Post a Video</h2>
-  <input type="text" id="video-title" placeholder="Enter video title">
-  <input type="file" id="video-file" accept="video/*">
-  <button class="post-btn" onclick="uploadVideo()">Post</button>
-</div>
+            <div class="input-group">
+                <label class="input-label">Upload Video File</label>
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()" 
+                     ondragover="handleDragOver(event)" 
+                     ondragleave="handleDragLeave(event)" 
+                     ondrop="handleDrop(event)">
+                    <div class="upload-icon">📤</div>
+                    <p style="margin-bottom: 10px; color: #aaa;">Click to select or drag & drop your video file</p>
+                    <p style="color: #666; font-size: 14px;">Supported formats: MP4, WebM, MOV (Max 100MB)</p>
+                    <input type="file" 
+                           id="fileInput" 
+                           class="file-input" 
+                           accept="video/*"
+                           onchange="handleFileSelect(event)">
+                </div>
+                <p id="fileName" style="margin-top: 10px; color: #aaa;"></p>
+            </div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAyTSyWhLVe22jynP94cp9OEg6IC5-OhdE",
-    authDomain: "leakstream-4f62f.firebaseapp.com",
-    projectId: "leakstream-4f62f",
-    storageBucket: "leakstream-4f62f.appspot.com",
-    messagingSenderId: "886997714546",
-    appId: "1:886997714546:web:977c83c90684e7dfc564eb",
-    measurementId: "G-ZFWWZ2L23W"
-  };
+            <div class="loading" id="loading">
+                <p>Uploading your video... Please wait.</p>
+                <p style="font-size: 14px; color: #888;">This may take a moment depending on file size.</p>
+            </div>
 
-  firebase.initializeApp(firebaseConfig);
-  const storage = firebase.storage();
-  const database = firebase.database();
+            <div id="message" class="message"></div>
 
-  function showPage(page) {
-    document.getElementById('home-page').style.display = page === 'home' ? 'block' : 'none';
-    document.getElementById('post-page').style.display = page === 'post' ? 'block' : 'none';
-  }
+            <button class="post-button" onclick="uploadVideo()" id="uploadButton">Post Video</button>
+        </div>
+    </div>
 
-  function uploadVideo() {
-    const fileInput = document.getElementById('video-file');
-    const titleInput = document.getElementById('video-title');
-    const file = fileInput.files[0];
-    const title = titleInput.value.trim();
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyTSyWhLVe22jynP94cp9OEg6IC5-OhdE",
+            authDomain: "leakstream-4f62f.firebaseapp.com",
+            projectId: "leakstream-4f62f",
+            storageBucket: "leakstream-4f62f.firebasestorage.app",
+            messagingSenderId: "886997714546",
+            appId: "1:886997714546:web:977c83c90684e7dfc564eb",
+            measurementId: "G-ZFWWZ2L23W"
+        };
 
-    if (!file || !title) {
-      alert('Please enter a title and select a video.');
-      return;
-    }
+        // Initialize Firebase
+        let app, storage, db;
+        let selectedFile = null;
+        
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            storage = firebase.storage();
+            db = firebase.firestore();
+            console.log("Firebase initialized successfully!");
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            showMessage("Error connecting to database. Please check your Firebase configuration.", "error");
+        }
 
-    const storageRef = storage.ref('videos/' + Date.now() + '_' + file.name);
-    storageRef.put(file).then(snapshot => {
-      snapshot.ref.getDownloadURL().then(url => {
-        database.ref('videos').push({
-          title: title,
-          url: url,
-          timestamp: Date.now()
-        }).then(() => {
-          alert('Video posted!');
-          fileInput.value = '';
-          titleInput.value = '';
-          loadVideos();
+        // Page Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // File Handling
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('video/')) {
+                selectedFile = file;
+                document.getElementById('fileName').textContent = `Selected: ${file.name} (${formatFileSize(file.size)})`;
+                document.querySelector('.upload-area').style.borderColor = '#00ff00';
+                document.querySelector('.upload-area').style.backgroundColor = 'rgba(0, 255, 0, 0.05)';
+            } else {
+                showMessage("Please select a valid video file.", "error");
+                selectedFile = null;
+            }
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
+            
+            const file = event.dataTransfer.files[0];
+            if (file && file.type.startsWith('video/')) {
+                selectedFile = file;
+                document.getElementById('fileName').textContent = `Selected: ${file.name} (${formatFileSize(file.size)})`;
+                document.querySelector('.upload-area').style.borderColor = '#00ff00';
+                document.querySelector('.upload-area').style.backgroundColor = 'rgba(0, 255, 0, 0.05)';
+            } else {
+                showMessage("Please drop a valid video file.", "error");
+                selectedFile = null;
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Upload Video Function
+        async function uploadVideo() {
+            const title = document.getElementById('videoTitle').value.trim();
+            
+            if (!title) {
+                showMessage("Please enter a title for your video.", "error");
+                return;
+            }
+            
+            if (!selectedFile) {
+                showMessage("Please select a video file to upload.", "error");
+                return;
+            }
+            
+            if (selectedFile.size > 100 * 1024 * 1024) { // 100MB limit
+                showMessage("File size exceeds 100MB limit. Please choose a smaller video.", "error");
+                return;
+            }
+            
+            // Show loading state
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('uploadButton').disabled = true;
+            
+            try {
+                // Create unique filename
+                const fileName = `${Date.now()}_${selectedFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                
+                // Upload to Firebase Storage
+                const storageRef = storage.ref();
+                const videoRef = storageRef.child('videos/' + fileName);
+                
+                const uploadTask = videoRef.put(selectedFile);
+                
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        // Optional: Show upload progress
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                    },
+                    (error) => {
+                        showMessage("Upload failed: " + error.message, "error");
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('uploadButton').disabled = false;
+                    },
+                    async () => {
+                        // Upload completed successfully
+                        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                        
+                        // Save video info to Firestore
+                        const videoData = {
+                            title: title,
+                            filename: fileName,
+                            url: downloadURL,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                            size: selectedFile.size,
+                            type: selectedFile.type
+                        };
+                        
+                        await db.collection('videos').add(videoData);
+                        
+                        // Reset form and show success message
+                        document.getElementById('videoTitle').value = '';
+                        document.getElementById('fileName').textContent = '';
+                        selectedFile = null;
+                        document.querySelector('.upload-area').style.borderColor = '';
+                        document.querySelector('.upload-area').style.backgroundColor = '';
+                        
+                        showMessage("Video uploaded successfully! It will appear on the home page shortly.", "success");
+                        
+                        // Reload videos
+                        setTimeout(loadVideos, 1000);
+                        
+                        // Switch to home page after 3 seconds
+                        setTimeout(() => {
+                            showPage('home');
+                        }, 3000);
+                        
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('uploadButton').disabled = false;
+                    }
+                );
+                
+            } catch (error) {
+                showMessage("Error: " + error.message, "error");
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('uploadButton').disabled = false;
+            }
+        }
+
+        // Load Videos Function
+        async function loadVideos() {
+            try {
+                const videosContainer = document.getElementById('videos-container');
+                
+                const querySnapshot = await db.collection('videos')
+                    .orderBy('timestamp', 'desc')
+                    .get();
+                
+                videosContainer.innerHTML = '';
+                
+                if (querySnapshot.empty) {
+                    videosContainer.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+                            <p style="color: #666; font-size: 18px;">No videos uploaded yet. Be the first to post!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                querySnapshot.forEach((doc) => {
+                    const video = doc.data();
+                    const videoCard = document.createElement('div');
+                    videoCard.className = 'video-card';
+                    videoCard.innerHTML = `
+                        <video class="video-player" controls>
+                            <source src="${video.url}" type="${video.type || 'video/mp4'}">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-title">${video.title}</div>
+                    `;
+                    videosContainer.appendChild(videoCard);
+                });
+                
+            } catch (error) {
+                console.error("Error loading videos:", error);
+                showMessage("Could not load videos. Please refresh the page.", "error");
+            }
+        }
+
+        // Show Message Function
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Load videos when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            if (db) {
+                loadVideos();
+            }
         });
-      });
-    });
-  }
-
-  function loadVideos() {
-    const videosList = document.getElementById('videos-list');
-    videosList.innerHTML = '';
-    database.ref('videos').orderByChild('timestamp').once('value', snapshot => {
-      snapshot.forEach(child => {
-        const videoData = child.val();
-        const div = document.createElement('div');
-        div.className = 'video-card';
-        div.innerHTML = `
-          <h3>${videoData.title}</h3>
-          <video controls src="${videoData.url}"></video>
-        `;
-        videosList.prepend(div);
-      });
-    });
-  }
-
-  loadVideos();
-</script>
-
+    </script>
 </body>
 </html>
