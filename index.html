@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeakStream</title>
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -21,88 +18,68 @@
             background-color: #000;
             color: #fff;
             min-height: 100vh;
-            padding-top: 100px;
+            padding-top: 80px;
         }
         
-        /* Animated Header Bar */
+        /* Floating animated header bar */
         .header-bar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
+            height: 70px;
             background: linear-gradient(90deg, #1a0000, #330000, #1a0000);
-            color: white;
-            padding: 15px 30px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.7);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
             border-bottom: 2px solid #ff0000;
             animation: wiggle 3s infinite alternate, glow 2s infinite alternate;
-            overflow: hidden;
-        }
-        
-        /* Finishing lines effect */
-        .header-bar::before, .header-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 4px;
-            background: linear-gradient(to bottom, transparent, #ff0000, transparent);
-            animation: lineMove 3s infinite linear;
-        }
-        
-        .header-bar::before {
-            left: 10%;
-        }
-        
-        .header-bar::after {
-            right: 10%;
         }
         
         @keyframes wiggle {
             0%, 100% { transform: translateY(0); }
-            25% { transform: translateY(-3px); }
-            50% { transform: translateY(3px); }
-            75% { transform: translateY(-1px); }
+            50% { transform: translateY(-3px); }
         }
         
         @keyframes glow {
-            0% { box-shadow: 0 4px 20px rgba(255, 0, 0, 0.7); }
-            100% { box-shadow: 0 4px 30px rgba(255, 0, 0, 0.9), 0 0 40px rgba(255, 0, 0, 0.5); }
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.7); }
+            50% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.9); }
         }
         
-        @keyframes lineMove {
-            0% { top: -100%; }
-            100% { top: 100%; }
+        .header-bar::before, .header-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(to right, transparent, #ff0000, transparent);
         }
         
+        .header-bar::before {
+            left: 0;
+        }
+        
+        .header-bar::after {
+            right: 0;
+        }
+        
+        /* Spinning logo */
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 15px;
         }
         
-        .logo-title {
-            font-size: 2.5rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, #ff0000, #ff6666, #ff0000);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-        }
-        
-        .spinning-image {
-            width: 60px;
-            height: 60px;
+        .spinning-logo {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
+            margin-right: 15px;
+            animation: spin 5s linear infinite;
             border: 2px solid #ff0000;
-            box-shadow: 0 0 15px #ff0000;
-            animation: spin 4s linear infinite;
+            box-shadow: 0 0 10px #ff0000;
         }
         
         @keyframes spin {
@@ -110,33 +87,47 @@
             100% { transform: rotate(360deg); }
         }
         
-        .nav-buttons {
-            display: flex;
-            gap: 20px;
+        /* Title styling */
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(to right, #ff0000, #ff6666, #ff0000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            letter-spacing: 1.5px;
         }
         
-        .nav-button {
-            background: rgba(255, 0, 0, 0.2);
-            color: white;
-            border: 1px solid #ff0000;
+        /* Navigation buttons */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-btn {
             padding: 10px 20px;
+            background: linear-gradient(to bottom, #ff0000, #990000);
+            color: white;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
         }
         
-        .nav-button:hover {
-            background: rgba(255, 0, 0, 0.4);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+        .nav-btn:hover {
+            background: linear-gradient(to bottom, #ff3333, #cc0000);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+            transform: translateY(-2px);
         }
         
-        /* Main Content */
-        .content {
-            padding: 30px;
+        /* Main content */
+        .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
         }
         
         .page {
@@ -145,25 +136,18 @@
         
         .page.active {
             display: block;
-            animation: fadeIn 0.5s;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        /* Home Page */
+        /* Home page - Video grid */
         .page-title {
-            font-size: 2rem;
-            margin-bottom: 25px;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
             color: #ff6666;
-            border-bottom: 2px solid #ff0000;
-            padding-bottom: 10px;
-            display: inline-block;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
         }
         
-        .videos-grid {
+        .videos-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 25px;
@@ -174,62 +158,61 @@
             background-color: #111;
             border-radius: 10px;
             overflow: hidden;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.2);
+            transition: transform 0.3s;
             border: 1px solid #333;
-            transition: transform 0.3s, box-shadow 0.3s;
         }
         
         .video-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.2);
-            border-color: #ff0000;
+            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.3);
         }
         
         .video-player {
             width: 100%;
             height: 200px;
-            object-fit: cover;
             background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+        }
+        
+        .video-info {
+            padding: 15px;
         }
         
         .video-title {
-            padding: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
             color: #fff;
+            font-weight: bold;
         }
         
-        .video-meta {
-            padding: 0 15px 15px;
-            font-size: 0.9rem;
-            color: #aaa;
+        .video-date {
+            font-size: 12px;
+            color: #999;
         }
         
-        .no-videos {
-            text-align: center;
-            padding: 50px;
-            font-size: 1.2rem;
-            color: #888;
-            grid-column: 1 / -1;
-        }
-        
-        /* Post Page */
-        .upload-form {
+        /* Post page */
+        .post-form {
             background-color: #111;
             padding: 30px;
             border-radius: 10px;
-            border: 1px solid #333;
             max-width: 600px;
             margin: 0 auto;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+            border: 1px solid #333;
         }
         
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         .form-label {
             display: block;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-weight: bold;
             color: #ff6666;
         }
         
@@ -240,7 +223,7 @@
             border: 1px solid #444;
             border-radius: 5px;
             color: white;
-            font-size: 1rem;
+            font-size: 16px;
         }
         
         .form-input:focus {
@@ -249,252 +232,214 @@
             box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
         }
         
-        .url-input-group {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .url-input {
-            flex: 1;
-        }
-        
-        .test-button {
-            background: rgba(255, 0, 0, 0.3);
-            color: white;
-            border: 1px solid #ff0000;
-            padding: 0 15px;
-            border-radius: 5px;
+        .upload-area {
+            border: 2px dashed #ff0000;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            background-color: rgba(255, 0, 0, 0.05);
             cursor: pointer;
             transition: all 0.3s;
-            white-space: nowrap;
+            margin-bottom: 20px;
         }
         
-        .test-button:hover {
-            background: rgba(255, 0, 0, 0.5);
-        }
-        
-        .instructions {
+        .upload-area:hover {
             background-color: rgba(255, 0, 0, 0.1);
-            border-left: 3px solid #ff0000;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 0 5px 5px 0;
         }
         
-        .instructions h3 {
-            color: #ff6666;
+        .upload-area.dragover {
+            background-color: rgba(255, 0, 0, 0.15);
+            border-color: #ff6666;
+        }
+        
+        .upload-icon {
+            font-size: 40px;
+            color: #ff0000;
             margin-bottom: 10px;
         }
         
-        .instructions ul {
-            padding-left: 20px;
-            color: #aaa;
+        .upload-text {
+            color: #ff6666;
         }
         
-        .instructions li {
-            margin-bottom: 8px;
+        .upload-note {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
         }
         
-        .submit-button {
-            background: linear-gradient(90deg, #ff0000, #cc0000);
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to right, #ff0000, #cc0000);
             color: white;
             border: none;
-            padding: 15px 30px;
             border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 18px;
             font-weight: bold;
-            width: 100%;
+            cursor: pointer;
             transition: all 0.3s;
-            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
         }
         
-        .submit-button:hover {
-            background: linear-gradient(90deg, #cc0000, #990000);
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        .submit-btn:hover {
+            background: linear-gradient(to right, #ff3333, #ff0000);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
         }
         
-        .submit-button:disabled {
-            background: #555;
+        .submit-btn:disabled {
+            background: #444;
             cursor: not-allowed;
             box-shadow: none;
         }
         
+        /* Status message */
         .status-message {
             padding: 15px;
-            margin-top: 20px;
+            margin: 20px 0;
             border-radius: 5px;
             text-align: center;
-            font-weight: bold;
-        }
-        
-        .status-success {
-            background-color: rgba(0, 255, 0, 0.1);
-            border: 1px solid #00ff00;
-            color: #00ff00;
-        }
-        
-        .status-error {
-            background-color: rgba(255, 0, 0, 0.1);
-            border: 1px solid #ff0000;
-            color: #ff6666;
-        }
-        
-        .status-loading {
-            background-color: rgba(255, 255, 0, 0.1);
-            border: 1px solid #ffff00;
-            color: #ffff00;
-        }
-        
-        .video-preview {
-            margin-top: 20px;
             display: none;
         }
         
-        .video-preview.active {
+        .status-message.success {
+            background-color: rgba(0, 128, 0, 0.2);
+            border: 1px solid #00aa00;
+            color: #66ff66;
             display: block;
         }
         
-        .preview-title {
+        .status-message.error {
+            background-color: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
             color: #ff6666;
-            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .status-message.info {
+            background-color: rgba(0, 100, 255, 0.2);
+            border: 1px solid #0066ff;
+            color: #6699ff;
+            display: block;
+        }
+        
+        /* Loading indicator */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ff0000;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
         }
         
         /* Footer */
         .footer {
             text-align: center;
-            padding: 30px;
-            margin-top: 50px;
+            padding: 20px;
+            margin-top: 40px;
             color: #666;
-            border-top: 1px solid #333;
-        }
-        
-        /* Loading spinner */
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-left-color: #ff0000;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
+            font-size: 14px;
+            border-top: 1px solid #222;
         }
         
         /* Responsive design */
         @media (max-width: 768px) {
             .header-bar {
-                padding: 10px 15px;
+                height: 60px;
+                padding: 0 10px;
             }
             
-            .logo-title {
-                font-size: 1.8rem;
+            .title {
+                font-size: 22px;
             }
             
-            .spinning-image {
-                width: 45px;
-                height: 45px;
-            }
-            
-            .nav-buttons {
-                gap: 10px;
-            }
-            
-            .nav-button {
+            .nav-btn {
                 padding: 8px 15px;
-                font-size: 0.9rem;
+                font-size: 14px;
             }
             
-            .videos-grid {
-                grid-template-columns: 1fr;
+            .spinning-logo {
+                width: 40px;
+                height: 40px;
             }
             
-            .content {
+            .videos-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+            }
+            
+            .post-form {
                 padding: 20px;
-            }
-            
-            .url-input-group {
-                flex-direction: column;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Animated Header Bar -->
-    <div class="header-bar">
+    <!-- Floating animated header bar -->
+    <header class="header-bar">
         <div class="logo-container">
-            <img src="https://i.pinimg.com/736x/d2/ba/23/d2ba23dc373c9ca95a1231c785222e80.jpg" alt="Logo" class="spinning-image">
-            <div class="logo-title">LEAKSTREAM</div>
+            <img src="https://i.pinimg.com/736x/d2/ba/23/d2ba23dc373c9ca95a1231c785222e80.jpg" alt="LeakStream Logo" class="spinning-logo">
+            <div class="title">LEAKSTREAM</div>
         </div>
         
         <div class="nav-buttons">
-            <button class="nav-button" id="homeBtn">HOME</button>
-            <button class="nav-button" id="postBtn">POST VIDEO</button>
+            <button class="nav-btn" id="homeBtn">HOME</button>
+            <button class="nav-btn" id="postBtn">POST</button>
         </div>
-    </div>
+    </header>
     
-    <!-- Main Content -->
-    <div class="content">
+    <!-- Main content container -->
+    <div class="container">
         <!-- Home Page -->
         <div id="homePage" class="page active">
-            <h1 class="page-title">Latest Leaks</h1>
-            <div id="videosContainer" class="videos-grid">
-                <!-- Videos will be loaded here -->
-                <div class="no-videos">Loading videos...</div>
+            <h2 class="page-title">RECENT LEAKS</h2>
+            <div class="videos-container" id="videosContainer">
+                <!-- Videos will be loaded here dynamically -->
+                <div class="loading-message">Loading videos...</div>
             </div>
         </div>
         
         <!-- Post Page -->
         <div id="postPage" class="page">
-            <h1 class="page-title">Upload New Leak</h1>
-            <div class="upload-form">
+            <h2 class="page-title">UPLOAD A NEW LEAK</h2>
+            
+            <div class="status-message" id="statusMessage"></div>
+            
+            <div class="post-form">
                 <div class="form-group">
-                    <label class="form-label">Video Title</label>
-                    <input type="text" id="videoTitle" class="form-input" placeholder="Enter a title for your video..." maxlength="100">
+                    <label class="form-label" for="videoTitle">LEAK TITLE</label>
+                    <input type="text" id="videoTitle" class="form-input" placeholder="Enter a title for your leak" maxlength="100">
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Video URL (MP4 Direct Link)</label>
-                    <div class="url-input-group">
-                        <input type="url" id="videoUrl" class="form-input url-input" placeholder="https://example.com/video.mp4">
-                        <button id="testVideoBtn" class="test-button">Test Video</button>
+                    <label class="form-label" for="videoUrl">VIDEO URL</label>
+                    <input type="text" id="videoUrl" class="form-input" placeholder="Paste your video URL here (MP4 format recommended)">
+                    <div class="upload-note">Note: You need to upload your video to a free hosting service (like Streamable, Vimeo, etc.) and paste the direct video URL here.</div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Drop your video file here or click to browse</div>
+                        <div class="upload-note">Note: This website doesn't host videos directly. You need to upload to a free service first, then paste the URL above.</div>
                     </div>
                 </div>
                 
-                <div id="videoPreview" class="video-preview">
-                    <div class="preview-title">Video Preview:</div>
-                    <video id="previewPlayer" class="video-player" controls>
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                
-                <div class="instructions">
-                    <h3>How to get a video URL:</h3>
-                    <ul>
-                        <li>Upload your MP4 video to a free hosting service like:
-                            <ul>
-                                <li>Google Drive (set to "Anyone with the link can view")</li>
-                                <li>Dropbox (get shareable link)</li>
-                                <li>GitHub Pages</li>
-                                <li>Any public file hosting service</li>
-                            </ul>
-                        </li>
-                        <li>Make sure the URL ends with .mp4 for direct video playback</li>
-                        <li>Test the URL first using the "Test Video" button</li>
-                    </ul>
-                </div>
-                
-                <button id="submitButton" class="submit-button">PUBLISH LEAK</button>
-                
-                <div id="statusMessage" class="status-message"></div>
+                <button class="submit-btn" id="submitBtn">
+                    <span id="submitText">PUBLISH LEAK</span>
+                    <div class="loading" id="loadingIndicator" style="display: none;"></div>
+                </button>
             </div>
         </div>
     </div>
     
-    <!-- Footer -->
     <div class="footer">
-        LeakStream &copy; 2023 - Anonymous Video Sharing Platform
+        LeakStream - Share leaks anonymously | This site doesn't host videos directly
     </div>
-
+    
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -506,125 +451,160 @@
             appId: "1:886997714546:web:977c83c90684e7dfc564eb",
             measurementId: "G-ZFWWZ2L23W"
         };
-
-        // Initialize Firebase (Firestore only)
+        
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         
         // DOM Elements
-        const homeBtn = document.getElementById('homeBtn');
-        const postBtn = document.getElementById('postBtn');
         const homePage = document.getElementById('homePage');
         const postPage = document.getElementById('postPage');
+        const homeBtn = document.getElementById('homeBtn');
+        const postBtn = document.getElementById('postBtn');
         const videosContainer = document.getElementById('videosContainer');
-        const videoTitle = document.getElementById('videoTitle');
-        const videoUrl = document.getElementById('videoUrl');
-        const testVideoBtn = document.getElementById('testVideoBtn');
-        const videoPreview = document.getElementById('videoPreview');
-        const previewPlayer = document.getElementById('previewPlayer');
-        const submitButton = document.getElementById('submitButton');
+        const videoTitleInput = document.getElementById('videoTitle');
+        const videoUrlInput = document.getElementById('videoUrl');
+        const uploadArea = document.getElementById('uploadArea');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+        const loadingIndicator = document.getElementById('loadingIndicator');
         const statusMessage = document.getElementById('statusMessage');
+        
+        // Current page state
+        let currentPage = 'home';
         
         // Navigation
         homeBtn.addEventListener('click', () => {
-            homePage.classList.add('active');
-            postPage.classList.remove('active');
+            showPage('home');
             loadVideos();
         });
         
         postBtn.addEventListener('click', () => {
+            showPage('post');
+        });
+        
+        function showPage(page) {
+            // Update active page
             homePage.classList.remove('active');
-            postPage.classList.add('active');
-            clearForm();
-        });
-        
-        // Test video URL
-        testVideoBtn.addEventListener('click', () => {
-            const url = videoUrl.value.trim();
+            postPage.classList.remove('active');
             
-            if (!url) {
-                showStatus('Please enter a video URL', 'error');
-                return;
+            if (page === 'home') {
+                homePage.classList.add('active');
+                currentPage = 'home';
+            } else {
+                postPage.classList.add('active');
+                currentPage = 'post';
             }
             
-            if (!isValidVideoUrl(url)) {
-                showStatus('Please enter a valid MP4 video URL (must end with .mp4)', 'error');
-                return;
-            }
+            // Update button styles
+            homeBtn.style.background = page === 'home' 
+                ? 'linear-gradient(to bottom, #ff3333, #cc0000)' 
+                : 'linear-gradient(to bottom, #ff0000, #990000)';
             
-            // Show preview
-            previewPlayer.src = url;
-            previewPlayer.load();
-            videoPreview.classList.add('active');
-            showStatus('Video loaded successfully! Click play to test.', 'success');
+            postBtn.style.background = page === 'post' 
+                ? 'linear-gradient(to bottom, #ff3333, #cc0000)' 
+                : 'linear-gradient(to bottom, #ff0000, #990000)';
+        }
+        
+        // Upload area interaction
+        uploadArea.addEventListener('click', () => {
+            videoUrlInput.focus();
+            showStatus('info', 'Remember: You need to upload your video to a free hosting service first, then paste the direct URL above.');
         });
         
-        // Submit video
-        submitButton.addEventListener('click', async () => {
-            const title = videoTitle.value.trim();
-            const url = videoUrl.value.trim();
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
             
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                showStatus('info', `File "${files[0].name}" dropped. Remember to upload it to a free hosting service and paste the URL above.`);
+            }
+        });
+        
+        // Submit new leak
+        submitBtn.addEventListener('click', async () => {
+            const title = videoTitleInput.value.trim();
+            const url = videoUrlInput.value.trim();
+            
+            // Validation
             if (!title) {
-                showStatus('Please enter a video title', 'error');
+                showStatus('error', 'Please enter a title for your leak');
+                videoTitleInput.focus();
                 return;
             }
             
             if (!url) {
-                showStatus('Please enter a video URL', 'error');
+                showStatus('error', 'Please enter a video URL');
+                videoUrlInput.focus();
                 return;
             }
             
-            if (!isValidVideoUrl(url)) {
-                showStatus('Please enter a valid MP4 video URL (must end with .mp4)', 'error');
+            // Basic URL validation
+            if (!isValidUrl(url)) {
+                showStatus('error', 'Please enter a valid URL. Make sure it starts with http:// or https://');
                 return;
             }
             
-            // Disable button and show loading
-            submitButton.disabled = true;
-            submitButton.textContent = 'PUBLISHING...';
-            showStatus('Publishing your video...', 'loading');
+            // Show loading state
+            submitBtn.disabled = true;
+            submitText.textContent = 'PUBLISHING...';
+            loadingIndicator.style.display = 'inline-block';
             
             try {
-                // Save video info to Firestore
+                // Add to Firestore
                 await db.collection('videos').add({
                     title: title,
                     url: url,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    views: 0,
-                    likes: 0
+                    views: 0
                 });
                 
+                // Reset form
+                videoTitleInput.value = '';
+                videoUrlInput.value = '';
+                
                 // Show success message
-                showStatus('Video published successfully!', 'success');
+                showStatus('success', 'Leak published successfully! Redirecting to home page...');
                 
-                // Clear form
-                clearForm();
-                
-                // Switch to home page after a delay
+                // Redirect to home page after delay
                 setTimeout(() => {
-                    homePage.classList.add('active');
-                    postPage.classList.remove('active');
+                    showPage('home');
                     loadVideos();
-                }, 1500);
+                }, 2000);
                 
             } catch (error) {
-                showStatus('Error: ' + error.message, 'error');
-                submitButton.disabled = false;
-                submitButton.textContent = 'PUBLISH LEAK';
+                console.error('Error publishing leak:', error);
+                showStatus('error', 'Failed to publish leak. Please try again.');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitText.textContent = 'PUBLISH LEAK';
+                loadingIndicator.style.display = 'none';
             }
         });
         
         // Load videos from Firestore
         async function loadVideos() {
-            videosContainer.innerHTML = '<div class="no-videos">Loading videos...</div>';
+            videosContainer.innerHTML = '<div class="loading-message">Loading videos...</div>';
             
             try {
                 const snapshot = await db.collection('videos')
                     .orderBy('timestamp', 'desc')
+                    .limit(20)
                     .get();
                 
                 if (snapshot.empty) {
-                    videosContainer.innerHTML = '<div class="no-videos">No videos uploaded yet. Be the first to post!</div>';
+                    videosContainer.innerHTML = '<div class="loading-message">No leaks yet. Be the first to post!</div>';
                     return;
                 }
                 
@@ -632,44 +612,60 @@
                 
                 snapshot.forEach(doc => {
                     const video = doc.data();
-                    const videoElement = document.createElement('div');
-                    videoElement.className = 'video-card';
+                    const videoId = doc.id;
                     
-                    // Create a safe video URL (handle CORS issues)
-                    const safeUrl = getSafeVideoUrl(video.url);
+                    const videoCard = document.createElement('div');
+                    videoCard.className = 'video-card';
                     
-                    videoElement.innerHTML = `
-                        <video class="video-player" controls preload="metadata">
-                            <source src="${safeUrl}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                        <div class="video-title">${escapeHtml(video.title)}</div>
-                        <div class="video-meta">Uploaded: ${formatDate(video.timestamp?.toDate())}</div>
+                    // Format date
+                    const date = video.timestamp ? 
+                        video.timestamp.toDate().toLocaleDateString() : 
+                        'Recently';
+                    
+                    // Create video element
+                    const videoHtml = `
+                        <div class="video-player">
+                            <video width="100%" height="100%" controls>
+                                <source src="${video.url}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">${escapeHtml(video.title)}</div>
+                            <div class="video-date">Posted: ${date}</div>
+                        </div>
                     `;
-                    videosContainer.appendChild(videoElement);
+                    
+                    videoCard.innerHTML = videoHtml;
+                    videosContainer.appendChild(videoCard);
                 });
                 
             } catch (error) {
                 console.error('Error loading videos:', error);
-                videosContainer.innerHTML = '<div class="no-videos">Error loading videos. Please try again.</div>';
+                videosContainer.innerHTML = '<div class="loading-message">Error loading videos. Please refresh the page.</div>';
             }
         }
         
-        // Helper functions
-        function isValidVideoUrl(url) {
-            // Check if it's a valid URL and ends with .mp4
+        // Utility functions
+        function showStatus(type, message) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusMessage.className = 'status-message';
+                }, 5000);
+            }
+        }
+        
+        function isValidUrl(string) {
             try {
-                const urlObj = new URL(url);
-                return urlObj.pathname.toLowerCase().endsWith('.mp4');
-            } catch {
+                new URL(string);
+                return true;
+            } catch (_) {
                 return false;
             }
-        }
-        
-        function getSafeVideoUrl(url) {
-            // For demo purposes, use a proxy if needed for CORS
-            // In production, make sure videos are hosted with proper CORS headers
-            return url;
         }
         
         function escapeHtml(text) {
@@ -678,55 +674,24 @@
             return div.innerHTML;
         }
         
-        function formatDate(date) {
-            if (!date) return 'Unknown date';
-            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }
-        
-        function showStatus(message, type) {
-            statusMessage.textContent = message;
-            statusMessage.className = 'status-message';
+        // Initialize the app
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load videos on initial page load
+            loadVideos();
             
-            switch(type) {
-                case 'success':
-                    statusMessage.classList.add('status-success');
-                    break;
-                case 'error':
-                    statusMessage.classList.add('status-error');
-                    break;
-                case 'loading':
-                    statusMessage.classList.add('status-loading');
-                    break;
-            }
-        }
-        
-        function clearForm() {
-            videoTitle.value = '';
-            videoUrl.value = '';
-            previewPlayer.src = '';
-            videoPreview.classList.remove('active');
-            statusMessage.textContent = '';
-            statusMessage.className = 'status-message';
-            submitButton.disabled = false;
-            submitButton.textContent = 'PUBLISH LEAK';
-        }
-        
-        // Initial load
-        loadVideos();
-        
-        // Real-time updates (optional)
-        // Uncomment to get real-time updates when new videos are added
-        /*
-        db.collection('videos')
-            .orderBy('timestamp', 'desc')
-            .onSnapshot((snapshot) => {
-                if (homePage.classList.contains('active')) {
-                    loadVideos();
-                }
-            }, (error) => {
-                console.error('Error in real-time listener:', error);
-            });
-        */
+            // Set up real-time listener for new videos
+            db.collection('videos')
+                .orderBy('timestamp', 'desc')
+                .limit(20)
+                .onSnapshot(snapshot => {
+                    // Only update if we're on the home page
+                    if (currentPage === 'home') {
+                        loadVideos();
+                    }
+                }, error => {
+                    console.error('Error in real-time listener:', error);
+                });
+        });
     </script>
 </body>
 </html>
