@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matrix LeakStream</title>
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs - LOAD THESE FIRST -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <!-- Font Awesome for icons -->
@@ -817,27 +817,31 @@
         // ==================== INITIALIZE FIREBASE ====================
         function initializeFirebase() {
             try {
-                // Check if Firebase is already initialized
-                if (firebase.apps.length === 0) {
-                    app = firebase.initializeApp(firebaseConfig);
-                } else {
-                    app = firebase.app();
+                // Check if Firebase SDKs are loaded
+                if (typeof firebase === 'undefined') {
+                    throw new Error("Firebase SDK not loaded. Check internet connection.");
                 }
                 
+                // Initialize Firebase
+                app = firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore();
                 firebaseInitialized = true;
                 
                 console.log("✅ Firebase initialized successfully");
+                console.log("✅ Firestore available:", typeof firebase.firestore.FieldValue.serverTime);
                 showHomeMessage("✅ Connected to database", "success");
                 updateStatusIndicator(true);
                 
-                // Enable post button now that Firebase is ready
+                // Enable post button
                 submitPostBtn.disabled = false;
+                
+                // Load posts
+                loadPosts();
                 
                 return true;
             } catch (error) {
                 console.error("❌ Firebase initialization error:", error);
-                showHomeMessage("❌ Database connection failed. Check console.", "error");
+                showHomeMessage("❌ Database connection failed: " + error.message, "error");
                 updateStatusIndicator(false);
                 
                 // Disable post button
@@ -848,17 +852,23 @@
             }
         }
         
-        // Initialize Firebase when page loads
+        // Wait for page to load and Firebase SDKs to be ready
         document.addEventListener('DOMContentLoaded', function() {
-            if (typeof firebase !== 'undefined') {
+            // Check if Firebase SDKs are loaded
+            if (typeof firebase !== 'undefined' && typeof firebase.firestore !== 'undefined') {
+                console.log("Firebase SDKs loaded successfully");
                 firebaseInitialized = initializeFirebase();
-                if (firebaseInitialized) {
-                    loadPosts();
-                }
             } else {
-                console.error("❌ Firebase SDK not loaded");
-                showHomeMessage("❌ Firebase SDK failed to load. Check internet connection.", "error");
+                console.error("Firebase SDKs not loaded properly");
+                showHomeMessage("❌ Firebase SDK failed to load. Please refresh the page.", "error");
                 updateStatusIndicator(false);
+                
+                // Try to load Firebase manually
+                setTimeout(() => {
+                    if (typeof firebase !== 'undefined') {
+                        firebaseInitialized = initializeFirebase();
+                    }
+                }, 2000);
             }
         });
         
@@ -1242,6 +1252,12 @@
                 return;
             }
             
+            // Check if firestore is available
+            if (!db || !firebase.firestore.FieldValue || typeof firebase.firestore.FieldValue.serverTime !== 'function') {
+                showFormMessage("Database error: Firestore not properly loaded", "error");
+                return;
+            }
+            
             try {
                 // Disable button and show loading
                 submitPostBtn.disabled = true;
@@ -1251,12 +1267,14 @@
                     title: title.trim(),
                     description: description.trim(),
                     videoLink: videoLink.trim(),
-                    timestamp: firebase.firestore.FieldValue.serverTime()
+                    timestamp: firebase.firestore.FieldValue.serverTime() // THIS SHOULD NOW WORK
                 };
+                
+                console.log("Adding post with data:", postData);
                 
                 // Add to Firestore
                 const docRef = await db.collection('posts').add(postData);
-                console.log("Post added with ID: ", docRef.id);
+                console.log("✅ Post added with ID: ", docRef.id);
                 
                 showFormMessage("✅ LEAK PUBLISHED SUCCESSFULLY! Redirecting...", "success");
                 
@@ -1272,7 +1290,7 @@
                 }, 2000);
                 
             } catch (error) {
-                console.error("Error adding post: ", error);
+                console.error("❌ Error adding post: ", error);
                 showFormMessage(`❌ ERROR: ${error.message}`, "error");
             } finally {
                 // Re-enable button
@@ -1411,9 +1429,9 @@
         // Console welcome message
         console.log(`
         ╔═══════════════════════════════════════════════╗
-        ║        MATRIX LEAKSTREAM v2.0 - FULL         ║
+        ║        MATRIX LEAKSTREAM v3.0 - FIXED        ║
         ║        Firebase Project: leakstreamnew       ║
-        ║        Status: ${firebaseInitialized ? '✅ CONNECTED' : '❌ DISCONNECTED'}           ║
+        ║        Status: Initializing...              ║
         ╚═══════════════════════════════════════════════╝
         `);
         
