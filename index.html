@@ -221,6 +221,13 @@
             justify-content: center;
             margin-bottom: 15px;
             position: relative;
+            overflow: hidden;
+        }
+        
+        .video-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .play-icon {
@@ -301,6 +308,56 @@
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
         }
         
+        /* Hosting links */
+        .hosting-links {
+            background-color: rgba(0, 30, 0, 0.8);
+            border: 1px solid #0a0;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .hosting-title {
+            color: #0f0;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+        
+        .hosting-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .hosting-btn {
+            background-color: rgba(0, 40, 0, 0.9);
+            color: #0f0;
+            border: 1px solid #0a0;
+            padding: 10px 20px;
+            border-radius: 3px;
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .hosting-btn:hover {
+            background-color: rgba(0, 255, 0, 0.1);
+            border-color: #0f0;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .hosting-icon {
+            font-size: 16px;
+        }
+        
         /* Video page */
         .video-page-container {
             max-width: 800px;
@@ -339,6 +396,7 @@
             font-size: 16px;
             max-height: 400px;
             overflow-y: auto;
+            white-space: pre-wrap;
         }
         
         .back-btn {
@@ -360,15 +418,69 @@
         }
         
         /* Loading and messages */
-        .loading, .no-posts, .error {
+        .loading {
             text-align: center;
             padding: 40px;
             font-size: 18px;
             color: #0f0;
         }
         
+        .no-posts {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #9f9;
+            border: 1px dashed #0a0;
+            border-radius: 5px;
+            background-color: rgba(0, 20, 0, 0.5);
+        }
+        
         .error {
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
             color: #f00;
+            background-color: rgba(40, 0, 0, 0.8);
+            border: 1px solid #f00;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            text-align: center;
+            padding: 15px;
+            font-size: 16px;
+            color: #0f0;
+            background-color: rgba(0, 40, 0, 0.8);
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            margin: 10px 0;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+        }
+        
+        /* Status indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background-color: #0f0;
+            box-shadow: 0 0 10px #0f0;
+        }
+        
+        .status-offline {
+            background-color: #f00;
+            box-shadow: 0 0 10px #f00;
         }
         
         /* Responsive design */
@@ -399,6 +511,11 @@
             .video-iframe {
                 height: 300px;
             }
+            
+            .hosting-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
@@ -428,7 +545,11 @@
     <div class="main-content">
         <!-- Home page -->
         <div class="page active" id="homePage">
-            <h2 style="text-align: center; margin-bottom: 10px; color: #0f0; text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);">ALL LEAKS</h2>
+            <h2 style="text-align: center; margin-bottom: 10px; color: #0f0; text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);">
+                <span class="status-indicator status-online" id="statusIndicator"></span>
+                ALL LEAKS
+            </h2>
+            <div id="homeMessages"></div>
             <div class="posts-grid" id="postsContainer">
                 <!-- Posts will be loaded here -->
             </div>
@@ -438,20 +559,38 @@
         <div class="page" id="postPage">
             <div class="form-container">
                 <h2 class="form-title">UPLOAD NEW LEAK</h2>
+                <div id="formMessages"></div>
                 <div class="form-group">
-                    <label class="form-label">VIDEO TITLE</label>
-                    <input type="text" class="form-input" id="postTitle" placeholder="Enter video title">
+                    <label class="form-label">VIDEO TITLE *</label>
+                    <input type="text" class="form-input" id="postTitle" placeholder="Enter video title" maxlength="200">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">VIDEO DESCRIPTION</label>
-                    <textarea class="form-textarea" id="postDescription" placeholder="Enter video description"></textarea>
+                    <label class="form-label">VIDEO DESCRIPTION *</label>
+                    <textarea class="form-textarea" id="postDescription" placeholder="Enter video description" maxlength="2000"></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">VIDEO LINK (YouTube, Vimeo, etc.)</label>
-                    <input type="text" class="form-input" id="postVideoLink" placeholder="Enter video URL">
+                    <label class="form-label">VIDEO LINK * (YouTube, Vimeo, Streamable, etc.)</label>
+                    <input type="text" class="form-input" id="postVideoLink" placeholder="https://example.com/video">
                 </div>
                 <button class="submit-btn" id="submitPostBtn">PUBLISH LEAK</button>
-                <div id="formMessage" style="text-align: center; margin-top: 15px;"></div>
+                
+                <!-- Hosting links section -->
+                <div class="hosting-links">
+                    <div class="hosting-title">RECOMMENDED HOSTING SERVICES:</div>
+                    <div class="hosting-buttons">
+                        <a href="https://imagekit.io/dashboard/media-library" target="_blank" class="hosting-btn">
+                            <span class="hosting-icon">🖼️</span>
+                            ImageKit (Images)
+                        </a>
+                        <a href="https://streamable.com/?utm_source=chatgpt.com" target="_blank" class="hosting-btn">
+                            <span class="hosting-icon">🎥</span>
+                            Streamable (Videos)
+                        </a>
+                    </div>
+                    <p style="color: #9f9; font-size: 12px; margin-top: 10px;">
+                        Use these services to host your media before posting links here
+                    </p>
+                </div>
             </div>
         </div>
         
@@ -471,7 +610,7 @@
     </div>
 
     <script>
-        // Firebase Configuration
+        // ==================== FIREBASE CONFIGURATION ====================
         const firebaseConfig = {
             apiKey: "AIzaSyDlEGndjR_x651X77k0A41mydFo3Emw3So",
             authDomain: "leakstreamnew.firebaseapp.com",
@@ -482,11 +621,38 @@
             measurementId: "G-Y2LY4BHWD3"
         };
         
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        // ==================== INITIALIZATION ====================
+        let app;
+        let db;
+        let firebaseInitialized = false;
         
-        // DOM Elements
+        function initializeFirebase() {
+            try {
+                app = firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                firebaseInitialized = true;
+                console.log("Firebase initialized successfully");
+                showHomeMessage("Connected to database", "success");
+                updateStatusIndicator(true);
+                return true;
+            } catch (error) {
+                console.error("Firebase initialization error:", error);
+                showHomeMessage("Database connection failed. Check Firebase configuration.", "error");
+                updateStatusIndicator(false);
+                return false;
+            }
+        }
+        
+        // Initialize Firebase on load
+        if (typeof firebase !== 'undefined') {
+            firebaseInitialized = initializeFirebase();
+        } else {
+            console.error("Firebase SDK not loaded");
+            showHomeMessage("Firebase SDK failed to load. Check internet connection.", "error");
+            updateStatusIndicator(false);
+        }
+        
+        // ==================== DOM ELEMENTS ====================
         const homeBtn = document.getElementById('homeBtn');
         const postBtn = document.getElementById('postBtn');
         const searchInput = document.getElementById('searchInput');
@@ -499,14 +665,16 @@
         const postTitle = document.getElementById('postTitle');
         const postDescription = document.getElementById('postDescription');
         const postVideoLink = document.getElementById('postVideoLink');
-        const formMessage = document.getElementById('formMessage');
         const backBtn = document.getElementById('backBtn');
         const videoPageTitle = document.getElementById('videoPageTitle');
         const videoPageDescription = document.getElementById('videoPageDescription');
         const videoPlayer = document.getElementById('videoPlayer');
         const logo = document.getElementById('logo');
+        const homeMessages = document.getElementById('homeMessages');
+        const formMessages = document.getElementById('formMessages');
+        const statusIndicator = document.getElementById('statusIndicator');
         
-        // Matrix Background Effect
+        // ==================== MATRIX BACKGROUND ====================
         const canvas = document.getElementById('matrixCanvas');
         const ctx = canvas.getContext('2d');
         
@@ -548,11 +716,297 @@
         
         setInterval(drawMatrix, 35);
         
-        // Application State
+        // ==================== APPLICATION STATE ====================
         let currentPosts = [];
         let currentVideoId = null;
         
-        // Page Navigation
+        // ==================== UTILITY FUNCTIONS ====================
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function showHomeMessage(message, type = 'info') {
+            homeMessages.innerHTML = `<div class="${type}">${escapeHtml(message)}</div>`;
+            if (type !== 'error' && type !== 'success') {
+                setTimeout(() => {
+                    homeMessages.innerHTML = '';
+                }, 3000);
+            }
+        }
+        
+        function showFormMessage(message, type = 'info') {
+            formMessages.innerHTML = `<div class="${type}">${escapeHtml(message)}</div>`;
+            if (type !== 'error' && type !== 'success') {
+                setTimeout(() => {
+                    formMessages.innerHTML = '';
+                }, 3000);
+            }
+        }
+        
+        function updateStatusIndicator(online) {
+            statusIndicator.className = `status-indicator ${online ? 'status-online' : 'status-offline'}`;
+            statusIndicator.title = online ? 'Database Connected' : 'Database Disconnected';
+        }
+        
+        function isValidUrl(string) {
+            if (!string) return false;
+            try {
+                const url = new URL(string);
+                return url.protocol === 'http:' || url.protocol === 'https:';
+            } catch (_) {
+                return false;
+            }
+        }
+        
+        function extractVideoId(url) {
+            if (!url) return null;
+            
+            // YouTube
+            const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const youtubeMatch = url.match(youtubeRegex);
+            if (youtubeMatch) return { type: 'youtube', id: youtubeMatch[1] };
+            
+            // Vimeo
+            const vimeoRegex = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/i;
+            const vimeoMatch = url.match(vimeoRegex);
+            if (vimeoMatch) return { type: 'vimeo', id: vimeoMatch[1] };
+            
+            // Streamable
+            const streamableRegex = /streamable\.com\/([a-z0-9]+)/i;
+            const streamableMatch = url.match(streamableRegex);
+            if (streamableMatch) return { type: 'streamable', id: streamableMatch[1] };
+            
+            return { type: 'direct', id: null };
+        }
+        
+        function createVideoEmbed(url) {
+            const videoInfo = extractVideoId(url);
+            
+            switch (videoInfo.type) {
+                case 'youtube':
+                    return `<iframe class="video-iframe" src="https://www.youtube.com/embed/${videoInfo.id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+                
+                case 'vimeo':
+                    return `<iframe class="video-iframe" src="https://player.vimeo.com/video/${videoInfo.id}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+                
+                case 'streamable':
+                    return `<iframe class="video-iframe" src="https://streamable.com/e/${videoInfo.id}" frameborder="0" allowfullscreen></iframe>`;
+                
+                default:
+                    return `
+                        <div style="padding: 30px; text-align: center;">
+                            <div style="margin-bottom: 20px; color: #0f0;">
+                                <i class="fas fa-external-link-alt" style="font-size: 48px; margin-bottom: 15px;"></i>
+                                <p>External Video Link</p>
+                            </div>
+                            <a href="${url}" target="_blank" style="color: #0f0; text-decoration: none; border: 1px solid #0f0; padding: 10px 20px; border-radius: 3px; display: inline-block;">
+                                <i class="fas fa-external-link-alt"></i> Open Video
+                            </a>
+                            <p style="color: #9f9; margin-top: 15px; font-size: 14px;">
+                                Click the button above to view the video
+                            </p>
+                        </div>
+                    `;
+            }
+        }
+        
+        function getThumbnailUrl(url) {
+            const videoInfo = extractVideoId(url);
+            
+            switch (videoInfo.type) {
+                case 'youtube':
+                    return `https://img.youtube.com/vi/${videoInfo.id}/hqdefault.jpg`;
+                
+                case 'vimeo':
+                    // Vimeo requires API call for thumbnails, so we'll use a placeholder
+                    return null;
+                
+                case 'streamable':
+                    // Streamable thumbnails
+                    return `https://cdn-cf-east.streamable.com/image/${videoInfo.id}.jpg`;
+                
+                default:
+                    return null;
+            }
+        }
+        
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Unknown date';
+            try {
+                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } catch (e) {
+                return 'Invalid date';
+            }
+        }
+        
+        // ==================== FIREBASE OPERATIONS ====================
+        async function loadPosts(searchTerm = '') {
+            if (!firebaseInitialized) {
+                showHomeMessage("Database not initialized. Cannot load posts.", "error");
+                postsContainer.innerHTML = '<div class="error">DATABASE CONNECTION FAILED</div>';
+                return;
+            }
+            
+            postsContainer.innerHTML = '<div class="loading">LOADING LEAKS...</div>';
+            
+            try {
+                let query = db.collection('posts').orderBy('timestamp', 'desc');
+                const querySnapshot = await query.get();
+                
+                currentPosts = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    currentPosts.push({ 
+                        id: doc.id, 
+                        title: data.title || 'Untitled',
+                        description: data.description || '',
+                        videoLink: data.videoLink || '',
+                        timestamp: data.timestamp || null
+                    });
+                });
+                
+                if (currentPosts.length === 0) {
+                    postsContainer.innerHTML = '<div class="no-posts">NO LEAKS FOUND. BE THE FIRST TO POST!</div>';
+                    return;
+                }
+                
+                displayPosts(searchTerm);
+                
+            } catch (error) {
+                console.error("Error loading posts: ", error);
+                postsContainer.innerHTML = '<div class="error">ERROR LOADING LEAKS. CHECK CONSOLE FOR DETAILS.</div>';
+                showHomeMessage("Failed to load posts: " + error.message, "error");
+            }
+        }
+        
+        function displayPosts(searchTerm = '') {
+            let filteredPosts = currentPosts;
+            
+            if (searchTerm.trim()) {
+                const term = searchTerm.toLowerCase().trim();
+                filteredPosts = currentPosts.filter(post => 
+                    post.title.toLowerCase().includes(term) ||
+                    post.description.toLowerCase().includes(term)
+                );
+            }
+            
+            if (filteredPosts.length === 0) {
+                postsContainer.innerHTML = '<div class="no-posts">NO LEAKS FOUND MATCHING YOUR SEARCH.</div>';
+                return;
+            }
+            
+            postsContainer.innerHTML = '';
+            
+            filteredPosts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'post-card';
+                postElement.dataset.id = post.id;
+                
+                const thumbnailUrl = getThumbnailUrl(post.videoLink);
+                
+                postElement.innerHTML = `
+                    <div class="video-preview">
+                        ${thumbnailUrl ? 
+                            `<img src="${thumbnailUrl}" alt="${escapeHtml(post.title)}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'play-icon\\'>▶</div>';" />` : 
+                            `<div class="play-icon">▶</div>`
+                        }
+                    </div>
+                    <h3 class="post-title">${escapeHtml(post.title)}</h3>
+                    <p class="post-description">${escapeHtml(post.description.substring(0, 200))}${post.description.length > 200 ? '...' : ''}</p>
+                    <div style="color: #0a0; font-size: 12px; margin-top: 10px;">
+                        <i class="far fa-clock"></i> ${formatDate(post.timestamp)}
+                    </div>
+                `;
+                
+                postElement.addEventListener('click', () => showVideo(post.id));
+                postsContainer.appendChild(postElement);
+            });
+        }
+        
+        async function addPost(title, description, videoLink) {
+            if (!firebaseInitialized) {
+                showFormMessage("Database not initialized. Cannot publish.", "error");
+                return;
+            }
+            
+            // Validation
+            if (!title.trim()) {
+                showFormMessage("Title is required", "error");
+                return;
+            }
+            
+            if (!description.trim()) {
+                showFormMessage("Description is required", "error");
+                return;
+            }
+            
+            if (!videoLink.trim()) {
+                showFormMessage("Video link is required", "error");
+                return;
+            }
+            
+            if (!isValidUrl(videoLink)) {
+                showFormMessage("Please enter a valid URL (must start with http:// or https://)", "error");
+                return;
+            }
+            
+            try {
+                submitPostBtn.disabled = true;
+                submitPostBtn.textContent = 'PUBLISHING...';
+                
+                const postData = {
+                    title: title.trim(),
+                    description: description.trim(),
+                    videoLink: videoLink.trim(),
+                    timestamp: firebase.firestore.FieldValue.serverTime()
+                };
+                
+                await db.collection('posts').add(postData);
+                
+                showFormMessage("LEAK PUBLISHED SUCCESSFULLY! Redirecting...", "success");
+                
+                // Clear form
+                postTitle.value = '';
+                postDescription.value = '';
+                postVideoLink.value = '';
+                
+                // Switch to home page and reload posts
+                setTimeout(() => {
+                    showPage('home');
+                    loadPosts();
+                }, 1500);
+                
+            } catch (error) {
+                console.error("Error adding post: ", error);
+                showFormMessage("ERROR PUBLISHING: " + error.message, "error");
+            } finally {
+                submitPostBtn.disabled = false;
+                submitPostBtn.textContent = 'PUBLISH LEAK';
+            }
+        }
+        
+        async function showVideo(postId) {
+            const post = currentPosts.find(p => p.id === postId);
+            if (!post) {
+                showHomeMessage("Post not found", "error");
+                return;
+            }
+            
+            currentVideoId = postId;
+            videoPageTitle.textContent = escapeHtml(post.title);
+            videoPageDescription.textContent = escapeHtml(post.description);
+            videoPageDescription.style.whiteSpace = 'pre-wrap';
+            
+            // Create video embed
+            videoPlayer.innerHTML = createVideoEmbed(post.videoLink);
+            showPage('video');
+        }
+        
+        // ==================== PAGE NAVIGATION ====================
         function showPage(pageId) {
             // Hide all pages
             homePage.classList.remove('active');
@@ -571,212 +1025,37 @@
             } else if (pageId === 'post') {
                 postPage.classList.add('active');
                 postBtn.classList.add('active');
+                formMessages.innerHTML = '';
             } else if (pageId === 'video') {
                 videoPage.classList.add('active');
             }
         }
         
-        // Firebase Functions
-        async function loadPosts(searchTerm = '') {
-            postsContainer.innerHTML = '<div class="loading">LOADING LEAKS...</div>';
-            
-            try {
-                let query = db.collection('posts').orderBy('timestamp', 'desc');
-                
-                const querySnapshot = await query.get();
-                currentPosts = [];
-                
-                querySnapshot.forEach((doc) => {
-                    currentPosts.push({ id: doc.id, ...doc.data() });
-                });
-                
-                displayPosts(searchTerm);
-            } catch (error) {
-                console.error("Error loading posts: ", error);
-                postsContainer.innerHTML = '<div class="error">ERROR LOADING LEAKS. CHECK CONSOLE.</div>';
-            }
-        }
-        
-        function displayPosts(searchTerm = '') {
-            if (currentPosts.length === 0) {
-                postsContainer.innerHTML = '<div class="no-posts">NO LEAKS FOUND. BE THE FIRST TO POST!</div>';
-                return;
-            }
-            
-            let filteredPosts = currentPosts;
-            if (searchTerm) {
-                const term = searchTerm.toLowerCase();
-                filteredPosts = currentPosts.filter(post => 
-                    post.title.toLowerCase().includes(term)
-                );
-            }
-            
-            if (filteredPosts.length === 0) {
-                postsContainer.innerHTML = '<div class="no-posts">NO LEAKS MATCH YOUR SEARCH.</div>';
-                return;
-            }
-            
-            postsContainer.innerHTML = '';
-            
-            filteredPosts.forEach(post => {
-                const postElement = document.createElement('div');
-                postElement.className = 'post-card';
-                postElement.dataset.id = post.id;
-                
-                // Extract video ID for thumbnail if it's a YouTube link
-                let thumbnailUrl = '';
-                if (post.videoLink.includes('youtube.com') || post.videoLink.includes('youtu.be')) {
-                    const videoId = extractYouTubeId(post.videoLink);
-                    if (videoId) {
-                        thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-                    }
-                }
-                
-                postElement.innerHTML = `
-                    <div class="video-preview">
-                        ${thumbnailUrl ? 
-                            `<img src="${thumbnailUrl}" style="width:100%; height:100%; object-fit:cover;" alt="Thumbnail">` : 
-                            `<div class="play-icon">▶</div>`
-                        }
-                    </div>
-                    <h3 class="post-title">${escapeHtml(post.title)}</h3>
-                    <p class="post-description">${escapeHtml(post.description.substring(0, 200))}${post.description.length > 200 ? '...' : ''}</p>
-                    <div style="color: #0a0; font-size: 12px; margin-top: 10px;">
-                        Posted: ${new Date(post.timestamp?.toDate()).toLocaleDateString()}
-                    </div>
-                `;
-                
-                postElement.addEventListener('click', () => showVideo(post.id));
-                postsContainer.appendChild(postElement);
-            });
-        }
-        
-        async function addPost(title, description, videoLink) {
-            if (!title.trim() || !description.trim() || !videoLink.trim()) {
-                showFormMessage('ALL FIELDS ARE REQUIRED', 'error');
-                return;
-            }
-            
-            if (!isValidUrl(videoLink)) {
-                showFormMessage('PLEASE ENTER A VALID VIDEO URL', 'error');
-                return;
-            }
-            
-            try {
-                submitPostBtn.disabled = true;
-                submitPostBtn.textContent = 'PUBLISHING...';
-                
-                const postData = {
-                    title: title,
-                    description: description,
-                    videoLink: videoLink,
-                    timestamp: firebase.firestore.FieldValue.serverTime()
-                };
-                
-                await db.collection('posts').add(postData);
-                
-                showFormMessage('LEAK PUBLISHED SUCCESSFULLY!', 'success');
-                
-                // Clear form
-                postTitle.value = '';
-                postDescription.value = '';
-                postVideoLink.value = '';
-                
-                // Switch to home page after a delay
-                setTimeout(() => {
-                    showPage('home');
-                }, 1500);
-                
-            } catch (error) {
-                console.error("Error adding post: ", error);
-                showFormMessage('ERROR PUBLISHING LEAK. TRY AGAIN.', 'error');
-            } finally {
-                submitPostBtn.disabled = false;
-                submitPostBtn.textContent = 'PUBLISH LEAK';
-            }
-        }
-        
-        async function showVideo(postId) {
-            const post = currentPosts.find(p => p.id === postId);
-            if (!post) return;
-            
-            currentVideoId = postId;
-            videoPageTitle.textContent = escapeHtml(post.title);
-            videoPageDescription.textContent = escapeHtml(post.description);
-            
-            // Create video embed
-            let videoEmbed = '';
-            const videoLink = post.videoLink;
-            
-            if (videoLink.includes('youtube.com') || videoLink.includes('youtu.be')) {
-                const videoId = extractYouTubeId(videoLink);
-                if (videoId) {
-                    videoEmbed = `<iframe class="video-iframe" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-                }
-            } else if (videoLink.includes('vimeo.com')) {
-                const videoId = videoLink.split('vimeo.com/')[1];
-                if (videoId) {
-                    videoEmbed = `<iframe class="video-iframe" src="https://player.vimeo.com/video/${videoId}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-                }
-            } else {
-                videoEmbed = `<div style="padding: 40px; text-align: center; color: #0f0;">
-                    <p>VIDEO LINK: <a href="${videoLink}" target="_blank" style="color: #0f0;">${videoLink}</a></p>
-                    <p>Click the link above to view the video in a new tab.</p>
-                </div>`;
-            }
-            
-            videoPlayer.innerHTML = videoEmbed;
-            showPage('video');
-        }
-        
-        // Helper Functions
-        function extractYouTubeId(url) {
-            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[7].length === 11) ? match[7] : null;
-        }
-        
-        function isValidUrl(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return false;
-            }
-        }
-        
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        function showFormMessage(message, type) {
-            formMessage.textContent = message;
-            formMessage.style.color = type === 'error' ? '#f00' : '#0f0';
-            formMessage.style.textShadow = type === 'error' ? '0 0 5px #f00' : '0 0 5px #0f0';
-            
-            setTimeout(() => {
-                formMessage.textContent = '';
-            }, 3000);
-        }
-        
-        // Event Listeners
+        // ==================== EVENT LISTENERS ====================
         homeBtn.addEventListener('click', () => showPage('home'));
         postBtn.addEventListener('click', () => showPage('post'));
         
         searchBtn.addEventListener('click', () => {
-            loadPosts(searchInput.value);
+            displayPosts(searchInput.value);
         });
         
         searchInput.addEventListener('keyup', (e) => {
             if (e.key === 'Enter') {
-                loadPosts(searchInput.value);
+                displayPosts(searchInput.value);
             }
+            // Real-time search as user types
+            displayPosts(searchInput.value);
         });
         
         submitPostBtn.addEventListener('click', () => {
             addPost(postTitle.value, postDescription.value, postVideoLink.value);
+        });
+        
+        // Allow Enter key to submit form
+        postTitle.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addPost(postTitle.value, postDescription.value, postVideoLink.value);
+            }
         });
         
         backBtn.addEventListener('click', () => {
@@ -785,12 +1064,35 @@
         
         // Logo error handling
         logo.addEventListener('error', () => {
-            console.log('Logo failed to load, using placeholder');
-            logo.src = 'https://via.placeholder.com/50/000/0f0?text=MATRIX';
+            console.log('Logo failed to load, using matrix placeholder');
+            logo.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><circle cx="25" cy="25" r="23" fill="black" stroke="%2300ff00" stroke-width="2"/><text x="25" y="30" font-family="monospace" font-size="20" fill="%2300ff00" text-anchor="middle">M</text></svg>';
         });
         
-        // Initialize
-        loadPosts();
+        // Auto-reload posts every 30 seconds
+        setInterval(() => {
+            if (homePage.classList.contains('active')) {
+                loadPosts(searchInput.value);
+            }
+        }, 30000);
+        
+        // ==================== INITIALIZATION ====================
+        // Load posts on initial page load
+        if (firebaseInitialized) {
+            loadPosts();
+        }
+        
+        // Add some helpful tooltips
+        searchInput.title = "Search in titles and descriptions";
+        postVideoLink.title = "Enter YouTube, Vimeo, Streamable, or any video URL";
+        
+        // Console welcome message
+        console.log(`
+        ============================================
+        MATRIX LEAKSTREAM v1.0
+        Firebase Project: leakstreamnew
+        Status: ${firebaseInitialized ? 'CONNECTED' : 'DISCONNECTED'}
+        ============================================
+        `);
     </script>
 </body>
 </html>
