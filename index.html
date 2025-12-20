@@ -1,1 +1,487 @@
-on work
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeakStream - Video Link Host</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #000; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; }
+        
+        /* Animated Navigation Bar */
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%; background: linear-gradient(90deg, #1a1a1a 0%, #2a0a0a 100%); padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; z-index: 1000;
+            border-bottom: 3px solid transparent; box-shadow: 0 0 25px rgba(255, 0, 0, 0.7); animation: wiggle 3s infinite, glow 2s infinite alternate;
+        }
+        @keyframes wiggle { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        @keyframes glow { from { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); } to { box-shadow: 0 0 35px rgba(255, 0, 0, 0.9); } }
+        .navbar::before {
+            content: ''; position: absolute; bottom: -3px; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent 0%, #ff0000 20%, #ff0000 80%, transparent 100%); animation: line-glow 2s infinite alternate;
+        }
+        @keyframes line-glow { from { opacity: 0.7; } to { opacity: 1; } }
+        
+        .logo-container { display: flex; align-items: center; gap: 20px; }
+        .spinning-logo { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #ff0000; animation: spin 3s linear infinite; box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); object-fit: cover; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .site-title { font-size: 28px; font-weight: bold; background: linear-gradient(45deg, #ff0000, #ff6b6b); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 10px rgba(255, 0, 0, 0.3); letter-spacing: 1.5px; }
+        
+        .nav-buttons { display: flex; gap: 15px; }
+        .nav-btn, .code-btn { padding: 10px 25px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3); }
+        .nav-btn:hover, .code-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5); background: linear-gradient(45deg, #cc0000, #ff0000); }
+        .code-btn.admin-active { background: linear-gradient(45deg, #00cc00, #009900); box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); }
+        
+        /* Main Content */
+        .main-content { margin-top: 100px; padding: 30px; min-height: calc(100vh - 100px); }
+        
+        /* Home Page - Video Grid */
+        .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; padding: 20px 0; }
+        .video-card { background: #1a1a1a; border-radius: 15px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #333; position: relative; }
+        .video-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(255, 0, 0, 0.2); border-color: #ff0000; }
+        .video-player { width: 100%; height: 200px; background: #000; display: flex; align-items: center; justify-content: center; }
+        .video-player video { width: 100%; height: 100%; object-fit: contain; }
+        .video-info { padding: 20px; }
+        .video-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; word-break: break-word; }
+        .video-meta { font-size: 12px; color: #aaa; display: flex; justify-content: space-between; align-items: center; }
+        .delete-btn { position: absolute; top: 15px; right: 15px; background: rgba(255, 0, 0, 0.9); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; display: none; }
+        .video-card:hover .delete-btn { display: block; }
+        
+        /* Upload Page */
+        .upload-container { max-width: 600px; margin: 0 auto; background: #1a1a1a; padding: 40px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(255, 0, 0, 0.1); }
+        .upload-title { font-size: 32px; text-align: center; margin-bottom: 30px; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; margin-bottom: 10px; color: #fff; font-weight: bold; font-size: 16px; }
+        .form-input { width: 100%; padding: 15px; background: #000; border: 2px solid #333; border-radius: 10px; color: #fff; font-size: 16px; transition: border-color 0.3s ease; }
+        .form-input:focus { outline: none; border-color: #ff0000; box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); }
+        .hosting-links { margin-top: 30px; padding: 20px; background: rgba(255, 0, 0, 0.05); border-radius: 10px; border: 1px dashed #ff0000; }
+        .hosting-links h3 { color: #ff6b6b; margin-bottom: 10px; font-size: 18px; }
+        .hosting-links a { color: #ff6b6b; text-decoration: none; display: block; margin: 8px 0; padding: 8px; border-radius: 5px; transition: background 0.3s; }
+        .hosting-links a:hover { background: rgba(255, 0, 0, 0.1); text-decoration: underline; }
+        .upload-btn { width: 100%; padding: 18px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 20px; box-shadow: 0 6px 20px rgba(255, 0, 0, 0.3); }
+        .upload-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255, 0, 0, 0.5); }
+        
+        /* Code Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 2000; display: none; }
+        .modal-content { background: #1a1a1a; padding: 40px; border-radius: 20px; border: 2px solid #ff0000; box-shadow: 0 0 40px rgba(255, 0, 0, 0.5); max-width: 500px; width: 90%; }
+        .modal-title { font-size: 24px; margin-bottom: 20px; color: #fff; text-align: center; }
+        .code-input { width: 100%; padding: 15px; font-size: 18px; letter-spacing: 3px; text-align: center; background: #000; border: 2px solid #ff0000; color: #fff; border-radius: 10px; margin-bottom: 20px; }
+        .modal-buttons { display: flex; gap: 15px; }
+        .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+        .modal-btn.submit { background: linear-gradient(45deg, #ff0000, #cc0000); color: white; }
+        .modal-btn.cancel { background: #333; color: #aaa; }
+        
+        /* Messages */
+        .message { padding: 15px; border-radius: 10px; margin: 20px 0; text-align: center; font-weight: bold; }
+        .message.success { background: rgba(0, 255, 0, 0.1); border: 1px solid #00ff00; color: #00ff00; }
+        .message.error { background: rgba(255, 0, 0, 0.1); border: 1px solid #ff0000; color: #ff0000; }
+        
+        .empty-state { text-align: center; padding: 60px 20px; color: #666; }
+        
+        /* Admin Panel */
+        .admin-panel { background: rgba(0, 100, 0, 0.2); border: 1px solid #00ff00; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
+        .admin-status { color: #00ff00; font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="https://i.pinimg.com/736x/d2/ba/23/d2ba23dc373c9ca95a1231c785222e80.jpg" alt="LeakStream Logo" class="spinning-logo">
+            <div class="site-title">LEAKSTREAM</div>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="showHomePage()">Home</button>
+            <button class="nav-btn" onclick="showUploadPage()">Post</button>
+            <button class="code-btn" id="codeBtn" onclick="showCodeModal()">Code</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="main-content" id="mainContent">
+        <!-- Home Page Content will be loaded here -->
+    </div>
+
+    <!-- Code Modal -->
+    <div class="modal-overlay" id="codeModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Enter Admin Code</h2>
+            <input type="password" class="code-input" id="adminCode" placeholder="Enter secret code" maxlength="20">
+            <div class="modal-buttons">
+                <button class="modal-btn submit" onclick="checkAdminCode()">Submit</button>
+                <button class="modal-btn cancel" onclick="hideCodeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="homeTemplate">
+        <div id="adminPanel" class="admin-panel" style="display: none;">
+            <div class="admin-status">🔓 ADMIN MODE ACTIVE - You can delete posts</div>
+            <button class="nav-btn" onclick="exitAdminMode()" style="padding: 8px 20px; font-size: 14px;">Exit Admin Mode</button>
+        </div>
+        <div class="videos-grid" id="videosGrid">
+            <!-- Videos will be dynamically loaded here -->
+        </div>
+        <div class="empty-state" id="emptyState">
+            <div style="font-size: 64px; margin-bottom: 20px;">📹</div>
+            <h2>No Videos Yet</h2>
+            <p>Be the first to post a video link!</p>
+        </div>
+    </template>
+
+    <template id="uploadTemplate">
+        <div class="upload-container">
+            <h1 class="upload-title">Post Video Link</h1>
+            
+            <div class="message" id="message"></div>
+            
+            <div class="form-group">
+                <label for="videoTitle">Video Title *</label>
+                <input type="text" id="videoTitle" class="form-input" placeholder="Enter video title" maxlength="100" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="videoUrl">MP4 Video URL *</label>
+                <input type="url" id="videoUrl" class="form-input" placeholder="https://example.com/video.mp4" required>
+                <p style="color: #aaa; font-size: 14px; margin-top: 8px;">Paste direct link to .mp4 video file</p>
+            </div>
+            
+            <div class="hosting-links">
+                <h3>📹 Some Free Video Hosters:</h3>
+                <a href="https://www.screenapp.io/features/share-video" target="_blank">• ScreenApp - Share your Videos</a>
+                <a href="https://imagekit.io/dashboard" target="_blank">• ImageKit.io - Image & Video CDN</a>
+                <p style="color: #aaa; font-size: 14px; margin-top: 10px;">Upload your video to one of these services first, then paste the direct MP4 link above.</p>
+            </div>
+            
+            <button class="upload-btn" id="uploadBtn" onclick="postVideoLink()">
+                📤 Publish Video Link
+            </button>
+        </div>
+    </template>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyTSyWhLVe22jynP94cp9OEg6IC5-OhdE",
+            authDomain: "leakstream-4f62f.firebaseapp.com",
+            projectId: "leakstream-4f62f",
+            storageBucket: "leakstream-4f62f.firebasestorage.app",
+            messagingSenderId: "886997714546",
+            appId: "1:886997714546:web:977c83c90684e7dfc564eb",
+            measurementId: "G-ZFWWZ2L23W"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // App State
+        let currentPage = 'home';
+        let isAdmin = false;
+        const ADMIN_CODE = "UNDESCRIMINATED-2012";
+
+        // Initialize App
+        function initApp() {
+            showHomePage();
+            checkAdminStatus();
+        }
+
+        // Show Home Page
+        function showHomePage() {
+            currentPage = 'home';
+            const mainContent = document.getElementById('mainContent');
+            const homeTemplate = document.getElementById('homeTemplate');
+            
+            if (mainContent && homeTemplate) {
+                mainContent.innerHTML = homeTemplate.innerHTML;
+                loadVideos();
+                updateAdminPanel();
+            }
+        }
+
+        // Show Upload Page
+        function showUploadPage() {
+            currentPage = 'upload';
+            const mainContent = document.getElementById('mainContent');
+            const uploadTemplate = document.getElementById('uploadTemplate');
+            
+            if (mainContent && uploadTemplate) {
+                mainContent.innerHTML = uploadTemplate.innerHTML;
+            }
+        }
+
+        // Load Videos from Firestore
+        async function loadVideos() {
+            const videosGrid = document.getElementById('videosGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (!videosGrid) return;
+            
+            try {
+                const snapshot = await db.collection('videos')
+                    .orderBy('timestamp', 'desc')
+                    .get();
+                
+                videosGrid.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    if (emptyState) emptyState.style.display = 'block';
+                    return;
+                }
+                
+                if (emptyState) emptyState.style.display = 'none';
+                
+                snapshot.forEach(doc => {
+                    const video = { id: doc.id, ...doc.data() };
+                    const videoCard = createVideoCard(video);
+                    videosGrid.appendChild(videoCard);
+                });
+                
+            } catch (error) {
+                console.error('Error loading videos:', error);
+                showMessage('Error loading videos', 'error');
+            }
+        }
+
+        // Create Video Card Element
+        function createVideoCard(video) {
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.id = `video-${video.id}`;
+            
+            // Format date
+            const postDate = video.timestamp?.toDate 
+                ? new Date(video.timestamp.toDate()).toLocaleDateString()
+                : 'Recent';
+            
+            card.innerHTML = `
+                <div class="video-player">
+                    <video controls>
+                        <source src="${video.videoUrl}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div class="video-info">
+                    <h3 class="video-title">${video.title}</h3>
+                    <div class="video-meta">
+                        <span>Posted: ${postDate}</span>
+                        <span>Direct MP4 Link</span>
+                    </div>
+                </div>
+                ${isAdmin ? `<button class="delete-btn" onclick="deletePost('${video.id}')">🗑 Delete</button>` : ''}
+            `;
+            
+            return card;
+        }
+
+        // Post Video Link to Firestore
+        async function postVideoLink() {
+            const titleInput = document.getElementById('videoTitle');
+            const urlInput = document.getElementById('videoUrl');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            const title = titleInput ? titleInput.value.trim() : '';
+            const videoUrl = urlInput ? urlInput.value.trim() : '';
+            
+            // Validation
+            if (!title) {
+                showMessage('Please enter a video title', 'error');
+                return;
+            }
+            
+            if (!videoUrl || !videoUrl.startsWith('http')) {
+                showMessage('Please enter a valid MP4 URL starting with http:// or https://', 'error');
+                return;
+            }
+            
+            // Simple MP4 URL check (can be enhanced)
+            if (!videoUrl.toLowerCase().endsWith('.mp4') && !videoUrl.includes('.mp4?')) {
+                if (!confirm("URL doesn't look like a direct .mp4 file. Continue anyway?")) {
+                    return;
+                }
+            }
+            
+            // Disable button
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Publishing...';
+            
+            try {
+                // Add to Firestore
+                await db.collection('videos').add({
+                    title: title,
+                    videoUrl: videoUrl,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    postedBy: 'Anonymous' // Can be enhanced with user system
+                });
+                
+                // Show success
+                showMessage('Video link posted successfully!', 'success');
+                
+                // Clear form
+                if (titleInput) titleInput.value = '';
+                if (urlInput) urlInput.value = '';
+                
+                // Return to home page after delay
+                setTimeout(() => {
+                    showHomePage();
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error posting video:', error);
+                showMessage(`Error: ${error.message}`, 'error');
+            } finally {
+                // Re-enable button
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '📤 Publish Video Link';
+            }
+        }
+
+        // Show/Hide Code Modal
+        function showCodeModal() {
+            const modal = document.getElementById('codeModal');
+            const codeInput = document.getElementById('adminCode');
+            if (modal && codeInput) {
+                modal.style.display = 'flex';
+                codeInput.value = '';
+                codeInput.focus();
+            }
+        }
+        
+        function hideCodeModal() {
+            const modal = document.getElementById('codeModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // Check Admin Code
+        function checkAdminCode() {
+            const codeInput = document.getElementById('adminCode');
+            const enteredCode = codeInput ? codeInput.value.trim() : '';
+            
+            if (enteredCode === ADMIN_CODE) {
+                isAdmin = true;
+                localStorage.setItem('leakstream_admin', 'true');
+                showMessage('🔓 Admin mode activated!', 'success');
+                hideCodeModal();
+                updateAdminPanel();
+                loadVideos(); // Reload to show delete buttons
+            } else {
+                showMessage('❌ Incorrect code', 'error');
+                if (codeInput) {
+                    codeInput.value = '';
+                    codeInput.focus();
+                }
+            }
+        }
+
+        // Check Admin Status from Local Storage
+        function checkAdminStatus() {
+            const savedAdmin = localStorage.getItem('leakstream_admin');
+            isAdmin = savedAdmin === 'true';
+            updateAdminPanel();
+        }
+
+        // Update Admin Panel UI
+        function updateAdminPanel() {
+            const adminPanel = document.getElementById('adminPanel');
+            const codeBtn = document.getElementById('codeBtn');
+            
+            if (adminPanel) {
+                adminPanel.style.display = isAdmin ? 'block' : 'none';
+            }
+            
+            if (codeBtn) {
+                if (isAdmin) {
+                    codeBtn.classList.add('admin-active');
+                    codeBtn.textContent = 'Admin Mode';
+                } else {
+                    codeBtn.classList.remove('admin-active');
+                    codeBtn.textContent = 'Code';
+                }
+            }
+        }
+
+        // Exit Admin Mode
+        function exitAdminMode() {
+            isAdmin = false;
+            localStorage.removeItem('leakstream_admin');
+            updateAdminPanel();
+            showMessage('Admin mode deactivated', 'error');
+            loadVideos(); // Reload to hide delete buttons
+        }
+
+        // Delete Post (Admin Only)
+        async function deletePost(videoId) {
+            if (!isAdmin) {
+                showMessage('Admin privileges required', 'error');
+                return;
+            }
+            
+            if (!confirm('Are you sure you want to delete this post?')) {
+                return;
+            }
+            
+            try {
+                await db.collection('videos').doc(videoId).delete();
+                
+                // Remove from UI immediately
+                const videoElement = document.getElementById(`video-${videoId}`);
+                if (videoElement) {
+                    videoElement.remove();
+                }
+                
+                showMessage('Post deleted successfully', 'success');
+                
+                // Check if grid is now empty
+                const videosGrid = document.getElementById('videosGrid');
+                if (videosGrid && videosGrid.children.length === 0) {
+                    const emptyState = document.getElementById('emptyState');
+                    if (emptyState) emptyState.style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error('Error deleting post:', error);
+                showMessage(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Show Message
+        function showMessage(text, type) {
+            // Remove existing messages
+            const existingMsg = document.querySelector('.message');
+            if (existingMsg) existingMsg.remove();
+            
+            // Create new message
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            
+            // Insert message based on current page
+            const mainContent = document.getElementById('mainContent');
+            if (mainContent) {
+                if (currentPage === 'home') {
+                    const adminPanel = document.getElementById('adminPanel');
+                    if (adminPanel) {
+                        mainContent.insertBefore(messageDiv, adminPanel.nextSibling);
+                    } else {
+                        mainContent.insertBefore(messageDiv, mainContent.firstChild);
+                    }
+                } else {
+                    mainContent.insertBefore(messageDiv, mainContent.firstChild);
+                }
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        // Initialize app on load
+        window.onload = initApp;
+    </script>
+</body>
+</html>
