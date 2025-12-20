@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediaPost Platform</title>
+    <title>LeakStream</title>
+    <!-- Import Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
     <style>
         * {
             margin: 0;
@@ -13,96 +17,53 @@
         }
         
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #e2e8f0;
+            background-color: #000000;
+            color: #ffffff;
             min-height: 100vh;
             overflow-x: hidden;
         }
         
-        /* Snowfall Animation on Posts */
-        .post-snow-container {
-            position: absolute;
+        /* Snowfall Animation */
+        #snowContainer {
+            position: fixed;
             top: 0;
-            right: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
+            z-index: 9999;
         }
         
-        .post-snowflake {
+        .snowflake {
             position: absolute;
             background: white;
             border-radius: 50%;
-            opacity: 0.7;
-            animation: postSnowfall linear infinite;
+            opacity: 0.8;
+            animation: snowfall linear infinite;
         }
         
-        @keyframes postSnowfall {
+        @keyframes snowfall {
             0% {
-                transform: translateX(50px) translateY(-50px) rotate(0deg);
+                transform: translateX(100vw) translateY(-50px) rotate(0deg);
                 opacity: 0;
             }
             10% {
-                opacity: 0.7;
+                opacity: 0.8;
             }
             90% {
-                opacity: 0.7;
+                opacity: 0.8;
             }
             100% {
-                transform: translateX(calc(-100vw - 50px)) translateY(calc(100vh + 50px)) rotate(360deg);
+                transform: translateX(-100px) translateY(100vh) rotate(360deg);
                 opacity: 0;
             }
         }
         
-        /* Christmas Tree LED Lights */
-        .led-tree {
-            position: fixed;
-            top: 80px;
-            left: 0;
-            width: 100%;
-            height: 20px;
-            background: 
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 20px,
-                    #ff0000 20px,
-                    #ff0000 40px,
-                    transparent 40px,
-                    transparent 60px,
-                    #00ff00 60px,
-                    #00ff00 80px,
-                    transparent 80px,
-                    transparent 100px,
-                    #ffff00 100px,
-                    #ffff00 120px,
-                    transparent 120px,
-                    transparent 140px,
-                    #0000ff 140px,
-                    #0000ff 160px
-                );
-            animation: ledTwinkle 2s ease-in-out infinite alternate;
-            z-index: 999;
-        }
-        
-        @keyframes ledTwinkle {
-            0% {
-                opacity: 0.7;
-                background-position: 0 0;
-            }
-            100% {
-                opacity: 1;
-                background-position: 40px 0;
-            }
-        }
-        
-        /* Navigation Bar */
+        /* Glowing Navigation Bar */
         .navbar {
-            background: linear-gradient(135deg, #334155 0%, #475569 100%);
-            padding: 0 40px;
-            height: 80px;
+            background: #111111;
+            padding: 0 30px;
+            height: 70px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -110,111 +71,117 @@
             top: 0;
             left: 0;
             right: 0;
-            z-index: 1000;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            border-bottom: 2px solid #00ff00;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 0, 0.5),
+                0 0 40px rgba(0, 255, 0, 0.3),
+                inset 0 0 20px rgba(0, 255, 0, 0.2);
+            animation: glowPulse 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glowPulse {
+            0% {
+                box-shadow: 
+                    0 0 15px rgba(0, 255, 0, 0.4),
+                    0 0 30px rgba(0, 255, 0, 0.2),
+                    inset 0 0 15px rgba(0, 255, 0, 0.1);
+            }
+            100% {
+                box-shadow: 
+                    0 0 25px rgba(0, 255, 0, 0.7),
+                    0 0 50px rgba(0, 255, 0, 0.4),
+                    inset 0 0 25px rgba(0, 255, 0, 0.3);
+            }
         }
         
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 30px;
+            gap: 20px;
         }
         
         .logo-main {
-            height: 50px;
+            height: 45px;
             width: auto;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.7));
             transition: transform 0.3s ease;
         }
         
         .logo-main:hover {
-            transform: scale(1.05);
+            transform: scale(1.1);
         }
         
         .logo-secondary {
-            height: 45px;
+            height: 40px;
             width: auto;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.7));
             transition: transform 0.3s ease;
         }
         
         .logo-secondary:hover {
-            transform: scale(1.05);
+            transform: scale(1.1);
         }
         
-        /* Navigation Buttons & Search */
-        .nav-right {
+        /* Search Bar */
+        .search-container {
             display: flex;
             align-items: center;
-            gap: 20px;
-        }
-        
-        .search-container {
-            position: relative;
+            gap: 10px;
         }
         
         .search-bar {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 10px 40px 10px 15px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            width: 250px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid rgba(0, 255, 0, 0.5);
+            color: #00ff00;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            width: 300px;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            outline: none;
         }
         
         .search-bar:focus {
-            outline: none;
-            border-color: #60a5fa;
-            background: rgba(255, 255, 255, 0.15);
-            width: 300px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            border-color: #00ff00;
+            width: 350px;
         }
         
         .search-bar::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(0, 255, 0, 0.6);
         }
         
-        .search-icon {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
         }
         
         .nav-btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            border: none;
-            color: white;
-            padding: 10px 24px;
-            border-radius: 8px;
-            font-size: 0.95rem;
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .nav-btn:hover {
-            background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+            background: rgba(0, 255, 0, 0.4);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-        }
-        
-        .nav-btn i {
-            font-size: 1rem;
         }
         
         /* Page Container */
         .page-container {
-            margin-top: 110px;
-            padding: 40px;
+            margin-top: 90px;
+            padding: 30px;
             display: none;
             position: relative;
         }
@@ -225,184 +192,209 @@
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
-        /* Home Page - Posts Display */
+        /* Home Page - Video Grid */
         #homePage {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         
         .page-header {
             margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
         }
         
         .page-header h1 {
             font-size: 2.5rem;
-            background: linear-gradient(135deg, #60a5fa 0%, #818cf8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #00ff00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
             margin-bottom: 10px;
         }
         
         .page-header p {
-            color: #94a3b8;
+            color: #cccccc;
             font-size: 1.1rem;
         }
         
-        .search-info {
-            margin: 20px 0;
-            color: #60a5fa;
-            font-size: 0.95rem;
-            display: none;
-        }
-        
-        .search-info.show {
-            display: block;
-        }
-        
-        .posts-grid {
+        .videos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
             margin-top: 30px;
         }
         
-        .post-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 25px;
+        .video-card {
+            background: #1a1a1a;
+            border: 2px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ff00;
+            box-shadow: 0 10px 30px rgba(0, 255, 0, 0.3);
+        }
+        
+        .video-thumbnail {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #222222, #333333);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
             overflow: hidden;
-            min-height: 300px;
         }
         
-        .post-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(96, 165, 250, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        .video-thumbnail::before {
+            content: '▶';
+            position: absolute;
+            font-size: 3rem;
+            color: rgba(0, 255, 0, 0.5);
         }
         
-        .post-header {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .video-info {
+            padding: 20px;
         }
         
-        .post-title {
-            font-size: 1.3rem;
-            color: #f1f5f9;
+        .video-title {
+            font-size: 1.2rem;
+            color: #ffffff;
             margin-bottom: 10px;
             line-height: 1.4;
         }
         
-        .post-meta {
-            display: flex;
-            justify-content: space-between;
-            color: #94a3b8;
-            font-size: 0.85rem;
-        }
-        
-        .post-author {
-            color: #60a5fa;
-        }
-        
-        .post-date {
-            color: #34d399;
-        }
-        
-        .video-content {
-            margin: 20px 0;
-        }
-        
-        .video-count {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(96, 165, 250, 0.1);
-            color: #60a5fa;
-            padding: 6px 12px;
-            border-radius: 20px;
+        .video-description {
+            color: #cccccc;
             font-size: 0.9rem;
+            line-height: 1.5;
             margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         
-        .video-urls {
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-        
-        .url-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
-        }
-        
-        .url-item i {
-            color: #60a5fa;
-        }
-        
-        .post-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .action-btn {
-            background: rgba(96, 165, 250, 0.1);
-            border: 1px solid rgba(96, 165, 250, 0.2);
-            color: #60a5fa;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-        }
-        
-        .action-btn:hover {
-            background: rgba(96, 165, 250, 0.2);
+        .video-date {
+            color: #00ff00;
+            font-size: 0.8rem;
+            text-align: right;
         }
         
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #94a3b8;
-            background: rgba(30, 41, 59, 0.5);
-            border-radius: 12px;
-            border: 2px dashed rgba(255, 255, 255, 0.1);
+            color: #666666;
+            background: #111111;
+            border-radius: 10px;
+            border: 2px dashed #333333;
             margin-top: 40px;
         }
         
         .empty-state i {
-            font-size: 3rem;
-            color: #475569;
+            font-size: 4rem;
+            color: #333333;
             margin-bottom: 20px;
         }
         
         .empty-state h3 {
             font-size: 1.5rem;
             margin-bottom: 10px;
-            color: #cbd5e1;
+            color: #cccccc;
+        }
+        
+        /* Video Player Page */
+        #videoPage {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none;
+        }
+        
+        .video-player-container {
+            background: #111111;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(0, 255, 0, 0.3);
+        }
+        
+        .video-header {
+            padding: 30px;
+            border-bottom: 1px solid #333333;
+        }
+        
+        .video-header h1 {
+            font-size: 2rem;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+        
+        .video-header p {
+            color: #cccccc;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .video-player {
+            width: 100%;
+            min-height: 600px;
+            background: #000000;
+            position: relative;
+        }
+        
+        .video-iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+        
+        .video-actions {
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #333333;
+        }
+        
+        .back-btn {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(0, 255, 0, 0.4);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+        
+        .share-btn {
+            background: rgba(0, 100, 255, 0.2);
+            border: 2px solid #0066ff;
+            color: #0066ff;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .share-btn:hover {
+            background: rgba(0, 100, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 100, 255, 0.5);
         }
         
         /* Post Page */
@@ -412,11 +404,10 @@
         }
         
         .post-form-container {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            background: #111111;
+            border: 2px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
             padding: 40px;
-            backdrop-filter: blur(10px);
         }
         
         .form-header {
@@ -426,12 +417,12 @@
         
         .form-header h1 {
             font-size: 2rem;
-            color: #f1f5f9;
+            color: #00ff00;
             margin-bottom: 10px;
         }
         
         .form-header p {
-            color: #94a3b8;
+            color: #cccccc;
             font-size: 1rem;
         }
         
@@ -442,26 +433,33 @@
         .form-group label {
             display: block;
             margin-bottom: 10px;
-            color: #f1f5f9;
+            color: #00ff00;
             font-weight: 600;
             font-size: 1rem;
         }
         
-        .form-group input {
+        .form-group input,
+        .form-group textarea {
             width: 100%;
-            padding: 14px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 2px solid #334155;
+            padding: 15px;
+            background: #000000;
+            border: 2px solid #333333;
             border-radius: 8px;
-            color: white;
+            color: #ffffff;
             font-size: 1rem;
             transition: all 0.3s ease;
         }
         
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group textarea:focus {
             outline: none;
-            border-color: #60a5fa;
-            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
         }
         
         .url-upload-section {
@@ -476,19 +474,19 @@
         
         .url-input-group input {
             flex: 1;
-            padding: 14px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 2px solid #334155;
+            padding: 15px;
+            background: #000000;
+            border: 2px solid #333333;
             border-radius: 8px;
             color: white;
             font-size: 1rem;
         }
         
         .add-url-btn {
-            background: linear-gradient(135deg, #60a5fa 0%, #818cf8 100%);
-            color: white;
-            border: none;
-            padding: 14px 20px;
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 15px 25px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
@@ -496,8 +494,8 @@
         }
         
         .add-url-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+            background: rgba(0, 255, 0, 0.4);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
         }
         
         .url-list {
@@ -505,9 +503,15 @@
             margin-top: 15px;
         }
         
-        /* Video Hosters Section */
-        .video-hosters {
-            margin: 30px 0;
+        .url-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #000000;
+            border: 1px solid #333333;
+            border-radius: 6px;
         }
         
         .hosters-grid {
@@ -518,8 +522,8 @@
         }
         
         .hoster-card {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid #334155;
+            background: #000000;
+            border: 1px solid #333333;
             border-radius: 8px;
             padding: 20px;
             text-decoration: none;
@@ -529,27 +533,20 @@
         }
         
         .hoster-card:hover {
-            border-color: #60a5fa;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(96, 165, 250, 0.2);
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
         }
         
         .hoster-card h3 {
             font-size: 1.1rem;
             margin-bottom: 8px;
-            color: #60a5fa;
-        }
-        
-        .hoster-card p {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            line-height: 1.5;
+            color: #00ff00;
         }
         
         .submit-btn {
-            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-            color: white;
-            border: none;
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            color: #00ff00;
             padding: 16px 40px;
             font-size: 1rem;
             font-weight: 600;
@@ -558,126 +555,156 @@
             transition: all 0.3s ease;
             width: 100%;
             margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .submit-btn:hover {
+            background: rgba(0, 255, 0, 0.4);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid #333333;
+            border-top: 4px solid #00ff00;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         /* Responsive Design */
         @media (max-width: 768px) {
             .navbar {
-                padding: 0 20px;
-                height: 70px;
+                padding: 0 15px;
+                height: 60px;
             }
             
             .logo-container {
-                gap: 15px;
+                gap: 10px;
             }
             
             .logo-main {
-                height: 40px;
-            }
-            
-            .logo-secondary {
                 height: 35px;
             }
             
-            .search-bar {
-                width: 180px;
+            .logo-secondary {
+                height: 30px;
             }
             
-            .search-bar:focus {
+            .search-bar {
                 width: 200px;
             }
             
+            .search-bar:focus {
+                width: 250px;
+            }
+            
             .nav-btn {
-                padding: 8px 16px;
+                padding: 8px 15px;
                 font-size: 0.9rem;
             }
             
-            .led-tree {
-                top: 70px;
-                height: 15px;
-            }
-            
             .page-container {
-                padding: 20px;
-                margin-top: 90px;
+                padding: 15px;
+                margin-top: 70px;
             }
             
-            .page-header h1 {
-                font-size: 2rem;
+            .videos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
             }
             
-            .posts-grid {
-                grid-template-columns: 1fr;
+            .video-player {
+                min-height: 300px;
+            }
+            
+            .video-iframe {
+                height: 300px;
             }
             
             .post-form-container {
-                padding: 25px;
+                padding: 20px;
             }
             
             .url-input-group {
                 flex-direction: column;
-            }
-            
-            .hosters-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation Bar -->
+    <!-- Snow Container -->
+    <div id="snowContainer"></div>
+    
+    <!-- Glowing Navigation Bar -->
     <nav class="navbar">
         <div class="logo-container">
             <img src="https://i.postimg.cc/pLhZ8Mcm/image.png" alt="Main Logo" class="logo-main">
             <img src="https://stickershop.line-scdn.net/stickershop/v1/product/4997885/LINEStorePC/main.png?v=2" alt="Secondary Logo" class="logo-secondary">
         </div>
         
-        <div class="nav-right">
-            <div class="search-container">
-                <input type="text" class="search-bar" placeholder="Search posts by title..." id="searchInput">
-                <i class="fas fa-search search-icon" onclick="searchPosts()"></i>
-            </div>
-            
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search videos..." id="searchInput">
+        </div>
+        
+        <div class="nav-buttons">
             <button class="nav-btn" onclick="showPage('homePage')">
-                <i class="fas fa-home"></i>
                 <span>Home</span>
             </button>
             <button class="nav-btn" onclick="showPage('postPage')">
-                <i class="fas fa-plus"></i>
                 <span>Post</span>
             </button>
         </div>
     </nav>
-    
-    <!-- Christmas Tree LED Lights -->
-    <div class="led-tree"></div>
 
-    <!-- Home Page - Posts Display -->
+    <!-- Home Page - Videos Grid -->
     <div id="homePage" class="page-container active">
         <div class="page-header">
-            <h1>Media Posts</h1>
-            <p>Browse and search through video posts shared by the community</p>
-            <div class="search-info" id="searchInfo"></div>
+            <h1>LeakStream</h1>
+            <p>Watch and share videos</p>
         </div>
         
-        <div class="posts-grid" id="postsGrid">
-            <!-- Posts will be dynamically added here -->
+        <div class="loading-spinner" id="homeLoading">
+            <div class="spinner"></div>
+            <p>Loading videos...</p>
+        </div>
+        
+        <div class="videos-grid" id="videosGrid">
+            <!-- Videos will be dynamically added here -->
         </div>
         
         <div id="emptyState" class="empty-state">
             <i class="fas fa-video"></i>
-            <h3>No Posts Yet</h3>
-            <p>Be the first to share video content! Click "Post" to create your first post.</p>
+            <h3>No Videos Yet</h3>
+            <p>Be the first to share a video! Click "Post" to upload.</p>
+        </div>
+    </div>
+
+    <!-- Video Player Page -->
+    <div id="videoPage" class="page-container">
+        <div class="video-player-container" id="videoPlayerContainer">
+            <!-- Video content will be dynamically loaded here -->
         </div>
     </div>
 
@@ -685,99 +712,108 @@
     <div id="postPage" class="page-container">
         <div class="post-form-container">
             <div class="form-header">
-                <h1>Create New Post</h1>
-                <p>Share videos via URL - No file size limits!</p>
+                <h1>Upload Video</h1>
+                <p>Share videos via URL</p>
             </div>
             
             <form id="postForm">
                 <div class="form-group">
-                    <label for="postTitle">Post Title *</label>
-                    <input type="text" id="postTitle" placeholder="Enter a title for your video post" required>
+                    <label for="postTitle">Video Title *</label>
+                    <input type="text" id="postTitle" placeholder="Enter video title" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="postAuthor">Your Name *</label>
-                    <input type="text" id="postAuthor" placeholder="Enter your name" required>
+                    <label for="postDescription">Description</label>
+                    <textarea id="postDescription" placeholder="Enter video description (optional)"></textarea>
                 </div>
                 
                 <div class="url-upload-section">
-                    <label>Upload Video URLs *</label>
-                    <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 15px;">
-                        Add one or multiple video URLs. Large files are supported!
+                    <label>Video URL *</label>
+                    <p style="color: #cccccc; font-size: 0.9rem; margin-bottom: 15px;">
+                        Paste a direct video URL or embed link
                     </p>
                     
                     <div class="url-input-group">
-                        <input type="url" id="videoUrl" placeholder="https://example.com/video.mp4">
+                        <input type="url" id="videoUrl" placeholder="https://example.com/video.mp4 or embed URL" required>
                         <button type="button" class="add-url-btn" onclick="addVideoUrl()">
-                            <i class="fas fa-plus"></i> Add URL
+                            <i class="fas fa-plus"></i> Add
                         </button>
                     </div>
                     
                     <div class="url-list" id="urlList">
-                        <p style="color: #64748b; text-align: center; padding: 20px;">No video URLs added yet</p>
+                        <!-- URLs will be added here dynamically -->
                     </div>
                 </div>
                 
                 <div class="video-hosters">
-                    <label>Recommended Video Hosters</label>
+                    <label>Recommended Hosters</label>
                     <div class="hosters-grid">
                         <a href="https://streamable.com/?utm_source=chatgpt.com" target="_blank" class="hoster-card">
                             <h3>Streamable</h3>
-                            <p>Free video hosting with easy sharing</p>
+                            <p>Free video hosting</p>
                         </a>
                         
                         <a href="https://imagekit.io/dashboard/media-library" target="_blank" class="hoster-card">
-                            <h3>ImageKit Media Library</h3>
-                            <p>Professional media hosting and delivery</p>
+                            <h3>ImageKit</h3>
+                            <p>Media hosting</p>
                         </a>
                     </div>
                 </div>
                 
-                <button type="submit" class="submit-btn">
-                    <i class="fas fa-paper-plane"></i> Publish Post
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span id="submitText">Upload Video</span>
                 </button>
             </form>
         </div>
     </div>
 
     <script>
-        // Posts data (starting empty)
-        let posts = [];
-        let currentSearch = '';
-        
-        // Create snowflakes for posts
-        function createPostSnowflakes(container, count = 15) {
-            const snowContainer = document.createElement('div');
-            snowContainer.className = 'post-snow-container';
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDlEGndjR_x651X77k0A41mydFo3Emw3So",
+            authDomain: "leakstreamnew.firebaseapp.com",
+            projectId: "leakstreamnew",
+            storageBucket: "leakstreamnew.firebasestorage.app",
+            messagingSenderId: "295121939490",
+            appId: "1:295121939490:web:d4bd6404d47cb70421ee7b",
+            measurementId: "G-Y2LY4BHWD3"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // Snowfall Effect
+        function createSnowfall() {
+            const container = document.getElementById('snowContainer');
+            const snowflakeCount = 150;
             
-            for (let i = 0; i < count; i++) {
+            for (let i = 0; i < snowflakeCount; i++) {
                 const snowflake = document.createElement('div');
-                snowflake.className = 'post-snowflake';
+                snowflake.className = 'snowflake';
                 
-                // Random size between 2px and 6px
-                const size = Math.random() * 4 + 2;
+                // Random size between 2px and 8px
+                const size = Math.random() * 6 + 2;
                 snowflake.style.width = `${size}px`;
                 snowflake.style.height = `${size}px`;
                 
-                // Random starting position from right
+                // Random starting position (from right)
                 snowflake.style.right = `${Math.random() * 100}px`;
-                snowflake.style.top = `${Math.random() * -50}px`;
+                snowflake.style.top = `${Math.random() * -100}px`;
                 
-                // Random animation duration between 8s and 20s
-                const duration = Math.random() * 12 + 8;
+                // Random animation duration
+                const duration = Math.random() * 10 + 5;
                 snowflake.style.animationDuration = `${duration}s`;
                 
-                // Random delay
-                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                // Random opacity
+                snowflake.style.opacity = Math.random() * 0.7 + 0.3;
                 
-                snowContainer.appendChild(snowflake);
+                container.appendChild(snowflake);
             }
-            
-            container.appendChild(snowContainer);
-            return snowContainer;
         }
-        
-        // Page navigation
+
+        // Page Navigation
         function showPage(pageId) {
             document.querySelectorAll('.page-container').forEach(page => {
                 page.classList.remove('active');
@@ -785,293 +821,303 @@
             
             document.getElementById(pageId).classList.add('active');
             
-            // Update button styles
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.style.background = 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)';
-            });
-            
-            // Highlight current page button
-            const activeBtn = document.querySelector(`.nav-btn span`);
-            if (activeBtn) {
-                const btn = activeBtn.closest('.nav-btn');
-                if (btn.querySelector('span').textContent.toLowerCase() === 
-                    pageId.replace('Page', '').toLowerCase()) {
-                    btn.style.background = 'linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%)';
-                }
-            }
-            
-            // If showing home page, refresh posts display
+            // Load videos when showing home page
             if (pageId === 'homePage') {
-                displayPosts();
+                loadVideos();
             }
         }
-        
-        // Display posts on home page
-        function displayPosts(filteredPosts = null) {
-            const postsGrid = document.getElementById('postsGrid');
+
+        // Load Videos from Firebase
+        async function loadVideos(searchQuery = '') {
+            const videosGrid = document.getElementById('videosGrid');
             const emptyState = document.getElementById('emptyState');
-            const searchInfo = document.getElementById('searchInfo');
+            const homeLoading = document.getElementById('homeLoading');
             
-            const displayArray = filteredPosts || posts;
+            videosGrid.innerHTML = '';
+            homeLoading.style.display = 'block';
+            emptyState.style.display = 'none';
             
-            if (displayArray.length === 0) {
-                postsGrid.innerHTML = '';
+            try {
+                let query = db.collection('videos').orderBy('timestamp', 'desc');
+                
+                if (searchQuery) {
+                    // Simple search by title (case-insensitive)
+                    const snapshot = await query.get();
+                    const videos = [];
+                    
+                    snapshot.forEach(doc => {
+                        const video = { id: doc.id, ...doc.data() };
+                        if (video.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+                            videos.push(video);
+                        }
+                    });
+                    
+                    displayVideos(videos);
+                } else {
+                    const snapshot = await query.get();
+                    const videos = [];
+                    
+                    snapshot.forEach(doc => {
+                        videos.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    displayVideos(videos);
+                }
+            } catch (error) {
+                console.error('Error loading videos:', error);
+                showError('Failed to load videos');
+            } finally {
+                homeLoading.style.display = 'none';
+            }
+        }
+
+        // Display Videos
+        function displayVideos(videos) {
+            const videosGrid = document.getElementById('videosGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (videos.length === 0) {
+                videosGrid.innerHTML = '';
                 emptyState.style.display = 'block';
-                searchInfo.classList.remove('show');
                 return;
             }
             
             emptyState.style.display = 'none';
-            postsGrid.innerHTML = '';
+            videosGrid.innerHTML = '';
             
-            // Show search info if filtering
-            if (filteredPosts && currentSearch) {
-                searchInfo.textContent = `Showing ${filteredPosts.length} result${filteredPosts.length === 1 ? '' : 's'} for "${currentSearch}"`;
-                searchInfo.classList.add('show');
-            } else {
-                searchInfo.classList.remove('show');
-            }
-            
-            displayArray.forEach(post => {
-                const postCard = document.createElement('div');
-                postCard.className = 'post-card';
+            videos.forEach(video => {
+                const videoCard = document.createElement('div');
+                videoCard.className = 'video-card';
+                videoCard.onclick = () => showVideo(video);
                 
-                // Add snowflakes to this post
-                const snowContainer = createPostSnowflakes(postCard, Math.floor(Math.random() * 10) + 8);
+                const videoDate = video.timestamp ? 
+                    new Date(video.timestamp.seconds * 1000).toLocaleDateString() : 
+                    'Recent';
                 
-                postCard.innerHTML = `
-                    <div class="post-header">
-                        <h3 class="post-title">${post.title}</h3>
-                        <div class="post-meta">
-                            <span class="post-author">
-                                <i class="fas fa-user"></i> ${post.author}
-                            </span>
-                            <span class="post-date">
-                                <i class="fas fa-calendar"></i> ${post.date}
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="video-content">
-                        <div class="video-count">
-                            <i class="fas fa-video"></i>
-                            ${post.videoUrls.length} video${post.videoUrls.length > 1 ? 's' : ''}
-                        </div>
-                    </div>
-                    
-                    <div class="video-urls">
-                        ${post.videoUrls.slice(0, 3).map(url => `
-                            <div class="url-item">
-                                <i class="fas fa-link"></i>
-                                <span>${url.length > 40 ? url.substring(0, 40) + '...' : url}</span>
-                            </div>
-                        `).join('')}
-                        ${post.videoUrls.length > 3 ? 
-                            `<div class="url-item" style="color: #94a3b8; font-style: italic;">
-                                <i class="fas fa-ellipsis-h"></i>
-                                <span>and ${post.videoUrls.length - 3} more...</span>
-                            </div>` : ''}
-                    </div>
-                    
-                    <div class="post-actions">
-                        <button class="action-btn" onclick="likePost(${post.id})">
-                            <i class="far fa-heart"></i>
-                            <span>Like (${post.likes || 0})</span>
-                        </button>
-                        <button class="action-btn" onclick="copyPostUrls(${post.id})">
-                            <i class="fas fa-copy"></i>
-                            <span>Copy URLs</span>
-                        </button>
+                videoCard.innerHTML = `
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <h3 class="video-title">${video.title}</h3>
+                        <p class="video-description">${video.description || 'No description'}</p>
+                        <div class="video-date">${videoDate}</div>
                     </div>
                 `;
                 
-                postsGrid.appendChild(postCard);
+                videosGrid.appendChild(videoCard);
             });
         }
-        
-        // Search posts by title
-        function searchPosts() {
-            const searchInput = document.getElementById('searchInput');
-            currentSearch = searchInput.value.trim().toLowerCase();
+
+        // Show Video Player
+        function showVideo(video) {
+            const container = document.getElementById('videoPlayerContainer');
             
-            if (!currentSearch) {
-                displayPosts();
-                return;
+            const videoDate = video.timestamp ? 
+                new Date(video.timestamp.seconds * 1000).toLocaleDateString() : 
+                'Recent';
+            
+            // Check if URL is an embed or direct video
+            let videoHtml = '';
+            if (video.url.includes('embed') || video.url.includes('youtube.com') || video.url.includes('vimeo.com')) {
+                // It's an embed URL
+                videoHtml = `<iframe class="video-iframe" src="${video.url}" allowfullscreen></iframe>`;
+            } else {
+                // It's a direct video URL
+                videoHtml = `<video class="video-iframe" controls autoplay>
+                    <source src="${video.url}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>`;
             }
             
-            const filteredPosts = posts.filter(post => 
-                post.title.toLowerCase().includes(currentSearch)
-            );
+            container.innerHTML = `
+                <div class="video-header">
+                    <h1>${video.title}</h1>
+                    <p>${video.description || ''}</p>
+                </div>
+                <div class="video-player">
+                    ${videoHtml}
+                </div>
+                <div class="video-actions">
+                    <button class="back-btn" onclick="showPage('homePage')">
+                        <i class="fas fa-arrow-left"></i> Back to Videos
+                    </button>
+                    <button class="share-btn" onclick="shareVideo('${video.id}')">
+                        <i class="fas fa-share"></i> Share Video
+                    </button>
+                </div>
+            `;
             
-            displayPosts(filteredPosts);
+            showPage('videoPage');
         }
-        
-        // Search on Enter key
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchPosts();
+
+        // Share Video
+        function shareVideo(videoId) {
+            const videoUrl = `${window.location.origin}${window.location.pathname}?video=${videoId}`;
+            const shareText = `Check out this video on LeakStream!`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'LeakStream Video',
+                    text: shareText,
+                    url: videoUrl
+                });
+            } else {
+                navigator.clipboard.writeText(videoUrl)
+                    .then(() => alert('Video link copied to clipboard!'))
+                    .catch(err => console.error('Failed to copy:', err));
             }
-        });
-        
-        // Video URL management for posting
+        }
+
+        // Video URL Management
         let videoUrls = [];
-        
+
         function addVideoUrl() {
             const urlInput = document.getElementById('videoUrl');
             const url = urlInput.value.trim();
             
             if (!url) {
-                alert('Please enter a valid URL');
+                showError('Please enter a valid URL');
                 return;
             }
             
-            // Basic URL validation
-            const urlPattern = /^(https?:\/\/)/i;
-            if (!urlPattern.test(url)) {
-                alert('Please enter a valid URL starting with http:// or https://');
+            // Validate URL
+            try {
+                new URL(url);
+            } catch (e) {
+                showError('Please enter a valid URL (include http:// or https://)');
                 return;
             }
             
-            videoUrls.push(url);
+            videoUrls = [url]; // Only keep one URL
             updateUrlList();
             urlInput.value = '';
-            urlInput.focus();
         }
-        
-        function removeUrl(index) {
-            videoUrls.splice(index, 1);
-            updateUrlList();
-        }
-        
+
         function updateUrlList() {
             const urlList = document.getElementById('urlList');
             urlList.innerHTML = '';
             
             if (videoUrls.length === 0) {
-                urlList.innerHTML = '<p style="color: #64748b; text-align: center; padding: 20px;">No video URLs added yet</p>';
+                urlList.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No video URL added</p>';
                 return;
             }
             
             videoUrls.forEach((url, index) => {
                 const urlItem = document.createElement('div');
                 urlItem.className = 'url-item';
-                urlItem.style.marginBottom = '10px';
                 urlItem.innerHTML = `
-                    <i class="fas fa-video"></i>
-                    <span style="flex: 1">${url.length > 50 ? url.substring(0, 50) + '...' : url}</span>
-                    <button type="button" onclick="removeUrl(${index})" style="background: none; border: none; color: #f87171; cursor: pointer;">
+                    <i class="fas fa-video" style="color: #00ff00;"></i>
+                    <span style="flex: 1; color: #ccc; font-size: 0.9rem;">
+                        ${url.length > 50 ? url.substring(0, 50) + '...' : url}
+                    </span>
+                    <button type="button" onclick="removeUrl(${index})" style="background: none; border: none; color: #ff3333; cursor: pointer;">
                         <i class="fas fa-times"></i>
                     </button>
                 `;
                 urlList.appendChild(urlItem);
             });
         }
-        
-        // Form submission
-        document.getElementById('postForm').addEventListener('submit', function(event) {
+
+        function removeUrl(index) {
+            videoUrls.splice(index, 1);
+            updateUrlList();
+        }
+
+        // Submit Video Form
+        document.getElementById('postForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             
             const title = document.getElementById('postTitle').value.trim();
-            const author = document.getElementById('postAuthor').value.trim();
+            const description = document.getElementById('postDescription').value.trim();
             
-            if (!title || !author) {
-                alert('Please fill in all required fields');
+            if (!title) {
+                showError('Please enter a video title');
                 return;
             }
             
             if (videoUrls.length === 0) {
-                alert('Please add at least one video URL');
+                showError('Please add a video URL');
                 return;
             }
             
-            // Add new post
-            const newPost = {
-                id: posts.length + 1,
-                title,
-                author,
-                date: new Date().toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric', 
-                    year: 'numeric' 
-                }),
-                videoUrls: [...videoUrls],
-                likes: 0
-            };
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
             
-            posts.unshift(newPost);
-            
-            // Show success message
-            const submitBtn = document.querySelector('.submit-btn');
-            const originalText = submitBtn.innerHTML;
-            
-            submitBtn.innerHTML = '<i class="fas fa-check"></i> Post Published!';
-            submitBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #34d399 100%)';
             submitBtn.disabled = true;
+            submitText.textContent = 'Uploading...';
             
-            // Reset form and show home page
-            setTimeout(() => {
-                document.getElementById('postForm').reset();
-                videoUrls = [];
-                updateUrlList();
+            try {
+                // Save to Firebase
+                await db.collection('videos').add({
+                    title: title,
+                    description: description,
+                    url: videoUrls[0],
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    views: 0
+                });
                 
-                submitBtn.innerHTML = originalText;
-                submitBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #34d399 100%)';
+                // Success
+                submitText.textContent = '✓ Uploaded!';
+                submitBtn.style.borderColor = '#00ff00';
+                submitBtn.style.color = '#00ff00';
+                
+                // Reset form
+                setTimeout(() => {
+                    document.getElementById('postForm').reset();
+                    videoUrls = [];
+                    updateUrlList();
+                    
+                    submitText.textContent = 'Upload Video';
+                    submitBtn.disabled = false;
+                    submitBtn.style.borderColor = '#00ff00';
+                    submitBtn.style.color = '#00ff00';
+                    
+                    // Go to home page
+                    showPage('homePage');
+                    loadVideos();
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error uploading video:', error);
+                showError('Failed to upload video');
                 submitBtn.disabled = false;
-                
-                // Show home page with new post
-                showPage('homePage');
-                displayPosts();
-                
-                // Clear search if active
-                document.getElementById('searchInput').value = '';
-                currentSearch = '';
-            }, 1500);
+                submitText.textContent = 'Upload Video';
+            }
         });
-        
-        // Post interaction functions
-        function likePost(postId) {
-            const post = posts.find(p => p.id === postId);
-            if (post) {
-                post.likes = (post.likes || 0) + 1;
-                displayPosts(currentSearch ? posts.filter(p => p.title.toLowerCase().includes(currentSearch)) : null);
-            }
+
+        // Search Functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchQuery = e.target.value.trim();
+            loadVideos(searchQuery);
+        });
+
+        // Error Display
+        function showError(message) {
+            alert(message);
         }
-        
-        function copyPostUrls(postId) {
-            const post = posts.find(p => p.id === postId);
-            if (post) {
-                const urlsText = post.videoUrls.join('\n');
-                navigator.clipboard.writeText(urlsText)
-                    .then(() => alert('Video URLs copied to clipboard!'))
-                    .catch(err => console.error('Failed to copy:', err));
-            }
-        }
-        
+
         // Initialize
-        updateUrlList();
-        displayPosts();
-        
-        // Add example post for demonstration (remove this in production)
-        setTimeout(() => {
-            if (posts.length === 0) {
-                posts = [{
-                    id: 1,
-                    title: "Example Video Post",
-                    author: "Demo User",
-                    date: new Date().toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                    }),
-                    videoUrls: [
-                        "https://example.com/sample-video-1.mp4",
-                        "https://example.com/sample-video-2.mp4"
-                    ],
-                    likes: 0
-                }];
-                displayPosts();
+        document.addEventListener('DOMContentLoaded', function() {
+            createSnowfall();
+            loadVideos();
+            updateUrlList();
+            
+            // Check for video ID in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('video');
+            
+            if (videoId) {
+                // Load specific video
+                db.collection('videos').doc(videoId).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            showVideo({ id: doc.id, ...doc.data() });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading video:', error);
+                    });
             }
-        }, 500);
+        });
     </script>
 </body>
 </html>
