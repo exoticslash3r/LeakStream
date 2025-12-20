@@ -3,92 +3,564 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeakStream - Video Link Host</title>
+    <title>LeakStream - Video Link Platform</title>
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #000; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; }
+        /* Reset & Base Styles */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body { 
+            background-color: #000; 
+            color: #fff; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            min-height: 100vh; 
+            overflow-x: hidden;
+        }
         
         /* Animated Navigation Bar */
         .navbar {
-            position: fixed; top: 0; left: 0; width: 100%; background: linear-gradient(90deg, #1a1a1a 0%, #2a0a0a 100%); padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; z-index: 1000;
-            border-bottom: 3px solid transparent; box-shadow: 0 0 25px rgba(255, 0, 0, 0.7); animation: wiggle 3s infinite, glow 2s infinite alternate;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(90deg, #1a1a1a 0%, #2a0a0a 100%);
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            border-bottom: 3px solid transparent;
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.7);
+            animation: wiggle 3s infinite, glow 2s infinite alternate;
+            backdrop-filter: blur(10px);
         }
-        @keyframes wiggle { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        @keyframes glow { from { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); } to { box-shadow: 0 0 35px rgba(255, 0, 0, 0.9); } }
+        
+        @keyframes wiggle {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+            to { box-shadow: 0 0 35px rgba(255, 0, 0, 0.9); }
+        }
+        
         .navbar::before {
-            content: ''; position: absolute; bottom: -3px; left: 0; width: 100%; height: 3px;
-            background: linear-gradient(90deg, transparent 0%, #ff0000 20%, #ff0000 80%, transparent 100%); animation: line-glow 2s infinite alternate;
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                #ff0000 20%, 
+                #ff0000 80%, 
+                transparent 100%);
+            animation: line-glow 2s infinite alternate;
         }
-        @keyframes line-glow { from { opacity: 0.7; } to { opacity: 1; } }
         
-        .logo-container { display: flex; align-items: center; gap: 20px; }
-        .spinning-logo { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #ff0000; animation: spin 3s linear infinite; box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); object-fit: cover; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .site-title { font-size: 28px; font-weight: bold; background: linear-gradient(45deg, #ff0000, #ff6b6b); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 10px rgba(255, 0, 0, 0.3); letter-spacing: 1.5px; }
+        @keyframes line-glow {
+            from { opacity: 0.7; }
+            to { opacity: 1; }
+        }
         
-        .nav-buttons { display: flex; gap: 15px; }
-        .nav-btn, .code-btn { padding: 10px 25px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3); }
-        .nav-btn:hover, .code-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5); background: linear-gradient(45deg, #cc0000, #ff0000); }
-        .code-btn.admin-active { background: linear-gradient(45deg, #00cc00, #009900); box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); }
+        /* Logo & Title */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .spinning-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #ff0000;
+            animation: spin 3s linear infinite;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+            object-fit: cover;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .site-title {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff0000, #ff6b6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+            letter-spacing: 1.5px;
+        }
+        
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            padding: 10px 25px;
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
+            background: linear-gradient(45deg, #cc0000, #ff0000);
+        }
+        
+        .code-btn {
+            padding: 10px 25px;
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        }
+        
+        .code-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
+        }
+        
+        .code-btn.admin-active {
+            background: linear-gradient(45deg, #00cc00, #009900);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
         
         /* Main Content */
-        .main-content { margin-top: 100px; padding: 30px; min-height: calc(100vh - 100px); }
+        .main-content {
+            margin-top: 100px;
+            padding: 30px;
+            min-height: calc(100vh - 100px);
+        }
         
-        /* Home Page - Video Grid */
-        .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; padding: 20px 0; }
-        .video-card { background: #1a1a1a; border-radius: 15px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #333; position: relative; }
-        .video-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(255, 0, 0, 0.2); border-color: #ff0000; }
-        .video-player { width: 100%; height: 200px; background: #000; display: flex; align-items: center; justify-content: center; }
-        .video-player video { width: 100%; height: 100%; object-fit: contain; }
-        .video-info { padding: 20px; }
-        .video-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; word-break: break-word; }
-        .video-meta { font-size: 12px; color: #aaa; display: flex; justify-content: space-between; align-items: center; }
-        .delete-btn { position: absolute; top: 15px; right: 15px; background: rgba(255, 0, 0, 0.9); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; display: none; }
-        .video-card:hover .delete-btn { display: block; }
+        /* Home Page - Videos Grid */
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+        }
+        
+        .video-card {
+            background: #1a1a1a;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #333;
+            position: relative;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 0, 0, 0.2);
+            border-color: #ff0000;
+        }
+        
+        .video-player {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-player video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .video-info {
+            padding: 20px;
+        }
+        
+        .video-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #fff;
+            word-break: break-word;
+        }
+        
+        .video-meta {
+            font-size: 12px;
+            color: #aaa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            display: none;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(220, 0, 0, 0.9);
+            transform: scale(1.1);
+        }
+        
+        .video-card:hover .delete-btn {
+            display: block;
+        }
         
         /* Upload Page */
-        .upload-container { max-width: 600px; margin: 0 auto; background: #1a1a1a; padding: 40px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(255, 0, 0, 0.1); }
-        .upload-title { font-size: 32px; text-align: center; margin-bottom: 30px; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
-        .form-group { margin-bottom: 25px; }
-        .form-group label { display: block; margin-bottom: 10px; color: #fff; font-weight: bold; font-size: 16px; }
-        .form-input { width: 100%; padding: 15px; background: #000; border: 2px solid #333; border-radius: 10px; color: #fff; font-size: 16px; transition: border-color 0.3s ease; }
-        .form-input:focus { outline: none; border-color: #ff0000; box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); }
-        .hosting-links { margin-top: 30px; padding: 20px; background: rgba(255, 0, 0, 0.05); border-radius: 10px; border: 1px dashed #ff0000; }
-        .hosting-links h3 { color: #ff6b6b; margin-bottom: 10px; font-size: 18px; }
-        .hosting-links a { color: #ff6b6b; text-decoration: none; display: block; margin: 8px 0; padding: 8px; border-radius: 5px; transition: background 0.3s; }
-        .hosting-links a:hover { background: rgba(255, 0, 0, 0.1); text-decoration: underline; }
-        .upload-btn { width: 100%; padding: 18px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 20px; box-shadow: 0 6px 20px rgba(255, 0, 0, 0.3); }
-        .upload-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255, 0, 0, 0.5); }
+        .upload-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.1);
+        }
+        
+        .upload-title {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+        }
+        
+        .hosting-links {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 0, 0, 0.05);
+            border-radius: 10px;
+            border: 1px dashed #ff0000;
+        }
+        
+        .hosting-links h3 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .hosting-links a {
+            color: #ff6b6b;
+            text-decoration: none;
+            display: block;
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .hosting-links a:hover {
+            background: rgba(255, 0, 0, 0.1);
+            text-decoration: underline;
+        }
+        
+        .upload-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 20px;
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.3);
+        }
+        
+        .upload-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 0, 0, 0.5);
+        }
+        
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
         
         /* Code Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 2000; display: none; }
-        .modal-content { background: #1a1a1a; padding: 40px; border-radius: 20px; border: 2px solid #ff0000; box-shadow: 0 0 40px rgba(255, 0, 0, 0.5); max-width: 500px; width: 90%; }
-        .modal-title { font-size: 24px; margin-bottom: 20px; color: #fff; text-align: center; }
-        .code-input { width: 100%; padding: 15px; font-size: 18px; letter-spacing: 3px; text-align: center; background: #000; border: 2px solid #ff0000; color: #fff; border-radius: 10px; margin-bottom: 20px; }
-        .modal-buttons { display: flex; gap: 15px; }
-        .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: all 0.3s; }
-        .modal-btn.submit { background: linear-gradient(45deg, #ff0000, #cc0000); color: white; }
-        .modal-btn.cancel { background: #333; color: #aaa; }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            display: none;
+        }
+        
+        .modal-content {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid #ff0000;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .code-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            letter-spacing: 3px;
+            text-align: center;
+            background: #000;
+            border: 2px solid #ff0000;
+            color: #fff;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .modal-btn.submit {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+        }
+        
+        .modal-btn.submit:hover {
+            background: linear-gradient(45deg, #cc0000, #ff0000);
+        }
+        
+        .modal-btn.cancel {
+            background: #333;
+            color: #aaa;
+        }
+        
+        .modal-btn.cancel:hover {
+            background: #444;
+        }
         
         /* Messages */
-        .message { padding: 15px; border-radius: 10px; margin: 20px 0; text-align: center; font-weight: bold; }
-        .message.success { background: rgba(0, 255, 0, 0.1); border: 1px solid #00ff00; color: #00ff00; }
-        .message.error { background: rgba(255, 0, 0, 0.1); border: 1px solid #ff0000; color: #ff0000; }
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
         
-        .empty-state { text-align: center; padding: 60px 20px; color: #666; }
+        .message.success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            display: block;
+        }
+        
+        .message.error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            display: block;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state.hidden {
+            display: none;
+        }
         
         /* Admin Panel */
-        .admin-panel { background: rgba(0, 100, 0, 0.2); border: 1px solid #00ff00; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
-        .admin-status { color: #00ff00; font-weight: bold; margin-bottom: 10px; }
+        .admin-panel {
+            background: rgba(0, 100, 0, 0.2);
+            border: 1px solid #00ff00;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .admin-status {
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        /* Loading Spinner */
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #333;
+            border-top: 3px solid #ff0000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+            
+            .site-title {
+                font-size: 22px;
+            }
+            
+            .nav-btn, .code-btn {
+                padding: 8px 18px;
+                font-size: 14px;
+            }
+            
+            .main-content {
+                padding: 20px;
+                margin-top: 80px;
+            }
+            
+            .videos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 15px;
+            }
+            
+            .upload-container {
+                padding: 25px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-container {
+                gap: 10px;
+            }
+            
+            .spinning-logo {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .site-title {
+                font-size: 18px;
+            }
+            
+            .nav-buttons {
+                gap: 8px;
+            }
+            
+            .nav-btn, .code-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="logo-container">
-            <img src="https://i.pinimg.com/736x/d2/ba/23/d2ba23dc373c9ca95a1231c785222e80.jpg" alt="LeakStream Logo" class="spinning-logo">
+            <img src="https://i.pinimg.com/736x/d2/ba/23/d2ba23dc373c9ca95a1231c785222e80.jpg" 
+                 alt="LeakStream Logo" 
+                 class="spinning-logo">
             <div class="site-title">LEAKSTREAM</div>
         </div>
         <div class="nav-buttons">
@@ -121,9 +593,16 @@
             <div class="admin-status">🔓 ADMIN MODE ACTIVE - You can delete posts</div>
             <button class="nav-btn" onclick="exitAdminMode()" style="padding: 8px 20px; font-size: 14px;">Exit Admin Mode</button>
         </div>
+        
+        <div class="loading" id="loadingVideos">
+            <div class="loading-spinner"></div>
+            <p>Loading videos...</p>
+        </div>
+        
         <div class="videos-grid" id="videosGrid">
             <!-- Videos will be dynamically loaded here -->
         </div>
+        
         <div class="empty-state" id="emptyState">
             <div style="font-size: 64px; margin-bottom: 20px;">📹</div>
             <h2>No Videos Yet</h2>
@@ -139,20 +618,42 @@
             
             <div class="form-group">
                 <label for="videoTitle">Video Title *</label>
-                <input type="text" id="videoTitle" class="form-input" placeholder="Enter video title" maxlength="100" required>
+                <input type="text" 
+                       id="videoTitle" 
+                       class="form-input" 
+                       placeholder="Enter a catchy title for your video"
+                       maxlength="100"
+                       required>
             </div>
             
             <div class="form-group">
                 <label for="videoUrl">MP4 Video URL *</label>
-                <input type="url" id="videoUrl" class="form-input" placeholder="https://example.com/video.mp4" required>
-                <p style="color: #aaa; font-size: 14px; margin-top: 8px;">Paste direct link to .mp4 video file</p>
+                <input type="url" 
+                       id="videoUrl" 
+                       class="form-input" 
+                       placeholder="https://example.com/video.mp4"
+                       required>
+                <p style="color: #aaa; font-size: 14px; margin-top: 8px;">
+                    Paste direct link to .mp4 video file (must end with .mp4)
+                </p>
             </div>
             
             <div class="hosting-links">
                 <h3>📹 Some Free Video Hosters:</h3>
-                <a href="https://www.screenapp.io/features/share-video" target="_blank">• ScreenApp - Share your Videos</a>
-                <a href="https://imagekit.io/dashboard" target="_blank">• ImageKit.io - Image & Video CDN</a>
-                <p style="color: #aaa; font-size: 14px; margin-top: 10px;">Upload your video to one of these services first, then paste the direct MP4 link above.</p>
+                <a href="https://www.screenapp.io/features/share-video" target="_blank" rel="noopener noreferrer">
+                    • ScreenApp - Share your Videos
+                </a>
+                <a href="https://imagekit.io/dashboard" target="_blank" rel="noopener noreferrer">
+                    • ImageKit.io - Image & Video CDN
+                </a>
+                <p style="color: #aaa; font-size: 14px; margin-top: 10px;">
+                    Upload your video to one of these services first, then paste the direct MP4 link above.
+                </p>
+            </div>
+            
+            <div class="loading" id="loadingUpload">
+                <div class="loading-spinner"></div>
+                <p>Publishing your video...</p>
             </div>
             
             <button class="upload-btn" id="uploadBtn" onclick="postVideoLink()">
@@ -169,8 +670,8 @@
             projectId: "leakstream-4f62f",
             storageBucket: "leakstream-4f62f.firebasestorage.app",
             messagingSenderId: "886997714546",
-            appId: "1:886997714546:web:977c83c90684e7dfc564eb",
-            measurementId: "G-ZFWWZ2L23W"
+            appId: "1:886997714546:web:b7fcbb9b28010d5ec564eb",
+            measurementId: "G-RXHE019ZWT"
         };
 
         // Initialize Firebase
@@ -216,32 +717,53 @@
         async function loadVideos() {
             const videosGrid = document.getElementById('videosGrid');
             const emptyState = document.getElementById('emptyState');
+            const loadingElement = document.getElementById('loadingVideos');
             
             if (!videosGrid) return;
             
             try {
+                // Show loading
+                if (loadingElement) loadingElement.style.display = 'block';
+                if (emptyState) emptyState.classList.add('hidden');
+                videosGrid.innerHTML = '';
+                
                 const snapshot = await db.collection('videos')
                     .orderBy('timestamp', 'desc')
                     .get();
                 
-                videosGrid.innerHTML = '';
+                // Hide loading
+                if (loadingElement) loadingElement.style.display = 'none';
                 
                 if (snapshot.empty) {
-                    if (emptyState) emptyState.style.display = 'block';
+                    if (emptyState) {
+                        emptyState.classList.remove('hidden');
+                        emptyState.style.display = 'block';
+                    }
                     return;
                 }
                 
-                if (emptyState) emptyState.style.display = 'none';
+                if (emptyState) emptyState.classList.add('hidden');
                 
                 snapshot.forEach(doc => {
-                    const video = { id: doc.id, ...doc.data() };
+                    const video = { 
+                        id: doc.id, 
+                        ...doc.data() 
+                    };
                     const videoCard = createVideoCard(video);
                     videosGrid.appendChild(videoCard);
                 });
                 
             } catch (error) {
                 console.error('Error loading videos:', error);
-                showMessage('Error loading videos', 'error');
+                if (loadingElement) loadingElement.style.display = 'none';
+                
+                // Show error in grid
+                videosGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #ff4444;">
+                        <p style="font-size: 18px; margin-bottom: 10px;">⚠️ Error loading videos</p>
+                        <p style="color: #aaa; font-size: 14px;">Please check your connection and refresh</p>
+                    </div>
+                `;
             }
         }
 
@@ -252,22 +774,31 @@
             card.id = `video-${video.id}`;
             
             // Format date
-            const postDate = video.timestamp?.toDate 
-                ? new Date(video.timestamp.toDate()).toLocaleDateString()
-                : 'Recent';
+            let postDate = 'Recent';
+            try {
+                if (video.timestamp && video.timestamp.toDate) {
+                    postDate = new Date(video.timestamp.toDate()).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                }
+            } catch (e) {
+                console.warn('Error parsing date:', e);
+            }
             
             card.innerHTML = `
                 <div class="video-player">
-                    <video controls>
+                    <video controls preload="metadata">
                         <source src="${video.videoUrl}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 </div>
                 <div class="video-info">
-                    <h3 class="video-title">${video.title}</h3>
+                    <h3 class="video-title">${escapeHtml(video.title)}</h3>
                     <div class="video-meta">
-                        <span>Posted: ${postDate}</span>
-                        <span>Direct MP4 Link</span>
+                        <span>📅 ${postDate}</span>
+                        <span>🔗 Direct MP4</span>
                     </div>
                 </div>
                 ${isAdmin ? `<button class="delete-btn" onclick="deletePost('${video.id}')">🗑 Delete</button>` : ''}
@@ -281,6 +812,7 @@
             const titleInput = document.getElementById('videoTitle');
             const urlInput = document.getElementById('videoUrl');
             const uploadBtn = document.getElementById('uploadBtn');
+            const loadingElement = document.getElementById('loadingUpload');
             
             const title = titleInput ? titleInput.value.trim() : '';
             const videoUrl = urlInput ? urlInput.value.trim() : '';
@@ -292,32 +824,43 @@
             }
             
             if (!videoUrl || !videoUrl.startsWith('http')) {
-                showMessage('Please enter a valid MP4 URL starting with http:// or https://', 'error');
+                showMessage('Please enter a valid URL starting with http:// or https://', 'error');
                 return;
             }
             
-            // Simple MP4 URL check (can be enhanced)
-            if (!videoUrl.toLowerCase().endsWith('.mp4') && !videoUrl.includes('.mp4?')) {
-                if (!confirm("URL doesn't look like a direct .mp4 file. Continue anyway?")) {
-                    return;
-                }
+            // Validate it's an MP4 URL
+            const urlLower = videoUrl.toLowerCase();
+            if (!urlLower.endsWith('.mp4') && !urlLower.includes('.mp4?')) {
+                showMessage('URL must be a direct .mp4 video file link', 'error');
+                return;
             }
             
-            // Disable button
+            // Disable button and show loading
             uploadBtn.disabled = true;
-            uploadBtn.textContent = 'Publishing...';
+            if (loadingElement) loadingElement.style.display = 'block';
             
             try {
+                // Test if URL is accessible (optional)
+                // You can remove this if you want faster posting
+                try {
+                    const testResponse = await fetch(videoUrl, { method: 'HEAD' });
+                    if (!testResponse.ok) {
+                        console.warn('URL might not be accessible, but continuing anyway...');
+                    }
+                } catch (testError) {
+                    console.warn('Could not test URL:', testError);
+                }
+                
                 // Add to Firestore
                 await db.collection('videos').add({
                     title: title,
                     videoUrl: videoUrl,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    postedBy: 'Anonymous' // Can be enhanced with user system
+                    postedBy: 'Anonymous'
                 });
                 
                 // Show success
-                showMessage('Video link posted successfully!', 'success');
+                showMessage('✅ Video link posted successfully!', 'success');
                 
                 // Clear form
                 if (titleInput) titleInput.value = '';
@@ -330,11 +873,11 @@
                 
             } catch (error) {
                 console.error('Error posting video:', error);
-                showMessage(`Error: ${error.message}`, 'error');
+                showMessage(`❌ Error: ${error.message}`, 'error');
             } finally {
                 // Re-enable button
                 uploadBtn.disabled = false;
-                uploadBtn.textContent = '📤 Publish Video Link';
+                if (loadingElement) loadingElement.style.display = 'none';
             }
         }
 
@@ -418,7 +961,7 @@
                 return;
             }
             
-            if (!confirm('Are you sure you want to delete this post?')) {
+            if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
                 return;
             }
             
@@ -431,18 +974,21 @@
                     videoElement.remove();
                 }
                 
-                showMessage('Post deleted successfully', 'success');
+                showMessage('✅ Post deleted successfully', 'success');
                 
                 // Check if grid is now empty
                 const videosGrid = document.getElementById('videosGrid');
                 if (videosGrid && videosGrid.children.length === 0) {
                     const emptyState = document.getElementById('emptyState');
-                    if (emptyState) emptyState.style.display = 'block';
+                    if (emptyState) {
+                        emptyState.classList.remove('hidden');
+                        emptyState.style.display = 'block';
+                    }
                 }
                 
             } catch (error) {
                 console.error('Error deleting post:', error);
-                showMessage(`Error: ${error.message}`, 'error');
+                showMessage(`❌ Error: ${error.message}`, 'error');
             }
         }
 
@@ -456,6 +1002,7 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
             messageDiv.textContent = text;
+            messageDiv.id = 'tempMessage';
             
             // Insert message based on current page
             const mainContent = document.getElementById('mainContent');
@@ -468,7 +1015,12 @@
                         mainContent.insertBefore(messageDiv, mainContent.firstChild);
                     }
                 } else {
-                    mainContent.insertBefore(messageDiv, mainContent.firstChild);
+                    const uploadContainer = document.querySelector('.upload-container');
+                    if (uploadContainer) {
+                        uploadContainer.insertBefore(messageDiv, uploadContainer.firstChild);
+                    } else {
+                        mainContent.insertBefore(messageDiv, mainContent.firstChild);
+                    }
                 }
                 
                 // Auto-remove after 5 seconds
@@ -478,6 +1030,13 @@
                     }
                 }, 5000);
             }
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // Initialize app on load
