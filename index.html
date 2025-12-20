@@ -1,203 +1,761 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>LeakStream</title>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-<style>
-body {
-  margin: 0;
-  font-family: monospace;
-  background: black;
-  color: #00ff00;
-}
-
-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background: rgba(0,0,0,0.9);
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #00ff00;
-  z-index: 1000;
-}
-
-header img {
-  width: 50px;
-  height: 50px;
-  animation: spin 6s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-header input {
-  margin-left: 20px;
-  padding: 5px;
-  background: black;
-  border: 1px solid #00ff00;
-  color: #00ff00;
-}
-
-header button {
-  margin-left: 10px;
-  background: black;
-  border: 1px solid #00ff00;
-  color: #00ff00;
-  padding: 5px 10px;
-  cursor: pointer;
-}
-
-.container {
-  margin-top: 90px;
-  padding: 20px;
-}
-
-.post {
-  border: 1px solid #00ff00;
-  padding: 10px;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
-input, textarea {
-  width: 100%;
-  background: black;
-  color: #00ff00;
-  border: 1px solid #00ff00;
-  padding: 5px;
-  margin-bottom: 10px;
-}
-
-a {
-  color: #00ff00;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeakStream</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ff3333;
+            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            color: #ff3333;
+            font-size: 2.5rem;
+        }
+        
+        .logo-text {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ff3333, #ff6666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+            letter-spacing: 2px;
+        }
+        
+        .admin-btn {
+            background: linear-gradient(135deg, #8b0000, #660000);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .admin-btn:hover {
+            background: linear-gradient(135deg, #a30000, #800000);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+        
+        /* Admin Modal Styles */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .admin-form {
+            background: linear-gradient(135deg, #1a1a1a, #000000);
+            padding: 40px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            border: 2px solid #ff3333;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.3);
+        }
+        
+        .admin-form h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #ff3333;
+            font-size: 1.8rem;
+        }
+        
+        .admin-form input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .admin-form input:focus {
+            outline: none;
+            border-color: #ff3333;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+        
+        .admin-form button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #008000, #004d00);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-form button:hover {
+            background: linear-gradient(135deg, #00a000, #006600);
+            transform: translateY(-2px);
+        }
+        
+        /* Post Modal Styles */
+        .post-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .post-form {
+            background: linear-gradient(135deg, #1a1a1a, #000000);
+            padding: 40px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            border: 2px solid #008000;
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.2);
+        }
+        
+        .post-form h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #00ff00;
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            background-color: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .post-actions button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-post {
+            background: linear-gradient(135deg, #008000, #004d00);
+            color: white;
+        }
+        
+        .submit-post:hover {
+            background: linear-gradient(135deg, #00a000, #006600);
+            transform: translateY(-2px);
+        }
+        
+        .close-post {
+            background: linear-gradient(135deg, #8b0000, #660000);
+            color: white;
+        }
+        
+        .close-post:hover {
+            background: linear-gradient(135deg, #a30000, #800000);
+            transform: translateY(-2px);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .page-title::after {
+            content: '';
+            display: block;
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ff3333, transparent);
+            margin: 15px auto;
+        }
+        
+        /* Videos Grid */
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .video-card {
+            background: linear-gradient(135deg, #1a1a1a, #121212);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #333;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .video-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(255, 0, 0, 0.2);
+            border-color: #ff3333;
+        }
+        
+        .video-thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 2px solid #333;
+        }
+        
+        .video-info {
+            padding: 20px;
+        }
+        
+        .video-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #fff;
+            line-height: 1.4;
+        }
+        
+        .video-description {
+            color: #aaa;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 0.85rem;
+        }
+        
+        .video-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #8b0000, #660000);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .video-link:hover {
+            background: linear-gradient(135deg, #a30000, #800000);
+            transform: translateY(-2px);
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #777;
+            font-size: 1.2rem;
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #777;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 1002;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, #008000, #004d00);
+            color: white;
+            border-left: 5px solid #00ff00;
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #8b0000, #660000);
+            color: white;
+            border-left: 5px solid #ff3333;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .videos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+            }
+            
+            .admin-form, .post-form {
+                padding: 25px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
-<header>
-  <img src="https://i.postimg.cc/RhNbssL6/logo.jpg">
-  <input id="search" placeholder="search title...">
-  <button onclick="goHome()">Home</button>
-  <button onclick="goPost()">Post</button>
-</header>
-
-<div class="container" id="app"></div>
-
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDlEGndjR_x651X77k0A41mydFo3Emw3So",
-  authDomain: "leakstreamnew.firebaseapp.com",
-  projectId: "leakstreamnew",
-  storageBucket: "leakstreamnew.firebasestorage.app",
-  messagingSenderId: "295121939490",
-  appId: "1:295121939490:web:d4bd6404d47cb70421ee7b",
-  measurementId: "G-Y2LY4BHWD3"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const postsRef = db.ref("posts");
-
-const app = document.getElementById("app");
-const search = document.getElementById("search");
-
-function goHome() {
-  location.hash = "";
-  loadHome();
-}
-
-function goPost() {
-  location.hash = "post";
-  loadPost();
-}
-
-function loadHome() {
-  app.innerHTML = "";
-  postsRef.off();
-  postsRef.on("value", snap => {
-    app.innerHTML = "";
-    const data = snap.val();
-    if (!data) return;
-
-    Object.keys(data).reverse().forEach(id => {
-      const post = data[id];
-      if (post.title.toLowerCase().includes(search.value.toLowerCase())) {
-        const div = document.createElement("div");
-        div.className = "post";
-        div.innerText = post.title;
-        div.onclick = () => {
-          location.hash = id;
-          loadView(id);
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <i class="fas fa-fire logo-icon"></i>
+            <h1 class="logo-text">LeakStream</h1>
+        </div>
+        <button class="admin-btn" id="adminBtn">
+            <i class="fas fa-lock"></i> Admin Access
+        </button>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <h2 class="page-title">Latest Leaks</h2>
+        
+        <div id="videosContainer">
+            <div class="loading">Loading videos</div>
+        </div>
+    </main>
+    
+    <!-- Admin Login Modal -->
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-form">
+            <h2><i class="fas fa-user-secret"></i> Admin Authentication</h2>
+            <input type="password" id="adminCode" placeholder="Enter Admin Code">
+            <button id="verifyAdminBtn">Verify Code</button>
+        </div>
+    </div>
+    
+    <!-- Post Video Modal -->
+    <div class="post-modal" id="postModal">
+        <div class="post-form">
+            <h2><i class="fas fa-video"></i> Post New Video</h2>
+            <div class="form-group">
+                <label for="videoTitle">Video Title</label>
+                <input type="text" id="videoTitle" placeholder="Enter video title">
+            </div>
+            <div class="form-group">
+                <label for="videoDescription">Description</label>
+                <textarea id="videoDescription" placeholder="Enter video description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="videoLink">Video URL</label>
+                <input type="url" id="videoLink" placeholder="https://example.com/video.mp4">
+            </div>
+            <div class="form-group">
+                <label for="thumbnailLink">Thumbnail URL (Optional)</label>
+                <input type="url" id="thumbnailLink" placeholder="https://example.com/thumbnail.jpg">
+            </div>
+            <div class="post-actions">
+                <button class="submit-post" id="submitVideoBtn">Post Video</button>
+                <button class="close-post" id="closePostBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+    
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyTSyWhLVe22jynP94cp9OEg6IC5-OhdE",
+            authDomain: "leakstream-4f62f.firebaseapp.com",
+            projectId: "leakstream-4f62f",
+            storageBucket: "leakstream-4f62f.firebasestorage.app",
+            messagingSenderId: "886997714546",
+            appId: "1:886997714546:web:b7fcbb9b28010d5ec564eb",
+            measurementId: "G-RXHE019ZWT"
         };
-        app.appendChild(div);
-      }
-    });
-  });
-}
-
-function loadPost() {
-  app.innerHTML = `
-    <h2>Create Post</h2>
-    <input id="title" placeholder="Title">
-    <textarea id="desc" placeholder="Description"></textarea>
-    <input id="video" placeholder="Video URL (mp4 / embed)">
-    <button onclick="publish()">Post</button>
-
-    <h3>Good hosting:</h3>
-    <a href="https://imagekit.io/dashboard/media-library" target="_blank">imagekit.io</a><br>
-    <a href="https://streamable.com/?utm_source=chatgpt.com" target="_blank">streamable.com</a>
-  `;
-}
-
-function publish() {
-  const title = document.getElementById("title").value.trim();
-  const desc = document.getElementById("desc").value.trim();
-  const video = document.getElementById("video").value.trim();
-
-  if (!title || !video) return alert("Missing fields");
-
-  postsRef.push({
-    title,
-    description: desc,
-    videoUrl: video,
-    timestamp: Date.now()
-  });
-
-  goHome();
-}
-
-function loadView(id) {
-  postsRef.child(id).once("value", snap => {
-    const p = snap.val();
-    if (!p) return;
-
-    app.innerHTML = `
-      <h1>${p.title}</h1>
-      <video src="${p.videoUrl}" controls style="width:100%;max-height:400px"></video>
-      <p style="margin-top:20px;white-space:pre-wrap">${p.description}</p>
-    `;
-  });
-}
-
-search.addEventListener("input", loadHome);
-
-window.onhashchange = () => {
-  if (location.hash === "#post") loadPost();
-  else if (location.hash.length > 1) loadView(location.hash.substring(1));
-  else loadHome();
-};
-
-loadHome();
-</script>
-
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        
+        // DOM Elements
+        const adminBtn = document.getElementById('adminBtn');
+        const adminModal = document.getElementById('adminModal');
+        const adminCodeInput = document.getElementById('adminCode');
+        const verifyAdminBtn = document.getElementById('verifyAdminBtn');
+        const postModal = document.getElementById('postModal');
+        const videoTitleInput = document.getElementById('videoTitle');
+        const videoDescriptionInput = document.getElementById('videoDescription');
+        const videoLinkInput = document.getElementById('videoLink');
+        const thumbnailLinkInput = document.getElementById('thumbnailLink');
+        const submitVideoBtn = document.getElementById('submitVideoBtn');
+        const closePostBtn = document.getElementById('closePostBtn');
+        const videosContainer = document.getElementById('videosContainer');
+        const notification = document.getElementById('notification');
+        
+        // Admin Code
+        const ADMIN_CODE = "UNDESCRIMINATED-2012";
+        let isAdmin = false;
+        
+        // Show notification
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Open admin modal
+        adminBtn.addEventListener('click', () => {
+            adminModal.style.display = 'flex';
+        });
+        
+        // Verify admin code
+        verifyAdminBtn.addEventListener('click', () => {
+            const enteredCode = adminCodeInput.value.trim();
+            
+            if (enteredCode === ADMIN_CODE) {
+                isAdmin = true;
+                adminModal.style.display = 'none';
+                adminCodeInput.value = '';
+                showNotification('Admin access granted!', 'success');
+                
+                // Update admin button
+                adminBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Post New Video';
+                adminBtn.removeEventListener('click', openAdminModal);
+                adminBtn.addEventListener('click', openPostModal);
+            } else {
+                showNotification('Invalid admin code!', 'error');
+            }
+        });
+        
+        // Close admin modal when clicking outside
+        adminModal.addEventListener('click', (e) => {
+            if (e.target === adminModal) {
+                adminModal.style.display = 'none';
+                adminCodeInput.value = '';
+            }
+        });
+        
+        // Open post modal
+        function openPostModal() {
+            postModal.style.display = 'flex';
+        }
+        
+        // Close post modal
+        closePostBtn.addEventListener('click', () => {
+            postModal.style.display = 'none';
+            clearPostForm();
+        });
+        
+        // Close post modal when clicking outside
+        postModal.addEventListener('click', (e) => {
+            if (e.target === postModal) {
+                postModal.style.display = 'none';
+                clearPostForm();
+            }
+        });
+        
+        // Clear post form
+        function clearPostForm() {
+            videoTitleInput.value = '';
+            videoDescriptionInput.value = '';
+            videoLinkInput.value = '';
+            thumbnailLinkInput.value = '';
+        }
+        
+        // Submit new video
+        submitVideoBtn.addEventListener('click', async () => {
+            const title = videoTitleInput.value.trim();
+            const description = videoDescriptionInput.value.trim();
+            const videoLink = videoLinkInput.value.trim();
+            const thumbnailLink = thumbnailLinkInput.value.trim();
+            
+            // Validation
+            if (!title || !videoLink) {
+                showNotification('Title and video link are required!', 'error');
+                return;
+            }
+            
+            if (!isValidUrl(videoLink)) {
+                showNotification('Please enter a valid video URL!', 'error');
+                return;
+            }
+            
+            if (thumbnailLink && !isValidUrl(thumbnailLink)) {
+                showNotification('Please enter a valid thumbnail URL!', 'error');
+                return;
+            }
+            
+            try {
+                // Create video object
+                const videoData = {
+                    title: title,
+                    description: description || 'No description provided',
+                    videoLink: videoLink,
+                    thumbnailLink: thumbnailLink || 'https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    views: 0
+                };
+                
+                // Add to Firestore
+                await db.collection('videos').add(videoData);
+                
+                // Success
+                showNotification('Video posted successfully!', 'success');
+                postModal.style.display = 'none';
+                clearPostForm();
+                
+                // Refresh videos list
+                loadVideos();
+                
+            } catch (error) {
+                console.error('Error posting video:', error);
+                showNotification('Failed to post video. Please try again.', 'error');
+            }
+        });
+        
+        // Load videos from Firestore
+        async function loadVideos() {
+            try {
+                videosContainer.innerHTML = '<div class="loading">Loading videos</div>';
+                
+                const querySnapshot = await db.collection('videos')
+                    .orderBy('timestamp', 'desc')
+                    .get();
+                
+                if (querySnapshot.empty) {
+                    videosContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-video-slash"></i>
+                            <h3>No videos found</h3>
+                            <p>Be the first to post a video!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                videosContainer.innerHTML = '<div class="videos-grid"></div>';
+                const videosGrid = document.querySelector('.videos-grid');
+                
+                querySnapshot.forEach((doc) => {
+                    const video = doc.data();
+                    const videoId = doc.id;
+                    
+                    const videoCard = document.createElement('div');
+                    videoCard.className = 'video-card';
+                    videoCard.innerHTML = `
+                        <img src="${video.thumbnailLink}" alt="${video.title}" class="video-thumbnail" onerror="this.src='https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'">
+                        <div class="video-info">
+                            <h3 class="video-title">${video.title}</h3>
+                            <p class="video-description">${video.description}</p>
+                            <div class="video-meta">
+                                <span><i class="fas fa-eye"></i> ${video.views || 0} views</span>
+                                <span><i class="fas fa-calendar"></i> ${formatDate(video.timestamp)}</span>
+                            </div>
+                            <a href="${video.videoLink}" target="_blank" class="video-link">
+                                <i class="fas fa-play"></i> Watch Now
+                            </a>
+                        </div>
+                    `;
+                    
+                    videosGrid.appendChild(videoCard);
+                });
+                
+            } catch (error) {
+                console.error('Error loading videos:', error);
+                videosContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error loading videos</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Helper function to format date
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Just now';
+            
+            const date = timestamp.toDate();
+            const now = new Date();
+            const diffInHours = (now - date) / (1000 * 60 * 60);
+            
+            if (diffInHours < 24) {
+                return 'Today';
+            } else if (diffInHours < 48) {
+                return 'Yesterday';
+            } else {
+                return date.toLocaleDateString();
+            }
+        }
+        
+        // Helper function to validate URL
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVideos();
+            
+            // Set up real-time listener for new videos
+            db.collection('videos')
+                .orderBy('timestamp', 'desc')
+                .onSnapshot((snapshot) => {
+                    if (!snapshot.metadata.hasPendingWrites) {
+                        loadVideos();
+                    }
+                });
+        });
+    </script>
 </body>
 </html>
