@@ -1,307 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrix LeakStream</title>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; color: #0f0; font-family: monospace; }
-        .top-bar { background: rgba(0,20,0,0.9); padding: 15px; border-bottom: 2px solid #0f0; display: flex; justify-content: space-between; }
-        .logo-container img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #0f0; animation: rotate 10s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .nav-buttons { display: flex; gap: 10px; }
-        .nav-btn { background: transparent; color: #0f0; border: 1px solid #0f0; padding: 8px 15px; cursor: pointer; }
-        .nav-btn.active { background: rgba(0,255,0,0.2); }
-        .search-container { display: flex; }
-        .search-bar { background: rgba(0,30,0,0.9); color: #0f0; border: 1px solid #0f0; padding: 8px; width: 250px; }
-        .page { display: none; padding: 20px; }
-        .page.active { display: block; }
-        .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
-        .post-card { background: rgba(0,20,0,0.8); border: 1px solid #0f0; padding: 15px; cursor: pointer; }
-        .form-container { max-width: 600px; margin: 0 auto; }
-        .form-input, .form-textarea { width: 100%; background: rgba(0,30,0,0.9); color: #0f0; border: 1px solid #0f0; padding: 10px; margin: 10px 0; }
-        .submit-btn { background: rgba(0,255,0,0.1); color: #0f0; border: 2px solid #0f0; padding: 12px; width: 100%; cursor: pointer; }
-        .hosting-links { margin-top: 20px; padding: 15px; background: rgba(0,30,0,0.8); border: 1px solid #0a0; }
-        .hosting-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .hosting-btn { background: rgba(0,40,0,0.9); color: #0f0; border: 1px solid #0a0; padding: 10px; text-decoration: none; text-align: center; }
-        .video-page-container { max-width: 800px; margin: 0 auto; }
-        .video-iframe { width: 100%; height: 400px; border: none; }
-    </style>
+<meta charset="UTF-8">
+<title>LeakStream</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: monospace;
+  background: black;
+  color: #00ff00;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #00ff00;
+  z-index: 1000;
+}
+
+header img {
+  width: 50px;
+  height: 50px;
+  animation: spin 6s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+header input {
+  margin-left: 20px;
+  padding: 5px;
+  background: black;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+}
+
+header button {
+  margin-left: 10px;
+  background: black;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.container {
+  margin-top: 90px;
+  padding: 20px;
+}
+
+.post {
+  border: 1px solid #00ff00;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+input, textarea {
+  width: 100%;
+  background: black;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+a {
+  color: #00ff00;
+}
+</style>
 </head>
+
 <body>
-    <!-- Top bar -->
-    <div class="top-bar">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <div class="logo-container">
-                <img src="https://i.postimg.cc/RhNbssL6/logo.jpg" alt="Logo">
-            </div>
-            <div class="nav-buttons">
-                <button class="nav-btn active" id="homeBtn">HOME</button>
-                <button class="nav-btn" id="postBtn">POST</button>
-            </div>
-        </div>
-        <div class="search-container">
-            <input type="text" class="search-bar" id="searchInput" placeholder="Search...">
-            <button class="nav-btn" id="searchBtn">SEARCH</button>
-        </div>
-    </div>
 
-    <!-- Pages -->
-    <div id="homePage" class="page active">
-        <h2 style="text-align: center; margin: 20px 0;">ALL LEAKS</h2>
-        <div id="postsContainer"></div>
-    </div>
+<header>
+  <img src="https://i.postimg.cc/RhNbssL6/logo.jpg">
+  <input id="search" placeholder="search title...">
+  <button onclick="goHome()">Home</button>
+  <button onclick="goPost()">Post</button>
+</header>
 
-    <div id="postPage" class="page">
-        <div class="form-container">
-            <h2 style="text-align: center; margin-bottom: 20px;">POST NEW LEAK</h2>
-            <div id="formMessage" style="text-align: center; margin: 10px 0;"></div>
-            <input type="text" class="form-input" id="postTitle" placeholder="Title">
-            <textarea class="form-textarea" id="postDescription" placeholder="Description"></textarea>
-            <input type="text" class="form-input" id="postVideoLink" placeholder="Video URL">
-            <button class="submit-btn" id="submitPostBtn">PUBLISH</button>
-            
-            <div class="hosting-links">
-                <div style="text-align: center; margin-bottom: 10px;">Recommended Hosting:</div>
-                <div class="hosting-buttons">
-                    <a href="https://imagekit.io/dashboard/media-library" target="_blank" class="hosting-btn">ImageKit</a>
-                    <a href="https://streamable.com/?utm_source=chatgpt.com" target="_blank" class="hosting-btn">Streamable</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="videoPage" class="page">
-        <button class="nav-btn" id="backBtn" style="margin: 20px;">← BACK</button>
-        <div class="video-page-container">
-            <h1 id="videoPageTitle" style="text-align: center; margin: 20px 0;"></h1>
-            <div id="videoPlayer"></div>
-            <div id="videoPageDescription" style="margin-top: 20px; padding: 20px; background: rgba(0,20,0,0.8);"></div>
-        </div>
-    </div>
+<div class="container" id="app"></div>
 
 <script>
-// ========== FIREBASE CONFIG ==========
 const firebaseConfig = {
-    apiKey: "AIzaSyDlEGndjR_x651X77k0A41mydFo3Emw3So",
-    authDomain: "leakstreamnew.firebaseapp.com",
-    projectId: "leakstreamnew",
-    storageBucket: "leakstreamnew.firebasestorage.app",
-    messagingSenderId: "295121939490",
-    appId: "1:295121939490:web:d4bd6404d47cb70421ee7b",
-    measurementId: "G-Y2LY4BHWD3"
+  apiKey: "AIzaSyDlEGndjR_x651X77k0A41mydFo3Emw3So",
+  authDomain: "leakstreamnew.firebaseapp.com",
+  projectId: "leakstreamnew",
+  storageBucket: "leakstreamnew.firebasestorage.app",
+  messagingSenderId: "295121939490",
+  appId: "1:295121939490:web:d4bd6404d47cb70421ee7b",
+  measurementId: "G-Y2LY4BHWD3"
 };
 
-// ========== INITIALIZE FIREBASE ==========
-let db;
-try {
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    console.log("✅ Firebase initialized successfully");
-} catch (error) {
-    console.error("❌ Firebase error:", error);
-    alert("Firebase failed to load. Check console.");
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const postsRef = db.ref("posts");
+
+const app = document.getElementById("app");
+const search = document.getElementById("search");
+
+function goHome() {
+  location.hash = "";
+  loadHome();
 }
 
-// ========== VARIABLES ==========
-let currentPosts = [];
-
-// ========== DOM ELEMENTS ==========
-const homeBtn = document.getElementById('homeBtn');
-const postBtn = document.getElementById('postBtn');
-const searchInput = document.getElementById('searchInput');
-const searchBtn = document.getElementById('searchBtn');
-const homePage = document.getElementById('homePage');
-const postPage = document.getElementById('postPage');
-const videoPage = document.getElementById('videoPage');
-const postsContainer = document.getElementById('postsContainer');
-const submitPostBtn = document.getElementById('submitPostBtn');
-const postTitle = document.getElementById('postTitle');
-const postDescription = document.getElementById('postDescription');
-const postVideoLink = document.getElementById('postVideoLink');
-const formMessage = document.getElementById('formMessage');
-const backBtn = document.getElementById('backBtn');
-const videoPageTitle = document.getElementById('videoPageTitle');
-const videoPageDescription = document.getElementById('videoPageDescription');
-const videoPlayer = document.getElementById('videoPlayer');
-
-// ========== PAGE NAVIGATION ==========
-function showPage(page) {
-    homePage.classList.remove('active');
-    postPage.classList.remove('active');
-    videoPage.classList.remove('active');
-    homeBtn.classList.remove('active');
-    postBtn.classList.remove('active');
-    
-    if (page === 'home') {
-        homePage.classList.add('active');
-        homeBtn.classList.add('active');
-        loadPosts();
-    } else if (page === 'post') {
-        postPage.classList.add('active');
-        postBtn.classList.add('active');
-    } else if (page === 'video') {
-        videoPage.classList.add('active');
-    }
+function goPost() {
+  location.hash = "post";
+  loadPost();
 }
 
-// ========== LOAD POSTS ==========
-async function loadPosts() {
-    if (!db) {
-        postsContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #f00;">Firebase not loaded</div>';
-        return;
-    }
-    
-    postsContainer.innerHTML = '<div style="text-align: center; padding: 40px;">Loading...</div>';
-    
-    try {
-        const snapshot = await db.collection('posts').orderBy('timestamp', 'desc').get();
-        currentPosts = [];
-        snapshot.forEach(doc => {
-            currentPosts.push({ id: doc.id, ...doc.data() });
-        });
-        
-        if (currentPosts.length === 0) {
-            postsContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #9f9;">No posts yet</div>';
-            return;
-        }
-        
-        displayPosts();
-    } catch (error) {
-        console.error("Error loading posts:", error);
-        postsContainer.innerHTML = `<div style="text-align: center; padding: 40px; color: #f00;">Error: ${error.message}</div>`;
-    }
-}
+function loadHome() {
+  app.innerHTML = "";
+  postsRef.off();
+  postsRef.on("value", snap => {
+    app.innerHTML = "";
+    const data = snap.val();
+    if (!data) return;
 
-function displayPosts(search = '') {
-    let filtered = currentPosts;
-    if (search) {
-        const term = search.toLowerCase();
-        filtered = currentPosts.filter(post => 
-            post.title.toLowerCase().includes(term) || 
-            post.description.toLowerCase().includes(term)
-        );
-    }
-    
-    postsContainer.innerHTML = '';
-    filtered.forEach(post => {
-        const div = document.createElement('div');
-        div.className = 'post-card';
-        div.innerHTML = `
-            <h3 style="color: #0f0; margin-bottom: 10px;">${escapeHtml(post.title)}</h3>
-            <p style="color: #9f9; margin-bottom: 10px;">${escapeHtml(post.description.substring(0, 100))}...</p>
-            <div style="color: #0a0; font-size: 12px;">Click to view</div>
-        `;
-        div.onclick = () => showVideo(post.id);
-        postsContainer.appendChild(div);
+    Object.keys(data).reverse().forEach(id => {
+      const post = data[id];
+      if (post.title.toLowerCase().includes(search.value.toLowerCase())) {
+        const div = document.createElement("div");
+        div.className = "post";
+        div.innerText = post.title;
+        div.onclick = () => {
+          location.hash = id;
+          loadView(id);
+        };
+        app.appendChild(div);
+      }
     });
+  });
 }
 
-// ========== CREATE POST ==========
-async function createPost() {
-    if (!db) {
-        showMessage("Firebase not loaded", "error");
-        return;
-    }
-    
-    const title = postTitle.value.trim();
-    const description = postDescription.value.trim();
-    const videoLink = postVideoLink.value.trim();
-    
-    if (!title || !description || !videoLink) {
-        showMessage("All fields required", "error");
-        return;
-    }
-    
-    try {
-        submitPostBtn.disabled = true;
-        submitPostBtn.textContent = 'Publishing...';
-        
-        await db.collection('posts').add({
-            title,
-            description,
-            videoLink,
-            timestamp: firebase.firestore.FieldValue.serverTime()
-        });
-        
-        showMessage("Post published!", "success");
-        postTitle.value = '';
-        postDescription.value = '';
-        postVideoLink.value = '';
-        
-        setTimeout(() => {
-            showPage('home');
-            submitPostBtn.disabled = false;
-            submitPostBtn.textContent = 'PUBLISH';
-        }, 1500);
-    } catch (error) {
-        console.error("Error creating post:", error);
-        showMessage(`Error: ${error.message}`, "error");
-        submitPostBtn.disabled = false;
-        submitPostBtn.textContent = 'PUBLISH';
-    }
+function loadPost() {
+  app.innerHTML = `
+    <h2>Create Post</h2>
+    <input id="title" placeholder="Title">
+    <textarea id="desc" placeholder="Description"></textarea>
+    <input id="video" placeholder="Video URL (mp4 / embed)">
+    <button onclick="publish()">Post</button>
+
+    <h3>Good hosting:</h3>
+    <a href="https://imagekit.io/dashboard/media-library" target="_blank">imagekit.io</a><br>
+    <a href="https://streamable.com/?utm_source=chatgpt.com" target="_blank">streamable.com</a>
+  `;
 }
 
-// ========== SHOW VIDEO ==========
-function showVideo(postId) {
-    const post = currentPosts.find(p => p.id === postId);
-    if (!post) return;
-    
-    videoPageTitle.textContent = post.title;
-    videoPageDescription.textContent = post.description;
-    
-    // Create embed
-    let embed = '';
-    if (post.videoLink.includes('youtube.com') || post.videoLink.includes('youtu.be')) {
-        const videoId = post.videoLink.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-        if (videoId) embed = `<iframe class="video-iframe" src="https://www.youtube.com/embed/${videoId[1]}" allowfullscreen></iframe>`;
-    } else if (post.videoLink.includes('vimeo.com')) {
-        const videoId = post.videoLink.match(/vimeo\.com\/([0-9]+)/);
-        if (videoId) embed = `<iframe class="video-iframe" src="https://player.vimeo.com/video/${videoId[1]}" allowfullscreen></iframe>`;
-    } else {
-        embed = `<div style="text-align: center; padding: 40px;">
-                    <a href="${post.videoLink}" target="_blank" style="color: #0f0; text-decoration: none; border: 1px solid #0f0; padding: 10px 20px;">Open Video</a>
-                </div>`;
-    }
-    
-    videoPlayer.innerHTML = embed;
-    showPage('video');
+function publish() {
+  const title = document.getElementById("title").value.trim();
+  const desc = document.getElementById("desc").value.trim();
+  const video = document.getElementById("video").value.trim();
+
+  if (!title || !video) return alert("Missing fields");
+
+  postsRef.push({
+    title,
+    description: desc,
+    videoUrl: video,
+    timestamp: Date.now()
+  });
+
+  goHome();
 }
 
-// ========== HELPER FUNCTIONS ==========
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+function loadView(id) {
+  postsRef.child(id).once("value", snap => {
+    const p = snap.val();
+    if (!p) return;
+
+    app.innerHTML = `
+      <h1>${p.title}</h1>
+      <video src="${p.videoUrl}" controls style="width:100%;max-height:400px"></video>
+      <p style="margin-top:20px;white-space:pre-wrap">${p.description}</p>
+    `;
+  });
 }
 
-function showMessage(msg, type) {
-    formMessage.textContent = msg;
-    formMessage.style.color = type === 'error' ? '#f00' : '#0f0';
-    setTimeout(() => formMessage.textContent = '', 3000);
-}
+search.addEventListener("input", loadHome);
 
-// ========== EVENT LISTENERS ==========
-homeBtn.onclick = () => showPage('home');
-postBtn.onclick = () => showPage('post');
-backBtn.onclick = () => showPage('home');
-searchBtn.onclick = () => displayPosts(searchInput.value);
-searchInput.onkeyup = (e) => {
-    if (e.key === 'Enter') displayPosts(searchInput.value);
+window.onhashchange = () => {
+  if (location.hash === "#post") loadPost();
+  else if (location.hash.length > 1) loadView(location.hash.substring(1));
+  else loadHome();
 };
-submitPostBtn.onclick = createPost;
 
-// Load posts on start
-if (db) {
-    loadPosts();
-} else {
-    postsContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #f00;">Firebase failed to initialize. Check console.</div>';
-}
+loadHome();
 </script>
+
 </body>
 </html>
