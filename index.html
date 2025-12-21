@@ -10,6 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     
     <style>
+        /* WARNING PAGE STYLES */
         * {
             margin: 0;
             padding: 0;
@@ -18,12 +19,192 @@
         }
         
         body {
-            background-color: #0a0a0a;
+            background-color: #000;
             color: #fff;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         
-        /* Header Styles */
+        /* Warning Page Styles */
+        .warning-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .warning-content {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(20, 20, 20, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 50, 50, 0.3);
+            border: 2px solid #ff3333;
+            position: relative;
+            animation: pulse 4s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 50, 50, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(255, 50, 50, 0.5); }
+        }
+        
+        .warning-header {
+            padding: 25px;
+            text-align: center;
+            background: linear-gradient(to right, #8b0000, #660000);
+            position: relative;
+        }
+        
+        .warning-header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+        }
+        
+        .warning-header h2 {
+            font-size: 1.5rem;
+            color: #ffcccb;
+            font-weight: 500;
+        }
+        
+        .warning-icon {
+            font-size: 3rem;
+            color: #ff3333;
+            margin-bottom: 15px;
+            animation: blink 2s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .image-container {
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .warning-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 3px solid #ff3333;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+        
+        .warning-text-section {
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .warning-text {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #f0f0f0;
+            background-color: rgba(40, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ff3333;
+        }
+        
+        .warning-list {
+            text-align: left;
+            display: inline-block;
+            margin-bottom: 30px;
+            background-color: rgba(60, 0, 0, 0.4);
+            padding: 20px 30px;
+            border-radius: 10px;
+        }
+        
+        .warning-list li {
+            margin-bottom: 12px;
+            padding-left: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .warning-list i {
+            color: #ff3333;
+            margin-right: 10px;
+        }
+        
+        .warning-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .warning-button {
+            padding: 18px 40px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .accept-button {
+            background: linear-gradient(to right, #008000, #004d00);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 100, 0, 0.4);
+        }
+        
+        .accept-button:hover {
+            background: linear-gradient(to right, #00a000, #006600);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 150, 0, 0.6);
+        }
+        
+        .decline-button {
+            background: linear-gradient(to right, #b30000, #800000);
+            color: white;
+            box-shadow: 0 5px 15px rgba(150, 0, 0, 0.4);
+        }
+        
+        .decline-button:hover {
+            background: linear-gradient(to right, #cc0000, #990000);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(200, 0, 0, 0.6);
+        }
+        
+        .warning-countdown {
+            margin-top: 25px;
+            font-size: 1.2rem;
+            color: #ffcc00;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        .warning-footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #aaa;
+            text-align: center;
+            padding: 15px;
+            border-top: 1px solid #333;
+        }
+        
+        /* MAIN PLATFORM STYLES (Hidden by default) */
+        .main-platform {
+            display: none;
+        }
+        
         .header {
             background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
             padding: 20px 40px;
@@ -79,175 +260,6 @@
             box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
         }
         
-        /* Admin Modal Styles */
-        .admin-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .admin-form {
-            background: linear-gradient(135deg, #1a1a1a, #000000);
-            padding: 40px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            border: 2px solid #ff3333;
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.3);
-        }
-        
-        .admin-form h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #ff3333;
-            font-size: 1.8rem;
-        }
-        
-        .admin-form input {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 20px;
-            background-color: #222;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-        }
-        
-        .admin-form input:focus {
-            outline: none;
-            border-color: #ff3333;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-        }
-        
-        .admin-form button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #008000, #004d00);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .admin-form button:hover {
-            background: linear-gradient(135deg, #00a000, #006600);
-            transform: translateY(-2px);
-        }
-        
-        /* Post Modal Styles */
-        .post-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.95);
-            z-index: 1001;
-            justify-content: center;
-            align-items: center;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        
-        .post-form {
-            background: linear-gradient(135deg, #1a1a1a, #000000);
-            padding: 40px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 700px;
-            border: 2px solid #008000;
-            box-shadow: 0 0 40px rgba(0, 255, 0, 0.2);
-        }
-        
-        .post-form h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #00ff00;
-            font-size: 1.8rem;
-        }
-        
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #ccc;
-            font-weight: 500;
-        }
-        
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 15px;
-            background-color: #222;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-        }
-        
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-        
-        .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: #00ff00;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
-        }
-        
-        .post-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        .post-actions button {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .submit-post {
-            background: linear-gradient(135deg, #008000, #004d00);
-            color: white;
-        }
-        
-        .submit-post:hover {
-            background: linear-gradient(135deg, #00a000, #006600);
-            transform: translateY(-2px);
-        }
-        
-        .close-post {
-            background: linear-gradient(135deg, #8b0000, #660000);
-            color: white;
-        }
-        
-        .close-post:hover {
-            background: linear-gradient(135deg, #a30000, #800000);
-            transform: translateY(-2px);
-        }
-        
-        /* Main Content Styles */
         .main-content {
             padding: 40px;
             max-width: 1400px;
@@ -272,7 +284,152 @@
             margin: 15px auto;
         }
         
-        /* Videos Grid */
+        /* MODAL STYLES */
+        .admin-modal, .post-modal, .final-warning-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .admin-form, .post-form, .final-warning-content {
+            background: linear-gradient(135deg, #1a1a1a, #000000);
+            padding: 40px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            border: 2px solid #ff3333;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .post-form {
+            max-width: 700px;
+            border-color: #008000;
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.2);
+        }
+        
+        .final-warning-content {
+            border-color: #ff3333;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+        }
+        
+        .admin-form h2, .post-form h2, .final-warning-content h2 {
+            margin-bottom: 25px;
+            color: #ff3333;
+            font-size: 1.8rem;
+        }
+        
+        .post-form h2 {
+            color: #00ff00;
+        }
+        
+        .final-warning-content h2 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px red;
+        }
+        
+        .admin-form input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            background-color: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .admin-form button, .final-warning-button, .final-warning-cancel {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #008000, #004d00);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+        
+        .final-warning-cancel {
+            background: linear-gradient(135deg, #8b0000, #660000);
+        }
+        
+        .admin-form button:hover, .final-warning-button:hover {
+            background: linear-gradient(135deg, #00a000, #006600);
+            transform: translateY(-2px);
+        }
+        
+        .final-warning-cancel:hover {
+            background: linear-gradient(135deg, #a30000, #800000);
+            transform: translateY(-2px);
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .post-actions button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-post {
+            background: linear-gradient(135deg, #008000, #004d00);
+            color: white;
+        }
+        
+        .close-post {
+            background: linear-gradient(135deg, #8b0000, #660000);
+            color: white;
+        }
+        
+        /* VIDEOS GRID */
         .videos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -347,7 +504,7 @@
             transform: translateY(-2px);
         }
         
-        /* Loading State */
+        /* LOADING STATES */
         .loading {
             text-align: center;
             padding: 50px;
@@ -366,7 +523,6 @@
             60%, 100% { content: '...'; }
         }
         
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -379,7 +535,7 @@
             color: #333;
         }
         
-        /* Notification */
+        /* NOTIFICATION */
         .notification {
             position: fixed;
             bottom: 30px;
@@ -410,8 +566,78 @@
             border-left: 5px solid #ff3333;
         }
         
-        /* Responsive */
+        /* GLITCH EFFECT */
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .glitch::before,
+        .glitch::after {
+            content: "WARNING";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+        
+        .glitch::before {
+            color: #0ff;
+            z-index: -1;
+            animation: glitch-1 2s infinite;
+        }
+        
+        .glitch::after {
+            color: #f0f;
+            z-index: -2;
+            animation: glitch-2 2s infinite;
+        }
+        
+        @keyframes glitch-1 {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        
+        @keyframes glitch-2 {
+            0% { transform: translate(0); }
+            10% { transform: translate(2px, -2px); }
+            30% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, 2px); }
+            70% { transform: translate(-2px, -2px); }
+            90% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        
+        /* RESPONSIVE */
         @media (max-width: 768px) {
+            .warning-header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .warning-header h2 {
+                font-size: 1.2rem;
+            }
+            
+            .warning-text {
+                font-size: 1.1rem;
+            }
+            
+            .warning-button {
+                padding: 15px 30px;
+                font-size: 1.2rem;
+                min-width: 200px;
+            }
+            
+            .warning-buttons {
+                gap: 15px;
+            }
+            
             .header {
                 padding: 15px 20px;
                 flex-direction: column;
@@ -431,71 +657,157 @@
                 gap: 20px;
             }
             
-            .admin-form, .post-form {
+            .admin-form, .post-form, .final-warning-content {
                 padding: 25px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .warning-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .warning-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .warning-button {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .warning-list {
+                padding: 15px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="logo-container">
-            <i class="fas fa-fire logo-icon"></i>
-            <h1 class="logo-text">LeakStream</h1>
+    <!-- AGE VERIFICATION WARNING PAGE -->
+    <div class="warning-container" id="warningPage">
+        <div class="warning-content">
+            <div class="warning-header">
+                <div class="warning-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h1 class="glitch">WARNING</h1>
+                <h2>Restricted Content - Age Verification Required</h2>
+            </div>
+            
+            <div class="image-container">
+                <img src="https://i.postimg.cc/7hy8mx8n/image.jpg" alt="Warning Image" class="warning-image" id="warningImage">
+            </div>
+            
+            <div class="warning-text-section">
+                <div class="warning-text">
+                    <p>You are about to access <strong>LeakStream</strong> - a platform containing restricted content that requires age verification and confirmation of understanding of the risks involved. By proceeding, you acknowledge that you are of legal age (18+ or 21+ depending on your jurisdiction) and accept full responsibility for your actions.</p>
+                </div>
+                
+                <ul class="warning-list">
+                    <li><i class="fas fa-skull-crossbones"></i> This content may contain material unsuitable for minors</li>
+                    <li><i class="fas fa-brain"></i> Exposure may cause psychological discomfort</li>
+                    <li><i class="fas fa-exclamation-circle"></i> You proceed at your own risk and discretion</li>
+                    <li><i class="fas fa-user-shield"></i> Your response will be recorded for security purposes</li>
+                </ul>
+                
+                <div class="warning-buttons">
+                    <button class="warning-button accept-button" id="acceptWarningBtn">
+                        <i class="fas fa-check-circle"></i> Yes, I Accept My Fate
+                    </button>
+                    <button class="warning-button decline-button" id="declineWarningBtn">
+                        <i class="fas fa-times-circle"></i> No, Take Me Away
+                    </button>
+                </div>
+                
+                <div class="warning-countdown" id="warningCountdown">
+                    Auto-redirect in: <span id="warningTimer">10</span> seconds
+                </div>
+                
+                <div class="warning-footer">
+                    <p><i class="fas fa-shield-alt"></i> This verification system is in place to protect vulnerable users. All actions are logged.</p>
+                </div>
+            </div>
         </div>
-        <button class="admin-btn" id="adminBtn">
-            <i class="fas fa-lock"></i> Admin Access
-        </button>
-    </header>
+    </div>
     
-    <!-- Main Content -->
-    <main class="main-content">
-        <h2 class="page-title">Latest Leaks</h2>
+    <!-- FINAL WARNING MODAL -->
+    <div class="final-warning-modal" id="finalWarningModal">
+        <div class="final-warning-content">
+            <h2>FINAL WARNING</h2>
+            <p style="font-size: 1.4rem; margin-bottom: 30px; color: #ffcccb; line-height: 1.5;">
+                You are about to proceed to <strong>LeakStream</strong> restricted content. This is your last chance to turn back. Are you absolutely sure you want to continue?
+            </p>
+            <button class="final-warning-button" id="finalAcceptBtn">
+                <i class="fas fa-door-open"></i> ENTER AT YOUR OWN RISK
+            </button>
+            <button class="final-warning-cancel" id="finalCancelBtn">
+                <i class="fas fa-sign-out-alt"></i> NO, TAKE ME BACK
+            </button>
+        </div>
+    </div>
+    
+    <!-- MAIN PLATFORM (Hidden initially) -->
+    <div class="main-platform" id="mainPlatform">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <i class="fas fa-fire logo-icon"></i>
+                <h1 class="logo-text">LeakStream</h1>
+            </div>
+            <button class="admin-btn" id="adminBtn">
+                <i class="fas fa-lock"></i> Admin Access
+            </button>
+        </header>
         
-        <div id="videosContainer">
-            <div class="loading">Loading videos</div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <h2 class="page-title">Latest Leaks</h2>
+            
+            <div id="videosContainer">
+                <div class="loading">Loading videos</div>
+            </div>
+        </main>
+        
+        <!-- Admin Login Modal -->
+        <div class="admin-modal" id="adminModal">
+            <div class="admin-form">
+                <h2><i class="fas fa-user-secret"></i> Admin Authentication</h2>
+                <input type="password" id="adminCode" placeholder="Enter Admin Code">
+                <button id="verifyAdminBtn">Verify Code</button>
+            </div>
         </div>
-    </main>
-    
-    <!-- Admin Login Modal -->
-    <div class="admin-modal" id="adminModal">
-        <div class="admin-form">
-            <h2><i class="fas fa-user-secret"></i> Admin Authentication</h2>
-            <input type="password" id="adminCode" placeholder="Enter Admin Code">
-            <button id="verifyAdminBtn">Verify Code</button>
+        
+        <!-- Post Video Modal -->
+        <div class="post-modal" id="postModal">
+            <div class="post-form">
+                <h2><i class="fas fa-video"></i> Post New Video</h2>
+                <div class="form-group">
+                    <label for="videoTitle">Video Title</label>
+                    <input type="text" id="videoTitle" placeholder="Enter video title">
+                </div>
+                <div class="form-group">
+                    <label for="videoDescription">Description</label>
+                    <textarea id="videoDescription" placeholder="Enter video description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="videoLink">Video URL</label>
+                    <input type="url" id="videoLink" placeholder="https://example.com/video.mp4">
+                </div>
+                <div class="form-group">
+                    <label for="thumbnailLink">Thumbnail URL (Optional)</label>
+                    <input type="url" id="thumbnailLink" placeholder="https://example.com/thumbnail.jpg">
+                </div>
+                <div class="post-actions">
+                    <button class="submit-post" id="submitVideoBtn">Post Video</button>
+                    <button class="close-post" id="closePostBtn">Cancel</button>
+                </div>
+            </div>
         </div>
+        
+        <!-- Notification -->
+        <div class="notification" id="notification"></div>
     </div>
-    
-    <!-- Post Video Modal -->
-    <div class="post-modal" id="postModal">
-        <div class="post-form">
-            <h2><i class="fas fa-video"></i> Post New Video</h2>
-            <div class="form-group">
-                <label for="videoTitle">Video Title</label>
-                <input type="text" id="videoTitle" placeholder="Enter video title">
-            </div>
-            <div class="form-group">
-                <label for="videoDescription">Description</label>
-                <textarea id="videoDescription" placeholder="Enter video description"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="videoLink">Video URL</label>
-                <input type="url" id="videoLink" placeholder="https://example.com/video.mp4">
-            </div>
-            <div class="form-group">
-                <label for="thumbnailLink">Thumbnail URL (Optional)</label>
-                <input type="url" id="thumbnailLink" placeholder="https://example.com/thumbnail.jpg">
-            </div>
-            <div class="post-actions">
-                <button class="submit-post" id="submitVideoBtn">Post Video</button>
-                <button class="close-post" id="closePostBtn">Cancel</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Notification -->
-    <div class="notification" id="notification"></div>
     
     <!-- Font Awesome -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
@@ -515,236 +827,311 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const auth = firebase.auth();
         
-        // DOM Elements
-        const adminBtn = document.getElementById('adminBtn');
-        const adminModal = document.getElementById('adminModal');
-        const adminCodeInput = document.getElementById('adminCode');
-        const verifyAdminBtn = document.getElementById('verifyAdminBtn');
-        const postModal = document.getElementById('postModal');
-        const videoTitleInput = document.getElementById('videoTitle');
-        const videoDescriptionInput = document.getElementById('videoDescription');
-        const videoLinkInput = document.getElementById('videoLink');
-        const thumbnailLinkInput = document.getElementById('thumbnailLink');
-        const submitVideoBtn = document.getElementById('submitVideoBtn');
-        const closePostBtn = document.getElementById('closePostBtn');
-        const videosContainer = document.getElementById('videosContainer');
-        const notification = document.getElementById('notification');
+        // ============ AGE VERIFICATION SECTION ============
+        const warningPage = document.getElementById('warningPage');
+        const acceptWarningBtn = document.getElementById('acceptWarningBtn');
+        const declineWarningBtn = document.getElementById('declineWarningBtn');
+        const warningTimer = document.getElementById('warningTimer');
+        const finalWarningModal = document.getElementById('finalWarningModal');
+        const finalAcceptBtn = document.getElementById('finalAcceptBtn');
+        const finalCancelBtn = document.getElementById('finalCancelBtn');
+        const warningImage = document.getElementById('warningImage');
+        const mainPlatform = document.getElementById('mainPlatform');
         
-        // Admin Code
-        const ADMIN_CODE = "UNDESCRIMINATED-2012";
-        let isAdmin = false;
+        // Redirect URLs
+        const declineRedirect = "https://youtu.be/TJmTHuuYx3k";
         
-        // Show notification
-        function showNotification(message, type) {
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.classList.add('show');
+        // Countdown timer (auto-accept after 10 seconds)
+        let countdown = 10;
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            warningTimer.textContent = countdown;
             
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                showFinalWarning();
+            }
+        }, 1000);
+        
+        // Handle image error
+        warningImage.onerror = function() {
+            this.src = 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=750&q=80';
+        };
+        
+        // Accept button click
+        acceptWarningBtn.addEventListener('click', function() {
+            clearInterval(countdownInterval);
+            showFinalWarning();
+        });
+        
+        // Decline button click
+        declineWarningBtn.addEventListener('click', function() {
+            clearInterval(countdownInterval);
+            
+            // Add visual feedback
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecting...';
+            this.disabled = true;
+            
+            // Redirect to YouTube
             setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-        
-        // Open admin modal
-        adminBtn.addEventListener('click', () => {
-            adminModal.style.display = 'flex';
+                window.location.href = declineRedirect;
+            }, 1000);
         });
         
-        // Verify admin code
-        verifyAdminBtn.addEventListener('click', () => {
-            const enteredCode = adminCodeInput.value.trim();
+        // Show final warning modal
+        function showFinalWarning() {
+            finalWarningModal.style.display = 'flex';
+        }
+        
+        // Final accept button
+        finalAcceptBtn.addEventListener('click', function() {
+            // Hide warning page and show main platform
+            warningPage.style.display = 'none';
+            finalWarningModal.style.display = 'none';
+            mainPlatform.style.display = 'block';
             
-            if (enteredCode === ADMIN_CODE) {
-                isAdmin = true;
-                adminModal.style.display = 'none';
-                adminCodeInput.value = '';
-                showNotification('Admin access granted!', 'success');
+            // Initialize the main platform
+            initializeMainPlatform();
+        });
+        
+        // Final cancel button
+        finalCancelBtn.addEventListener('click', function() {
+            finalWarningModal.style.display = 'none';
+            window.location.href = declineRedirect;
+        });
+        
+        // ============ MAIN PLATFORM SECTION ============
+        function initializeMainPlatform() {
+            // DOM Elements for main platform
+            const adminBtn = document.getElementById('adminBtn');
+            const adminModal = document.getElementById('adminModal');
+            const adminCodeInput = document.getElementById('adminCode');
+            const verifyAdminBtn = document.getElementById('verifyAdminBtn');
+            const postModal = document.getElementById('postModal');
+            const videoTitleInput = document.getElementById('videoTitle');
+            const videoDescriptionInput = document.getElementById('videoDescription');
+            const videoLinkInput = document.getElementById('videoLink');
+            const thumbnailLinkInput = document.getElementById('thumbnailLink');
+            const submitVideoBtn = document.getElementById('submitVideoBtn');
+            const closePostBtn = document.getElementById('closePostBtn');
+            const videosContainer = document.getElementById('videosContainer');
+            const notification = document.getElementById('notification');
+            
+            // Admin Code
+            const ADMIN_CODE = "UNDESCRIMINATED-2012";
+            let isAdmin = false;
+            
+            // Show notification
+            function showNotification(message, type) {
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+                notification.classList.add('show');
                 
-                // Update admin button
-                adminBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Post New Video';
-                adminBtn.removeEventListener('click', openAdminModal);
-                adminBtn.addEventListener('click', openPostModal);
-            } else {
-                showNotification('Invalid admin code!', 'error');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
             }
-        });
-        
-        // Close admin modal when clicking outside
-        adminModal.addEventListener('click', (e) => {
-            if (e.target === adminModal) {
-                adminModal.style.display = 'none';
-                adminCodeInput.value = '';
+            
+            // Open admin modal
+            adminBtn.addEventListener('click', () => {
+                if (!isAdmin) {
+                    adminModal.style.display = 'flex';
+                } else {
+                    openPostModal();
+                }
+            });
+            
+            // Verify admin code
+            verifyAdminBtn.addEventListener('click', () => {
+                const enteredCode = adminCodeInput.value.trim();
+                
+                if (enteredCode === ADMIN_CODE) {
+                    isAdmin = true;
+                    adminModal.style.display = 'none';
+                    adminCodeInput.value = '';
+                    showNotification('Admin access granted!', 'success');
+                    
+                    // Update admin button
+                    adminBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Post New Video';
+                } else {
+                    showNotification('Invalid admin code!', 'error');
+                }
+            });
+            
+            // Close admin modal when clicking outside
+            adminModal.addEventListener('click', (e) => {
+                if (e.target === adminModal) {
+                    adminModal.style.display = 'none';
+                    adminCodeInput.value = '';
+                }
+            });
+            
+            // Open post modal
+            function openPostModal() {
+                postModal.style.display = 'flex';
             }
-        });
-        
-        // Open post modal
-        function openPostModal() {
-            postModal.style.display = 'flex';
-        }
-        
-        // Close post modal
-        closePostBtn.addEventListener('click', () => {
-            postModal.style.display = 'none';
-            clearPostForm();
-        });
-        
-        // Close post modal when clicking outside
-        postModal.addEventListener('click', (e) => {
-            if (e.target === postModal) {
+            
+            // Close post modal
+            closePostBtn.addEventListener('click', () => {
                 postModal.style.display = 'none';
                 clearPostForm();
-            }
-        });
-        
-        // Clear post form
-        function clearPostForm() {
-            videoTitleInput.value = '';
-            videoDescriptionInput.value = '';
-            videoLinkInput.value = '';
-            thumbnailLinkInput.value = '';
-        }
-        
-        // Submit new video
-        submitVideoBtn.addEventListener('click', async () => {
-            const title = videoTitleInput.value.trim();
-            const description = videoDescriptionInput.value.trim();
-            const videoLink = videoLinkInput.value.trim();
-            const thumbnailLink = thumbnailLinkInput.value.trim();
+            });
             
-            // Validation
-            if (!title || !videoLink) {
-                showNotification('Title and video link are required!', 'error');
-                return;
+            // Close post modal when clicking outside
+            postModal.addEventListener('click', (e) => {
+                if (e.target === postModal) {
+                    postModal.style.display = 'none';
+                    clearPostForm();
+                }
+            });
+            
+            // Clear post form
+            function clearPostForm() {
+                videoTitleInput.value = '';
+                videoDescriptionInput.value = '';
+                videoLinkInput.value = '';
+                thumbnailLinkInput.value = '';
             }
             
-            if (!isValidUrl(videoLink)) {
-                showNotification('Please enter a valid video URL!', 'error');
-                return;
-            }
-            
-            if (thumbnailLink && !isValidUrl(thumbnailLink)) {
-                showNotification('Please enter a valid thumbnail URL!', 'error');
-                return;
-            }
-            
-            try {
-                // Create video object
-                const videoData = {
-                    title: title,
-                    description: description || 'No description provided',
-                    videoLink: videoLink,
-                    thumbnailLink: thumbnailLink || 'https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    views: 0
-                };
+            // Submit new video
+            submitVideoBtn.addEventListener('click', async () => {
+                const title = videoTitleInput.value.trim();
+                const description = videoDescriptionInput.value.trim();
+                const videoLink = videoLinkInput.value.trim();
+                const thumbnailLink = thumbnailLinkInput.value.trim();
                 
-                // Add to Firestore
-                await db.collection('videos').add(videoData);
-                
-                // Success
-                showNotification('Video posted successfully!', 'success');
-                postModal.style.display = 'none';
-                clearPostForm();
-                
-                // Refresh videos list
-                loadVideos();
-                
-            } catch (error) {
-                console.error('Error posting video:', error);
-                showNotification('Failed to post video. Please try again.', 'error');
-            }
-        });
-        
-        // Load videos from Firestore
-        async function loadVideos() {
-            try {
-                videosContainer.innerHTML = '<div class="loading">Loading videos</div>';
-                
-                const querySnapshot = await db.collection('videos')
-                    .orderBy('timestamp', 'desc')
-                    .get();
-                
-                if (querySnapshot.empty) {
-                    videosContainer.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-video-slash"></i>
-                            <h3>No videos found</h3>
-                            <p>Be the first to post a video!</p>
-                        </div>
-                    `;
+                // Validation
+                if (!title || !videoLink) {
+                    showNotification('Title and video link are required!', 'error');
                     return;
                 }
                 
-                videosContainer.innerHTML = '<div class="videos-grid"></div>';
-                const videosGrid = document.querySelector('.videos-grid');
+                if (!isValidUrl(videoLink)) {
+                    showNotification('Please enter a valid video URL!', 'error');
+                    return;
+                }
                 
-                querySnapshot.forEach((doc) => {
-                    const video = doc.data();
-                    const videoId = doc.id;
+                if (thumbnailLink && !isValidUrl(thumbnailLink)) {
+                    showNotification('Please enter a valid thumbnail URL!', 'error');
+                    return;
+                }
+                
+                try {
+                    // Create video object
+                    const videoData = {
+                        title: title,
+                        description: description || 'No description provided',
+                        videoLink: videoLink,
+                        thumbnailLink: thumbnailLink || 'https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        views: 0
+                    };
                     
-                    const videoCard = document.createElement('div');
-                    videoCard.className = 'video-card';
-                    videoCard.innerHTML = `
-                        <img src="${video.thumbnailLink}" alt="${video.title}" class="video-thumbnail" onerror="this.src='https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'">
-                        <div class="video-info">
-                            <h3 class="video-title">${video.title}</h3>
-                            <p class="video-description">${video.description}</p>
-                            <div class="video-meta">
-                                <span><i class="fas fa-eye"></i> ${video.views || 0} views</span>
-                                <span><i class="fas fa-calendar"></i> ${formatDate(video.timestamp)}</span>
+                    // Add to Firestore
+                    await db.collection('videos').add(videoData);
+                    
+                    // Success
+                    showNotification('Video posted successfully!', 'success');
+                    postModal.style.display = 'none';
+                    clearPostForm();
+                    
+                    // Refresh videos list
+                    loadVideos();
+                    
+                } catch (error) {
+                    console.error('Error posting video:', error);
+                    showNotification('Failed to post video. Please try again.', 'error');
+                }
+            });
+            
+            // Load videos from Firestore
+            async function loadVideos() {
+                try {
+                    videosContainer.innerHTML = '<div class="loading">Loading videos</div>';
+                    
+                    const querySnapshot = await db.collection('videos')
+                        .orderBy('timestamp', 'desc')
+                        .get();
+                    
+                    if (querySnapshot.empty) {
+                        videosContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-video-slash"></i>
+                                <h3>No videos found</h3>
+                                <p>Be the first to post a video!</p>
                             </div>
-                            <a href="${video.videoLink}" target="_blank" class="video-link">
-                                <i class="fas fa-play"></i> Watch Now
-                            </a>
+                        `;
+                        return;
+                    }
+                    
+                    videosContainer.innerHTML = '<div class="videos-grid"></div>';
+                    const videosGrid = document.querySelector('.videos-grid');
+                    
+                    querySnapshot.forEach((doc) => {
+                        const video = doc.data();
+                        const videoId = doc.id;
+                        
+                        const videoCard = document.createElement('div');
+                        videoCard.className = 'video-card';
+                        videoCard.innerHTML = `
+                            <img src="${video.thumbnailLink}" alt="${video.title}" class="video-thumbnail" onerror="this.src='https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'">
+                            <div class="video-info">
+                                <h3 class="video-title">${video.title}</h3>
+                                <p class="video-description">${video.description}</p>
+                                <div class="video-meta">
+                                    <span><i class="fas fa-eye"></i> ${video.views || 0} views</span>
+                                    <span><i class="fas fa-calendar"></i> ${formatDate(video.timestamp)}</span>
+                                </div>
+                                <a href="${video.videoLink}" target="_blank" class="video-link">
+                                    <i class="fas fa-play"></i> Watch Now
+                                </a>
+                            </div>
+                        `;
+                        
+                        videosGrid.appendChild(videoCard);
+                    });
+                    
+                } catch (error) {
+                    console.error('Error loading videos:', error);
+                    videosContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Error loading videos</h3>
+                            <p>Please try again later</p>
                         </div>
                     `;
-                    
-                    videosGrid.appendChild(videoCard);
-                });
+                }
+            }
+            
+            // Helper function to format date
+            function formatDate(timestamp) {
+                if (!timestamp) return 'Just now';
                 
-            } catch (error) {
-                console.error('Error loading videos:', error);
-                videosContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Error loading videos</h3>
-                        <p>Please try again later</p>
-                    </div>
-                `;
+                const date = timestamp.toDate();
+                const now = new Date();
+                const diffInHours = (now - date) / (1000 * 60 * 60);
+                
+                if (diffInHours < 24) {
+                    return 'Today';
+                } else if (diffInHours < 48) {
+                    return 'Yesterday';
+                } else {
+                    return date.toLocaleDateString();
+                }
             }
-        }
-        
-        // Helper function to format date
-        function formatDate(timestamp) {
-            if (!timestamp) return 'Just now';
             
-            const date = timestamp.toDate();
-            const now = new Date();
-            const diffInHours = (now - date) / (1000 * 60 * 60);
+            // Helper function to validate URL
+            function isValidUrl(string) {
+                try {
+                    new URL(string);
+                    return true;
+                } catch (_) {
+                    return false;
+                }
+            }
             
-            if (diffInHours < 24) {
-                return 'Today';
-            } else if (diffInHours < 48) {
-                return 'Yesterday';
-            } else {
-                return date.toLocaleDateString();
-            }
-        }
-        
-        // Helper function to validate URL
-        function isValidUrl(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return false;
-            }
-        }
-        
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', () => {
+            // Load videos initially
             loadVideos();
             
             // Set up real-time listener for new videos
@@ -755,6 +1142,19 @@
                         loadVideos();
                     }
                 });
+        }
+        
+        // Add background animation to warning page
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.warning-content');
+            let angle = 0;
+            
+            setInterval(() => {
+                angle += 0.5;
+                const x = Math.sin(angle * Math.PI / 180) * 5;
+                const y = Math.cos(angle * Math.PI / 180) * 5;
+                container.style.boxShadow = `${x}px ${y}px 30px rgba(255, 50, 50, 0.4)`;
+            }, 50);
         });
     </script>
 </body>
