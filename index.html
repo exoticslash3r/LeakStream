@@ -3,256 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeakStream Viewer</title>
+    <title>LeakStream</title>
     <style>
+        /* === RESET === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #000; color: #fff; }
         .hidden { display: none !important; }
         
-        /* Snow */
+        /* === SNOW === */
         .snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
         .snow { position: absolute; background: #fff; border-radius: 50%; opacity: 0.8; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(100vh); } }
         
-        /* Timeout Screen */
-        .timeout-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            text-align: center;
-            animation: timeoutGlitch 2s infinite;
+        /* === ENTRY PAGE === */
+        #entryPage { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .banner { width: 90%; max-width: 800px; margin: 20px auto; border: 2px solid #333; overflow: hidden; }
+        .banner img { width: 100%; display: block; }
+        .title { font-size: 2rem; margin: 20px 0; }
+        .buttons { display: flex; gap: 20px; margin: 30px 0; }
+        .btn { padding: 12px 30px; font-size: 1rem; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-no { background: #ff0000; color: white; animation: pulse-red 2s infinite; }
+        .btn-no:hover { background: #cc0000; transform: scale(1.05); }
+        .btn-yes { background: #000; color: #fff; border: 2px solid #fff; }
+        .btn-yes:hover { animation: glitch 0.3s infinite; }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(255, 0, 0, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
         }
-        @keyframes timeoutGlitch {
-            0% { background: #000; color: #fff; }
-            50% { background: #ff0000; color: #000; }
-            100% { background: #000; color: #fff; }
-        }
-        .timeout-message {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        .timeout-reason {
-            font-size: 1.5rem;
-            color: #ff4444;
-            margin-bottom: 40px;
-        }
-        .timeout-timer {
-            font-size: 2rem;
-            color: #fff;
-            font-family: monospace;
+        @keyframes glitch {
+            0% { background: #000; color: #fff; } 20% { background: #fff; color: #000; }
+            40% { background: #000; color: #fff; } 60% { background: #fff; color: #000; }
+            80% { background: #000; color: #fff; } 100% { background: #000; color: #fff; }
         }
         
-        /* Header */
-        .header {
-            background: #111;
-            padding: 15px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .stats {
-            color: #666;
-            font-size: 0.9rem;
-        }
+        /* === MAIN PAGE === */
+        #mainPage { min-height: 100vh; }
+        .header { background: #111; padding: 10px 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.2rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .stats { color: #666; font-size: 0.8rem; }
+        .menu-toggle { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
         
-        /* Search Bar */
-        .search-container {
-            background: #111;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #333;
-        }
-        .search-box {
-            display: flex;
-            gap: 10px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .search-input {
-            flex: 1;
-            padding: 12px;
-            background: #000;
-            border: 1px solid #333;
-            color: #fff;
-            font-size: 1rem;
-        }
-        .search-btn {
-            padding: 12px 24px;
-            background: #000;
-            color: #fff;
-            border: 1px solid #333;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .search-btn:hover {
-            background: #222;
-        }
-        .search-info {
-            text-align: center;
-            color: #666;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
+        /* === SEARCH BAR === */
+        .search-container { background: #111; padding: 15px; border-bottom: 1px solid #333; }
+        .search-box { display: flex; gap: 10px; max-width: 600px; margin: 0 auto; }
+        .search-input { flex: 1; padding: 12px; background: #000; border: 1px solid #333; color: #fff; font-size: 1rem; }
+        .search-btn { padding: 12px 24px; background: #000; color: #fff; border: 1px solid #333; cursor: pointer; }
+        .search-btn:hover { background: #222; }
+        .search-info { text-align: center; color: #666; margin-top: 10px; font-size: 0.9rem; }
         
-        /* Main Content */
-        .main-content {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { display: flex; }
+        .sidebar { background: #111; padding: 15px; border-right: 1px solid #333; width: 200px; transition: transform 0.3s; }
+        .sidebar.closed { transform: translateX(-100%); }
+        .sidebar-toggle { position: absolute; top: 10px; right: -40px; background: #111; color: #fff; border: 1px solid #333; border-left: none; padding: 10px; cursor: pointer; }
+        .sidebar-section { margin-bottom: 20px; }
+        .sidebar h3 { color: #fff; margin-bottom: 10px; font-size: 0.9rem; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { margin-bottom: 8px; }
+        .sidebar a { color: #666; text-decoration: none; display: block; padding: 5px 0; font-size: 0.85rem; cursor: pointer; }
+        .sidebar a:hover { color: #fff; }
         
-        /* Posts */
-        .posts-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        .post {
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: transform 0.3s;
-        }
-        .post:hover {
-            transform: translateY(-5px);
-            border-color: #666;
-        }
-        .post-media {
-            width: 100%;
-            height: 200px;
-            background: #000;
-            overflow: hidden;
-        }
-        .post-media video,
-        .post-media img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .post-content {
-            padding: 15px;
-        }
-        .post-title {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-        .post-description {
-            color: #888;
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
-        .post-meta {
-            display: flex;
-            justify-content: space-between;
-            color: #666;
-            font-size: 0.8rem;
-            border-top: 1px solid #333;
-            padding-top: 10px;
-        }
-        .post-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .action-btn {
-            padding: 5px 10px;
-            background: #000;
-            color: #fff;
-            border: 1px solid #333;
-            cursor: pointer;
-            font-size: 0.8rem;
-            border-radius: 3px;
-        }
-        .action-btn:hover {
-            background: #222;
-        }
+        /* === OLD VIDEO STYLE (SCROLL DOWN) === */
+        .main-content { flex: 1; padding: 15px; }
+        .posts-container { display: flex; flex-direction: column; gap: 20px; }
+        .post { background: #111; padding: 20px; border: 1px solid #333; border-radius: 5px; }
+        .post-header { display: flex; justify-content: space-between; margin-bottom: 15px; color: #666; font-size: 0.8rem; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .post-title { color: #fff; margin-bottom: 10px; font-size: 1.1rem; font-weight: bold; }
+        .post-description { color: #888; margin-bottom: 15px; font-size: 0.9rem; line-height: 1.4; }
         
-        /* No Results */
-        .no-results {
-            text-align: center;
-            color: #666;
-            padding: 50px;
-            font-size: 1.2rem;
-            grid-column: 1 / -1;
-        }
+        /* VIDEO/IMAGE CONTAINER - OLD STYLE */
+        .post-media { margin: 15px 0; border-radius: 5px; overflow: hidden; background: #000; }
+        .post-media video { width: 100%; max-height: 400px; display: block; background: #000; }
+        .post-media img { width: 100%; max-height: 400px; object-fit: contain; display: block; background: #000; }
         
-        /* Loading */
-        .loading {
-            text-align: center;
-            color: #666;
-            padding: 40px;
-            grid-column: 1 / -1;
-        }
+        .post-url { color: #666; font-size: 0.8rem; word-break: break-all; padding: 8px; background: #1a1a1a; margin: 10px 0; border-radius: 3px; font-family: monospace; }
+        .post-actions { display: flex; gap: 15px; margin-top: 15px; color: #666; font-size: 0.8rem; }
+        .action-btn { cursor: pointer; padding: 5px 10px; transition: color 0.3s; }
+        .action-btn:hover { color: #fff; }
         
-        /* Hidden Admin Panel (Invisible) */
-        .admin-panel {
-            display: none;
+        /* === POST FORM (PUBLISHING) === */
+        .post-form { background: #111; padding: 20px; margin-bottom: 30px; border: 1px solid #333; border-radius: 5px; }
+        .post-form h2 { margin-bottom: 20px; color: #fff; font-size: 1.2rem; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #666; font-size: 0.9rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; background: #000; border: 1px solid #333; color: #fff; font-size: 0.95rem; }
+        .form-group textarea { height: 100px; resize: vertical; }
+        .url-inputs { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+        .main-btn { padding: 10px 20px; background: #000; color: #fff; border: 1px solid #333; cursor: pointer; font-size: 0.95rem; }
+        .main-btn:hover { background: #333; }
+        .video-host-link { margin-top: 15px; padding: 10px; background: #1a1a1a; font-size: 0.85rem; text-align: center; }
+        
+        /* === NOTIFICATIONS === */
+        .new-post-notification { position: fixed; top: 20px; right: 20px; background: #fff; color: #000; padding: 10px 20px; display: none; z-index: 1000; animation: slideIn 0.3s; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .back-btn { position: fixed; bottom: 20px; left: 20px; background: #111; color: #666; border: 1px solid #333; padding: 10px 20px; cursor: pointer; }
+        .no-posts { text-align: center; color: #666; padding: 40px; }
+        .loading { text-align: center; color: #666; padding: 30px; }
+        
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; height: 100vh; z-index: 1000; }
+            .main-content { margin-left: 0; }
+            .search-box { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <!-- Timeout Screen -->
-    <div class="timeout-screen hidden" id="timeoutScreen">
-        <div class="timeout-message">TIMED OUT</div>
-        <div class="timeout-reason" id="timeoutReason">Reason: Spamming</div>
-        <div class="timeout-timer" id="timeoutTimer">24:00:00</div>
-    </div>
-    
-    <!-- Snow Effect -->
     <div class="snow-container" id="snowContainer"></div>
     
-    <!-- Header -->
-    <div class="header">
-        <div class="logo">LEAKSTREAM VIEWER</div>
-        <div class="stats">Posts: <span id="postCount">0</span> | Online: <span id="onlineCount">1</span></div>
+    <div id="entryPage">
+        <h1 class="title">ENTRY POINT</h1>
+        <div class="banner">
+            <img src="https://i.postimg.cc/W1LwgPyX/image.png" alt="Banner">
+        </div>
+        <div class="buttons">
+            <button class="btn btn-no" onclick="redirectNo()">No</button>
+            <button class="btn btn-yes" onclick="enterMainPage()">Yes, I accept my fate</button>
+        </div>
     </div>
     
-    <!-- Search Bar -->
-    <div class="search-container">
-        <div class="search-box">
-            <input type="text" class="search-input" id="searchInput" placeholder="Search videos or descriptions...">
-            <button class="search-btn" onclick="searchPosts()">Search</button>
+    <div id="mainPage" class="hidden">
+        <div class="header">
+            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+            <div class="logo" onclick="showEntryPage()">LEAKSTREAM</div>
+            <div class="stats">Posts: <span id="postCount">0</span></div>
         </div>
-        <div class="search-info" id="searchInfo">Type to search posts by title or description</div>
-    </div>
-    
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="posts-container" id="postsContainer">
-            <div class="loading" id="loadingPosts">Loading posts...</div>
-            <div class="no-results hidden" id="noPosts">No posts found. Try a different search.</div>
+        
+        <!-- SEARCH BAR -->
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search posts by title or description...">
+                <button class="search-btn" onclick="searchPosts()">Search</button>
+            </div>
+            <div class="search-info" id="searchInfo">Type to search</div>
         </div>
+        
+        <div class="container">
+            <div class="sidebar closed" id="sidebar">
+                <button class="sidebar-toggle" onclick="toggleSidebar()">→</button>
+                <div class="sidebar-section">
+                    <h3>Browse</h3>
+                    <ul>
+                        <li><a onclick="showAllPosts()">All Posts</a></li>
+                        <li><a onclick="filterByType('video')">Videos</a></li>
+                        <li><a onclick="filterByType('image')">Images</a></li>
+                    </ul>
+                </div>
+                <div class="sidebar-section">
+                    <h3>Links</h3>
+                    <ul>
+                        <li><a href="https://imagekit.io/login/?target=%2Fdashboard%2Fmedia-library" target="_blank">Video Host</a></li>
+                        <li><a href="https://imgbb.com/" target="_blank">Image Host</a></li>
+                    </ul>
+                </div>
+                <div class="sidebar-section">
+                    <h3>Actions</h3>
+                    <ul>
+                        <li><a onclick="scrollToTop()">Scroll to Top</a></li>
+                        <li><a onclick="clearSearch()">Clear Search</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <!-- PUBLISH FORM -->
+                <div class="post-form">
+                    <h2>Create New Post</h2>
+                    <div class="form-group">
+                        <label>Title *</label>
+                        <input type="text" id="postTitle" placeholder="Enter post title">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="postContent" placeholder="Enter description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="mediaType">
+                            <option value="video">Video</option>
+                            <option value="image">Image</option>
+                            <option value="link">Link</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Media URL</label>
+                        <div class="url-inputs">
+                            <input type="url" id="mediaUrl" placeholder="https://example.com/video.mp4">
+                            <button class="main-btn" onclick="testUrl()">Test</button>
+                        </div>
+                    </div>
+                    <button class="main-btn" onclick="createPost()" style="width:100%;">Post</button>
+                    <div class="video-host-link">
+                        <a href="https://imagekit.io/login/?target=%2Fdashboard%2Fmedia-library" target="_blank">Free video host</a>
+                    </div>
+                </div>
+                
+                <!-- POSTS CONTAINER -->
+                <div class="posts-container" id="postsContainer">
+                    <div class="loading" id="loadingPosts">Loading posts...</div>
+                    <div class="no-posts hidden" id="noPosts">No posts yet. Create one!</div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="back-btn" onclick="showEntryPage()">← Back</button>
+        <div class="new-post-notification" id="newPostNotification"></div>
     </div>
 
     <script>
         // ===== INITIAL SETUP =====
+        localStorage.removeItem('accepted');
         createSnow();
         
-        // ===== SNOW EFFECT =====
+        // ===== SNOW =====
         function createSnow() {
             const container = document.getElementById('snowContainer');
             for (let i = 0; i < 40; i++) {
@@ -267,125 +229,44 @@
             }
         }
         
-        // ===== ANTI-SPAM SYSTEM =====
-        class SpamDetector {
-            constructor() {
-                this.userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
-                this.lastPostTime = localStorage.getItem('lastPostTime') || 0;
-                this.spamCount = parseInt(localStorage.getItem('spamCount') || '0');
-                this.timeoutUntil = parseInt(localStorage.getItem('timeoutUntil') || '0');
-                
-                this.checkTimeout();
-            }
-            
-            checkTimeout() {
-                const now = Date.now();
-                if (this.timeoutUntil > now) {
-                    this.showTimeout(this.timeoutUntil - now);
-                    return true;
-                }
-                return false;
-            }
-            
-            showTimeout(remainingTime) {
-                const timeoutScreen = document.getElementById('timeoutScreen');
-                const timeoutTimer = document.getElementById('timeoutTimer');
-                
-                timeoutScreen.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-                
-                const updateTimer = () => {
-                    const hours = Math.floor(remainingTime / 3600000);
-                    const minutes = Math.floor((remainingTime % 3600000) / 60000);
-                    const seconds = Math.floor((remainingTime % 60000) / 1000);
-                    
-                    timeoutTimer.textContent = 
-                        `${hours.toString().padStart(2, '0')}:` +
-                        `${minutes.toString().padStart(2, '0')}:` +
-                        `${seconds.toString().padStart(2, '0')}`;
-                    
-                    if (remainingTime > 0) {
-                        remainingTime -= 1000;
-                        setTimeout(updateTimer, 1000);
-                    } else {
-                        timeoutScreen.classList.add('hidden');
-                        document.body.style.overflow = 'auto';
-                        localStorage.removeItem('timeoutUntil');
-                        localStorage.removeItem('spamCount');
-                        localStorage.removeItem('userPosts');
-                    }
-                };
-                
-                updateTimer();
-            }
-            
-            detectSpam(title, content, mediaUrl) {
-                const now = Date.now();
-                
-                // Check if user is timed out
-                if (this.checkTimeout()) {
-                    return { isSpam: true, reason: "User is timed out" };
-                }
-                
-                // Check posting frequency (max 1 post per 10 seconds)
-                if (now - this.lastPostTime < 10000) {
-                    this.spamCount++;
-                    if (this.spamCount >= 3) {
-                        this.timeoutUser(3600000); // 1 hour timeout
-                        return { isSpam: true, reason: "Posting too fast" };
-                    }
-                    return { isSpam: false, warning: "Slow down!" };
-                }
-                
-                // Check for duplicate content
-                const recentPosts = this.userPosts.slice(-10);
-                const duplicateTitle = recentPosts.filter(p => 
-                    p.title.toLowerCase() === title.toLowerCase()
-                ).length;
-                
-                const duplicateUrl = recentPosts.filter(p => 
-                    p.mediaUrl === mediaUrl
-                ).length;
-                
-                if (duplicateTitle >= 3) {
-                    this.timeoutUser(86400000); // 24 hours for spam
-                    return { isSpam: true, reason: "Duplicate titles detected" };
-                }
-                
-                if (duplicateUrl >= 3) {
-                    this.timeoutUser(86400000); // 24 hours for spam
-                    return { isSpam: true, reason: "Duplicate URLs detected" };
-                }
-                
-                // Reset spam count if posting normally
-                this.lastPostTime = now;
-                if (this.spamCount > 0) this.spamCount--;
-                
-                // Save post to history
-                this.userPosts.push({ title, content, mediaUrl, timestamp: now });
-                if (this.userPosts.length > 50) {
-                    this.userPosts = this.userPosts.slice(-50);
-                }
-                
-                localStorage.setItem('userPosts', JSON.stringify(this.userPosts));
-                localStorage.setItem('lastPostTime', this.lastPostTime);
-                localStorage.setItem('spamCount', this.spamCount);
-                
-                return { isSpam: false };
-            }
-            
-            timeoutUser(duration) {
-                const timeoutUntil = Date.now() + duration;
-                this.timeoutUntil = timeoutUntil;
-                localStorage.setItem('timeoutUntil', timeoutUntil);
-                this.showTimeout(duration);
+        // ===== SIDEBAR =====
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.sidebar-toggle');
+            sidebar.classList.toggle('closed');
+            toggle.textContent = sidebar.classList.contains('closed') ? '→' : '←';
+        }
+        
+        // ===== PAGE NAV =====
+        function showEntryPage() {
+            if (confirm("Go back to entry?")) {
+                document.getElementById('entryPage').classList.remove('hidden');
+                document.getElementById('mainPage').classList.add('hidden');
+                if (window.postsListener) window.postsListener();
             }
         }
         
-        // Initialize spam detector
-        const spamDetector = new SpamDetector();
+        function enterMainPage() {
+            localStorage.setItem('accepted', 'true');
+            document.getElementById('entryPage').classList.add('hidden');
+            document.getElementById('mainPage').classList.remove('hidden');
+            initFirebase();
+        }
         
-        // ===== FIREBASE CONFIG =====
+        function redirectNo() {
+            window.location.href = "https://youtu.be/e_04ZrNroTo";
+        }
+        
+        // Glitch effect
+        setInterval(() => {
+            const yesBtn = document.querySelector('.btn-yes');
+            if (yesBtn && Math.random() > 0.7) {
+                yesBtn.style.animation = 'glitch 0.3s';
+                setTimeout(() => yesBtn.style.animation = '', 300);
+            }
+        }, 2000);
+        
+        // ===== FIREBASE =====
         const firebaseConfig = {
             apiKey: "AIzaSyDlEGndjR_x651X77k0A41mydFo3Emw3So",
             authDomain: "leakstreamnew.firebaseapp.com",
@@ -397,56 +278,45 @@
         };
         
         let db = null;
-        let postsListener = null;
         let allPosts = [];
+        let currentFilter = 'all';
         
         // ===== INITIALIZE FIREBASE =====
         function initFirebase() {
             try {
-                // Check if Firebase is already loaded
-                if (typeof firebase === 'undefined') {
-                    loadFirebaseSDK();
-                } else {
-                    setupFirebase();
-                }
+                // Load Firebase SDK
+                const script1 = document.createElement('script');
+                script1.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
+                script1.onload = () => {
+                    const script2 = document.createElement('script');
+                    script2.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js';
+                    script2.onload = () => {
+                        firebase.initializeApp(firebaseConfig);
+                        db = firebase.firestore();
+                        console.log("Firebase initialized");
+                        loadPosts();
+                    };
+                    document.head.appendChild(script2);
+                };
+                document.head.appendChild(script1);
+                
             } catch (error) {
-                console.error("Firebase init error:", error);
-                document.getElementById('loadingPosts').innerHTML = "Error connecting to database";
-            }
-        }
-        
-        function loadFirebaseSDK() {
-            const script1 = document.createElement('script');
-            script1.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
-            script1.onload = () => {
-                const script2 = document.createElement('script');
-                script2.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js';
-                script2.onload = setupFirebase;
-                document.head.appendChild(script2);
-            };
-            document.head.appendChild(script1);
-        }
-        
-        function setupFirebase() {
-            try {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore();
-                loadPosts();
-            } catch (error) {
-                console.error("Firebase setup error:", error);
+                console.log("Firebase error:", error);
+                showNotification("Connection error");
             }
         }
         
         // ===== POSTS MANAGEMENT =====
         function loadPosts() {
-            if (!db) return;
+            if (!db) {
+                document.getElementById('loadingPosts').innerHTML = "Database not connected";
+                return;
+            }
             
             document.getElementById('loadingPosts').classList.remove('hidden');
             document.getElementById('noPosts').classList.add('hidden');
             
-            if (postsListener) postsListener(); // Remove previous listener
-            
-            postsListener = db.collection('posts')
+            db.collection('posts')
                 .orderBy('timestamp', 'desc')
                 .limit(100)
                 .onSnapshot(snapshot => {
@@ -457,70 +327,13 @@
                         allPosts.push(data);
                     });
                     
-                    renderPosts(allPosts);
                     document.getElementById('postCount').textContent = allPosts.length;
+                    renderPosts(allPosts);
                     
                 }, error => {
                     console.error("Posts error:", error);
                     document.getElementById('loadingPosts').innerHTML = "Error loading posts";
                 });
-        }
-        
-        function renderPosts(posts) {
-            const container = document.getElementById('postsContainer');
-            const loading = document.getElementById('loadingPosts');
-            const noPosts = document.getElementById('noPosts');
-            
-            loading.classList.add('hidden');
-            
-            if (posts.length === 0) {
-                noPosts.classList.remove('hidden');
-                container.innerHTML = '';
-                return;
-            }
-            
-            noPosts.classList.add('hidden');
-            
-            let html = '';
-            posts.forEach(post => {
-                html += `
-                    <div class="post">
-                        <div class="post-media">
-                            ${post.mediaUrl ? `
-                                ${post.mediaType === 'video' ? `
-                                    <video controls>
-                                        <source src="${escapeHtml(post.mediaUrl)}" type="video/mp4">
-                                    </video>
-                                ` : post.mediaType === 'image' ? `
-                                    <img src="${escapeHtml(post.mediaUrl)}" alt="Post image">
-                                ` : `
-                                    <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;">
-                                        🔗 Link Post
-                                    </div>
-                                `}
-                            ` : `
-                                <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;">
-                                    📝 Text Post
-                                </div>
-                            `}
-                        </div>
-                        <div class="post-content">
-                            <h3 class="post-title">${escapeHtml(post.title)}</h3>
-                            ${post.content ? `<div class="post-description">${escapeHtml(post.content)}</div>` : ''}
-                            <div class="post-meta">
-                                <span>${post.mediaType || 'text'}</span>
-                                <span>${post.timestamp?.toDate ? new Date(post.timestamp.toDate()).toLocaleDateString() : ''}</span>
-                            </div>
-                            <div class="post-actions">
-                                <button class="action-btn" onclick="copyLink('${post.id}')">Copy Link</button>
-                                <button class="action-btn" onclick="reportPost('${post.id}')">Report</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
         }
         
         // ===== SEARCH FUNCTIONALITY =====
@@ -531,67 +344,198 @@
             if (!searchTerm) {
                 renderPosts(allPosts);
                 searchInfo.textContent = "Showing all posts";
+                currentFilter = 'all';
                 return;
             }
             
             const filteredPosts = allPosts.filter(post => {
                 const titleMatch = post.title.toLowerCase().includes(searchTerm);
-                const descMatch = post.content?.toLowerCase().includes(searchTerm) || false;
+                const descMatch = post.content ? post.content.toLowerCase().includes(searchTerm) : false;
                 return titleMatch || descMatch;
             });
             
             renderPosts(filteredPosts);
             searchInfo.textContent = `Found ${filteredPosts.length} results for "${searchTerm}"`;
+            currentFilter = 'search';
         }
         
-        // Auto-search when typing
+        // Real-time search as you type
         let searchTimeout;
         document.getElementById('searchInput').addEventListener('input', function() {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(searchPosts, 300);
         });
         
-        // ===== POST ACTIONS =====
-        function copyLink(postId) {
-            const url = window.location.href.split('#')[0] + '#' + postId;
-            navigator.clipboard.writeText(url).then(() => {
-                showNotification("Link copied!");
-            });
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            searchPosts();
         }
         
-        function reportPost(postId) {
-            if (confirm("Report this post as inappropriate?")) {
-                showNotification("Report submitted for review");
-                // In real app, send to moderation queue
+        // ===== RENDER POSTS (OLD STYLE) =====
+        function renderPosts(posts) {
+            const container = document.getElementById('postsContainer');
+            const loading = document.getElementById('loadingPosts');
+            const noPosts = document.getElementById('noPosts');
+            
+            loading.classList.add('hidden');
+            
+            if (posts.length === 0) {
+                noPosts.classList.remove('hidden');
+                noPosts.textContent = currentFilter === 'search' ? "No matching posts found" : "No posts yet. Create one!";
+                container.innerHTML = '';
+                return;
+            }
+            
+            noPosts.classList.add('hidden');
+            
+            let html = '';
+            posts.forEach(post => {
+                const date = post.timestamp?.toDate ? new Date(post.timestamp.toDate()).toLocaleString() : 'Now';
+                
+                html += `
+                    <div class="post">
+                        <div class="post-header">
+                            <span>${date}</span>
+                            <span>${post.mediaType || 'text'}</span>
+                        </div>
+                        <h3 class="post-title">${escapeHtml(post.title)}</h3>
+                        ${post.content ? `<div class="post-description">${escapeHtml(post.content)}</div>` : ''}
+                        ${post.mediaUrl ? `
+                            <div class="post-media">
+                                ${post.mediaType === 'video' ? `
+                                    <video controls>
+                                        <source src="${escapeHtml(post.mediaUrl)}" type="video/mp4">
+                                    </video>
+                                ` : post.mediaType === 'image' ? `
+                                    <img src="${escapeHtml(post.mediaUrl)}" alt="Image">
+                                ` : ''}
+                            </div>
+                            <div class="post-url">${escapeHtml(post.mediaUrl)}</div>
+                        ` : ''}
+                        <div class="post-actions">
+                            <span class="action-btn" onclick="votePost('${post.id}', 1)">▲ ${post.votes || 0}</span>
+                            <span class="action-btn" onclick="votePost('${post.id}', -1)">▼</span>
+                            <span class="action-btn" onclick="copyLink('${post.id}')">Copy</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // ===== POST CREATION =====
+        async function createPost() {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+            const mediaUrl = document.getElementById('mediaUrl').value.trim();
+            const mediaType = document.getElementById('mediaType').value;
+            
+            if (!title) {
+                alert("Please enter a title");
+                return;
+            }
+            
+            if (mediaUrl && !mediaUrl.startsWith('http')) {
+                alert("URL must start with http:// or https://");
+                return;
+            }
+            
+            if (!db) {
+                alert("Database not connected");
+                return;
+            }
+            
+            try {
+                const postData = {
+                    title: title,
+                    content: content,
+                    mediaUrl: mediaUrl,
+                    mediaType: mediaType,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    votes: 0
+                };
+                
+                await db.collection('posts').add(postData);
+                
+                // Clear form
+                document.getElementById('postTitle').value = '';
+                document.getElementById('postContent').value = '';
+                document.getElementById('mediaUrl').value = '';
+                
+                showNotification("Post created!");
+                
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error: " + error.message);
             }
         }
         
-        // ===== NOTIFICATION =====
-        function showNotification(message) {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #fff;
-                color: #000;
-                padding: 10px 20px;
-                border-radius: 5px;
-                z-index: 10000;
-                animation: slideIn 0.3s;
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
+        // ===== POST ACTIONS =====
+        async function votePost(postId, change) {
+            if (!db) return;
             
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s';
-                setTimeout(() => notification.remove(), 300);
-            }, 2000);
+            try {
+                await db.collection('posts').doc(postId).update({
+                    votes: firebase.firestore.FieldValue.increment(change)
+                });
+            } catch (error) {
+                console.error("Vote error:", error);
+            }
         }
         
-        // ===== HELPER FUNCTIONS =====
+        function copyLink(postId) {
+            const url = window.location.href.split('#')[0] + '#' + postId;
+            navigator.clipboard.writeText(url);
+            showNotification("Link copied!");
+        }
+        
+        function testUrl() {
+            const url = document.getElementById('mediaUrl').value.trim();
+            if (!url) {
+                alert("Please enter a URL");
+                return;
+            }
+            
+            if (!url.startsWith('http')) {
+                alert("Invalid URL. Must start with http:// or https://");
+                return;
+            }
+            
+            showNotification("URL OK");
+        }
+        
+        // ===== FILTERS =====
+        function showAllPosts() {
+            document.getElementById('searchInput').value = '';
+            renderPosts(allPosts);
+            document.getElementById('searchInfo').textContent = "Showing all posts";
+            currentFilter = 'all';
+        }
+        
+        function filterByType(type) {
+            const filtered = allPosts.filter(post => 
+                post.mediaType === type || (type === 'text' && !post.mediaType)
+            );
+            renderPosts(filtered);
+            document.getElementById('searchInfo').textContent = `Showing ${type}s only`;
+            currentFilter = type;
+        }
+        
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // ===== UTILITIES =====
+        function showNotification(msg) {
+            const el = document.getElementById('newPostNotification');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 2000);
+        }
+        
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
@@ -605,17 +549,16 @@
             "https://www.w3schools.com"
         ];
         
-        // ===== INITIALIZE =====
-        document.addEventListener('DOMContentLoaded', initFirebase);
-        
-        // Check for timeout on load
-        if (localStorage.getItem('timeoutUntil')) {
-            const timeoutUntil = parseInt(localStorage.getItem('timeoutUntil'));
-            const remaining = timeoutUntil - Date.now();
-            if (remaining > 0) {
-                spamDetector.showTimeout(remaining);
-            }
+        // ===== INITIALIZATION =====
+        if (localStorage.getItem('accepted') === 'true') {
+            document.getElementById('entryPage').classList.add('hidden');
+            document.getElementById('mainPage').classList.remove('hidden');
+            initFirebase();
         }
+        
+        // Export for console access
+        window.hiddenLinks = hiddenLinks;
+        window.allPosts = allPosts;
     </script>
 </body>
 </html>
