@@ -240,6 +240,7 @@
         .search-container {
             flex-grow: 1;
             max-width: 800px;
+            position: relative;
         }
 
         #searchBar {
@@ -285,32 +286,20 @@
             pointer-events: none;
         }
 
-        .search-results {
-            background: #111;
-            border: 2px solid #800;
-            border-top: none;
-            border-radius: 0;
-            margin-top: 0;
-            max-height: 400px;
-            overflow-y: auto;
-            display: none;
-            position: absolute;
-            width: calc(100% - 4px);
-            z-index: 100;
-        }
-
-        .result-item {
-            padding: 15px;
-            border-bottom: 1px solid #333;
-            cursor: pointer;
-            transition: background 0.3s;
+        .search-info {
             color: #ccc;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Creepster', cursive;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            padding: 10px;
+            background: rgba(128, 0, 0, 0.1);
+            border: 1px solid #333;
         }
 
-        .result-item:hover {
-            background: #222;
-            color: #fff;
+        .search-highlight {
+            color: #ff4444;
+            font-weight: bold;
         }
 
         /* Videos grid */
@@ -318,7 +307,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 30px;
-            margin-top: 40px;
+            margin-top: 20px;
         }
 
         .video-card {
@@ -430,6 +419,17 @@
             letter-spacing: 3px;
         }
 
+        .results-count {
+            color: #ccc;
+            font-family: 'Creepster', cursive;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            padding: 10px;
+            background: rgba(128, 0, 0, 0.1);
+            border: 1px solid #333;
+        }
+
         /* Scrollbar styling */
         ::-webkit-scrollbar {
             width: 12px;
@@ -477,11 +477,15 @@
         <div class="header">
             <div class="logo">LeakStream</div>
             <div class="search-container">
-                <input type="text" id="searchBar" placeholder="Search videos by title or description...">
-                <div class="search-results" id="searchResults"></div>
+                <input type="text" id="searchBar" placeholder="Search videos by title...">
+                <div class="search-info" id="searchInfo">
+                    Showing all content. Type to search...
+                </div>
             </div>
         </div>
 
+        <div class="results-count" id="resultsCount"></div>
+        
         <div class="videos-grid" id="videosGrid">
             <!-- Videos will be loaded here -->
         </div>
@@ -503,7 +507,16 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            } else {
+                firebase.app();
+            }
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
+        
         const db = firebase.firestore();
         const auth = firebase.auth();
 
@@ -570,16 +583,20 @@
             // Sign in anonymously
             try {
                 await auth.signInAnonymously();
+                console.log("Authenticated successfully");
                 loadVideos();
                 setupSearch();
             } catch (error) {
                 console.error('Authentication error:', error);
+                document.getElementById('searchInfo').textContent = 'Error connecting to database. Please refresh the page.';
             }
         }
 
         // Load videos from Firestore
         async function loadVideos(filter = '') {
             try {
+                console.log("Loading videos with filter:", filter);
+                
                 let query = db.collection('posts')
                     .where('spamReports', '<', 5)
                     .orderBy('timestamp', 'desc');
@@ -589,26 +606,53 @@
                 videosGrid.innerHTML = '';
                 
                 if (snapshot.empty) {
-                    videosGrid.innerHTML = '<div class="no-results">No videos found</div>';
+                    videosGrid.innerHTML = '<div class="no-results">No content found</div>';
+                    document.getElementById('resultsCount').textContent = '0 results found';
                     return;
                 }
                 
+                let matchCount = 0;
+                let totalCount = 0;
+                
                 snapshot.forEach(doc => {
+                    totalCount++;
                     const data = doc.data();
                     const title = data.title || '';
-                    const description = data.description || '';
                     
-                    // Apply filter
-                    if (filter && !title.toLowerCase().includes(filter.toLowerCase()) && 
-                        !description.toLowerCase().includes(filter.toLowerCase())) {
-                        return;
+                    // Apply filter - only show if title contains the filter text
+                    if (filter) {
+                        if (!title.toLowerCase().includes(filter.toLowerCase())) {
+                            return; // Skip this item if it doesn't match
+                        }
+                        matchCount++;
+                    } else {
+                        matchCount++;
                     }
                     
                     const videoCard = createVideoCard(doc.id, data);
                     videosGrid.appendChild(videoCard);
                 });
+                
+                // Update results count
+                if (filter) {
+                    document.getElementById('resultsCount').textContent = 
+                        `${matchCount} of ${totalCount} results match "${filter}"`;
+                    document.getElementById('searchInfo').innerHTML = 
+                        `Searching for: <span class="search-highlight">${filter}</span>`;
+                } else {
+                    document.getElementById('resultsCount').textContent = 
+                        `${matchCount} results found`;
+                    document.getElementById('searchInfo').textContent = 
+                        'Showing all content. Type to search...';
+                }
+                
+                if (matchCount === 0) {
+                    videosGrid.innerHTML = `<div class="no-results">No content found matching "${filter}"</div>`;
+                }
+                
             } catch (error) {
                 console.error('Error loading videos:', error);
+                document.getElementById('searchInfo').textContent = 'Error loading content. Please try again.';
             }
         }
 
@@ -619,7 +663,7 @@
             
             let thumbnail = '';
             if (data.type === 'image' || data.type === 'video') {
-                thumbnail = `<img src="${data.link}" class="video-thumbnail" alt="${data.title}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"250\" viewBox=\"0 0 400 250\"><rect width=\"400\" height=\"250\" fill=\"%23222\"/><text x=\"200\" y=\"125\" font-family=\"Creepster\" font-size=\"24\" fill=\"%23800\" text-anchor=\"middle\">${data.type.toUpperCase()}</text></svg>'">`;
+                thumbnail = `<img src="${data.link}" class="video-thumbnail" alt="${data.title}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"250\" viewBox=\"0 0 400 250\"><rect width=\"400\" height=\"250\" fill=\"%23222\"/><text x=\"200\" y=\"125\" font-family=\"Creepster\" font-size=\"24\" fill=\"%23800\" text-anchor=\"middle\">${data.type.toUpperCase()}</text></svg>'">`;
             } else {
                 thumbnail = `<div class="video-thumbnail" style="background: linear-gradient(45deg, #222, #111); display: flex; align-items: center; justify-content: center; color: #800; font-size: 2rem; font-family: Creepster, cursive; letter-spacing: 3px;">LINK</div>`;
             }
@@ -628,7 +672,7 @@
                 ${thumbnail}
                 <div class="video-info">
                     <h3 class="video-title">${data.title}</h3>
-                    <p class="video-description">${data.description}</p>
+                    <p class="video-description">${data.description || 'No description provided'}</p>
                     <div class="video-actions">
                         <a href="${data.link}" target="_blank" class="video-link">View ${data.type}</a>
                         <button class="report-btn" onclick="reportPost('${id}')">Report</button>
@@ -642,54 +686,16 @@
         // Setup real-time search
         function setupSearch() {
             const searchBar = document.getElementById('searchBar');
-            const searchResults = document.getElementById('searchResults');
+            let searchTimeout;
             
             searchBar.addEventListener('input', function() {
                 const query = this.value.trim();
                 
-                if (query.length === 0) {
-                    searchResults.style.display = 'none';
-                    loadVideos();
-                    return;
-                }
+                clearTimeout(searchTimeout);
                 
-                // Show real-time search results
-                db.collection('posts')
-                    .where('title', '>=', query)
-                    .where('title', '<=', query + '\uf8ff')
-                    .limit(10)
-                    .get()
-                    .then(snapshot => {
-                        searchResults.innerHTML = '';
-                        snapshot.forEach(doc => {
-                            const data = doc.data();
-                            const div = document.createElement('div');
-                            div.className = 'result-item';
-                            div.textContent = data.title;
-                            div.addEventListener('click', () => {
-                                searchBar.value = data.title;
-                                searchResults.style.display = 'none';
-                                loadVideos(data.title);
-                            });
-                            searchResults.appendChild(div);
-                        });
-                        
-                        if (snapshot.size > 0) {
-                            searchResults.style.display = 'block';
-                        } else {
-                            searchResults.style.display = 'none';
-                        }
-                    });
-                
-                // Filter current videos
-                loadVideos(query);
-            });
-            
-            // Hide results when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!searchBar.contains(e.target) && !searchResults.contains(e.target)) {
-                    searchResults.style.display = 'none';
-                }
+                searchTimeout = setTimeout(() => {
+                    loadVideos(query);
+                }, 300); // Delay search to avoid too many requests
             });
         }
 
