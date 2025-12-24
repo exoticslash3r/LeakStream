@@ -3,189 +3,131 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LeakStream Viewer</title>
+<title>LeakStream Publisher</title>
 <style>
-/* === RESET === */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: Arial, sans-serif; background: #000; color: #fff; }
-.hidden { display: none !important; }
+body { font-family: Arial, sans-serif; background: #000; color: #fff; padding: 20px; }
 
-/* === SNOW === */
-.snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
-.snow { position: absolute; background: #fff; border-radius: 50%; opacity: 0.8; animation: fall linear infinite; }
-@keyframes fall { to { transform: translateY(100vh); } }
+.container { max-width: 800px; margin: 0 auto; }
+.header { background: #111; padding: 20px; border: 1px solid #333; margin-bottom: 30px; text-align: center; }
+.header h1 { color: #fff; font-size: 1.5rem; }
 
-/* === ENTRY PAGE === */
-#entryPage { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-.banner { width: 90%; max-width: 800px; margin: 20px auto; border: 2px solid #333; overflow: hidden; }
-.banner img { width: 100%; display: block; }
-.title { font-size: 2rem; margin: 20px 0; }
-.buttons { display: flex; gap: 20px; margin: 30px 0; }
-.btn { padding: 12px 30px; font-size: 1rem; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-.btn-no { background: #ff0000; color: white; animation: pulse-red 2s infinite; }
-.btn-no:hover { background: #cc0000; transform: scale(1.05); }
-.btn-yes { background: #000; color: #fff; border: 2px solid #fff; }
-.btn-yes:hover { animation: glitch 0.3s infinite; }
-@keyframes pulse-red {
-0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
-50% { box-shadow: 0 0 40px rgba(255, 0, 0, 0.8); }
-100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
-}
-@keyframes glitch {
-0% { background: #000; color: #fff; } 20% { background: #fff; color: #000; }
-40% { background: #000; color: #fff; } 60% { background: #fff; color: #000; }
-80% { background: #000; color: #fff; } 100% { background: #000; color: #fff; }
-}
+.form-container { background: #111; padding: 25px; border: 1px solid #333; border-radius: 5px; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; color: #888; margin-bottom: 8px; font-size: 0.9rem; }
+.form-control { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; font-size: 1rem; border-radius: 3px; }
+.form-control:focus { outline: none; border-color: #666; }
+textarea.form-control { min-height: 100px; resize: vertical; }
 
-/* === MAIN PAGE === */
-#mainPage { min-height: 100vh; }
-.header { background: #111; padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-.logo { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; }
-.stats { color: #666; font-size: 0.8rem; }
+.radio-group { display: flex; gap: 20px; margin-top: 10px; }
+.radio-option { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.radio-option input[type="radio"] { margin: 0; }
 
-/* === SEARCH BAR === */
-.search-container { background: #111; padding: 15px; border-bottom: 1px solid #333; }
-.search-box { display: flex; gap: 10px; max-width: 600px; margin: 0 auto; }
-.search-input { flex: 1; padding: 12px; background: #000; border: 1px solid #333; color: #fff; font-size: 1rem; }
-.search-btn { padding: 12px 24px; background: #000; color: #fff; border: 1px solid #333; cursor: pointer; }
-.search-btn:hover { background: #222; }
-.search-info { text-align: center; color: #666; margin-top: 10px; font-size: 0.9rem; }
+.btn { padding: 12px 24px; background: #000; color: #fff; border: 1px solid #333; cursor: pointer; font-size: 1rem; font-weight: bold; transition: all 0.3s; }
+.btn:hover { background: #222; border-color: #666; }
+.btn-primary { background: #111; border-color: #fff; }
+.btn-primary:hover { background: #222; }
 
-/* === POSTS (SCROLL DOWN STYLE) === */
-.main-content { padding: 20px; max-width: 1200px; margin: 0 auto; }
-.posts-container { display: flex; flex-direction: column; gap: 25px; }
+.upload-area { border: 2px dashed #333; padding: 30px; text-align: center; margin: 20px 0; cursor: pointer; transition: all 0.3s; }
+.upload-area:hover { border-color: #666; background: #1a1a1a; }
+.upload-area.dragover { border-color: #fff; background: #222; }
+.upload-icon { font-size: 2rem; margin-bottom: 10px; }
+.file-name { color: #666; margin-top: 10px; font-size: 0.9rem; }
 
-.post { background: #111; padding: 20px; border: 1px solid #333; border-radius: 5px; transition: all 0.3s ease; }
-.post-header { display: flex; justify-content: space-between; margin-bottom: 15px; color: #666; font-size: 0.8rem; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.preview { margin: 20px 0; }
+.preview img, .preview video { max-width: 100%; max-height: 300px; display: block; margin: 10px auto; background: #000; }
 
-.post-title { color: #fff; margin-bottom: 10px; font-size: 1.2rem; font-weight: bold; }
-.post-description { color: #888; margin-bottom: 15px; font-size: 0.95rem; line-height: 1.5; }
+.status { padding: 15px; margin: 20px 0; border-radius: 3px; display: none; }
+.status.success { background: #1a3a1a; border: 1px solid #2d5a2d; color: #8f8; display: block; }
+.status.error { background: #3a1a1a; border: 1px solid #5a2d2d; color: #f88; display: block; }
+.status.loading { background: #2a2a2a; border: 1px solid #444; color: #aaa; display: block; text-align: center; }
 
-/* VIDEO/IMAGE - OLD STYLE */
-.post-media { margin: 15px 0; border-radius: 5px; overflow: hidden; background: #000; }
-.post-media video { width: 100%; max-height: 500px; display: block; background: #000; }
-.post-media img { width: 100%; max-height: 500px; object-fit: contain; display: block; background: #000; }
+.actions { display: flex; justify-content: space-between; margin-top: 30px; }
+.counter { color: #666; font-size: 0.8rem; text-align: right; margin-top: 5px; }
 
-.post-url { color: #666; font-size: 0.8rem; word-break: break-all; padding: 10px; background: #1a1a1a; margin: 10px 0; border-radius: 3px; font-family: monospace; }
-
-.post-actions { display: flex; gap: 15px; margin-top: 15px; color: #666; font-size: 0.8rem; }
-.action-btn { cursor: pointer; padding: 5px 10px; transition: color 0.3s; }
-.action-btn:hover { color: #fff; }
-
-/* === UTILITIES === */
-.no-posts { text-align: center; color: #666; padding: 50px; font-size: 1.1rem; }
-.loading { text-align: center; color: #666; padding: 40px; }
-
-.back-btn { position: fixed; bottom: 20px; left: 20px; background: #111; color: #666; border: 1px solid #333; padding: 10px 20px; cursor: pointer; z-index: 100; }
-.back-btn:hover { color: #fff; border-color: #fff; }
-
-.notification { position: fixed; top: 20px; right: 20px; background: #fff; color: #000; padding: 10px 20px; display: none; z-index: 1000; animation: slideIn 0.3s; }
-@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.nav { margin-bottom: 20px; display: flex; justify-content: space-between; }
+.nav-btn { padding: 10px 20px; background: #111; color: #fff; border: 1px solid #333; text-decoration: none; }
+.nav-btn:hover { background: #222; }
 
 @media (max-width: 768px) {
-.search-box { flex-direction: column; }
-.main-content { padding: 15px; }
-.post { padding: 15px; }
+body { padding: 10px; }
+.radio-group { flex-direction: column; gap: 10px; }
+.actions { flex-direction: column; gap: 10px; }
+.actions .btn { width: 100%; }
 }
 </style>
 </head>
 <body>
-<!-- SNOW -->
-<div class="snow-container" id="snowContainer"></div>
-
-<!-- ENTRY PAGE -->
-<div id="entryPage">
-<h1 class="title">ENTRY POINT</h1>
-<div class="banner">
-<img src="https://i.postimg.cc/W1LwgPyX/image.png" alt="Banner">
-</div>
-<div class="buttons">
-<button class="btn btn-no" onclick="redirectNo()">No</button>
-<button class="btn btn-yes" onclick="enterMainPage()">Yes, I accept my fate</button>
-</div>
+<div class="container">
+<div class="nav">
+<a href="viewer.html" class="nav-btn">← Back to Viewer</a>
+<a href="#" class="nav-btn" onclick="showStats()">Stats</a>
 </div>
 
-<!-- MAIN PAGE (VIEWER ONLY) -->
-<div id="mainPage" class="hidden">
-<!-- HEADER -->
 <div class="header">
-<div class="logo">LEAKSTREAM VIEWER</div>
-<div class="stats">Posts: <span id="postCount">0</span></div>
+<h1>LEAKSTREAM PUBLISHER</h1>
+<p>Upload content to the stream</p>
 </div>
 
-<!-- SEARCH BAR -->
-<div class="search-container">
-<div class="search-box">
-<input type="text" class="search-input" id="searchInput" placeholder="Type to filter by title...">
-<button class="search-btn" onclick="clearSearch()">Clear</button>
-</div>
-<div class="search-info" id="searchInfo">Shows only posts with matching titles</div>
+<div class="form-container">
+<div id="status" class="status"></div>
+
+<div class="form-group">
+<label for="title">Title *</label>
+<input type="text" id="title" class="form-control" placeholder="Enter post title" maxlength="100">
+<div class="counter"><span id="titleCount">0</span>/100</div>
 </div>
 
-<!-- MAIN CONTENT -->
-<div class="main-content">
-<div class="posts-container" id="postsContainer">
-<div class="loading" id="loadingPosts">Loading posts...</div>
-<div class="no-posts hidden" id="noPosts">No posts found</div>
+<div class="form-group">
+<label for="content">Content (Optional)</label>
+<textarea id="content" class="form-control" placeholder="Enter description or text content" maxlength="1000"></textarea>
+<div class="counter"><span id="contentCount">0</span>/1000</div>
+</div>
+
+<div class="form-group">
+<label>Media Type</label>
+<div class="radio-group">
+<label class="radio-option">
+<input type="radio" name="mediaType" value="none" checked> None (Text Only)
+</label>
+<label class="radio-option">
+<input type="radio" name="mediaType" value="image"> Image
+</label>
+<label class="radio-option">
+<input type="radio" name="mediaType" value="video"> Video
+</label>
 </div>
 </div>
 
-<!-- BACK BUTTON -->
-<button class="back-btn" onclick="showEntryPage()">← Back to Entry</button>
+<div class="form-group" id="mediaUrlGroup" style="display: none;">
+<label for="mediaUrl">Media URL *</label>
+<input type="url" id="mediaUrl" class="form-control" placeholder="https://example.com/image.jpg">
+<div id="uploadArea" class="upload-area">
+<div class="upload-icon">⬆️</div>
+<div>Drag & drop file or click to select</div>
+<div>Supports: JPG, PNG, GIF, MP4, WebM</div>
+<input type="file" id="fileInput" style="display: none;" accept="image/*,video/*">
+<div id="fileName" class="file-name"></div>
+</div>
+<div id="preview" class="preview"></div>
+</div>
 
-<!-- NOTIFICATION -->
-<div class="notification" id="notification"></div>
+<div class="actions">
+<button class="btn" onclick="clearForm()">Clear</button>
+<button class="btn btn-primary" onclick="publishPost()">Publish</button>
+</div>
+</div>
+
+<div id="statsPanel" style="display: none; margin-top: 30px; padding: 20px; background: #111; border: 1px solid #333;">
+<h3>Statistics</h3>
+<p>Total Posts: <span id="totalPosts">0</span></p>
+<p>Today's Posts: <span id="todayPosts">0</span></p>
+<button class="btn" onclick="hideStats()" style="margin-top: 15px;">Close</button>
+</div>
 </div>
 
 <script>
-// ===== INITIAL SETUP =====
-localStorage.removeItem('accepted');
-createSnow();
-
-// ===== SNOW =====
-function createSnow() {
-const container = document.getElementById('snowContainer');
-for (let i = 0; i < 40; i++) {
-const snow = document.createElement('div');
-snow.className = 'snow';
-const size = Math.random() * 4 + 2;
-snow.style.width = snow.style.height = `${size}px`;
-snow.style.left = `${Math.random() * 100}%`;
-snow.style.animationDuration = `${Math.random() * 8 + 8}s`;
-snow.style.animationDelay = `${Math.random() * 5}s`;
-container.appendChild(snow);
-}
-}
-
-// ===== PAGE NAVIGATION =====
-function showEntryPage() {
-if (confirm("Return to entry page?")) {
-document.getElementById('entryPage').classList.remove('hidden');
-document.getElementById('mainPage').classList.add('hidden');
-}
-}
-
-function enterMainPage() {
-localStorage.setItem('accepted', 'true');
-document.getElementById('entryPage').classList.add('hidden');
-document.getElementById('mainPage').classList.remove('hidden');
-initFirebase();
-}
-
-function redirectNo() {
-window.location.href = "https://youtu.be/e_04ZrNroTo";
-}
-
-// Glitch effect for Yes button
-setInterval(() => {
-const yesBtn = document.querySelector('.btn-yes');
-if (yesBtn && Math.random() > 0.7) {
-yesBtn.style.animation = 'glitch 0.3s';
-setTimeout(() => yesBtn.style.animation = '', 300);
-}
-}, 2000);
-
-// ===== FIREBASE CONFIG =====
+// Firebase Configuration (SAME AS YOUR VIEWER)
 const firebaseConfig = {
 apiKey: "AIzaSyAyTSyWhLVe22jynP94cp9OEg6IC5-OhdE",
 authDomain: "leakstream-4f62f.firebaseapp.com",
@@ -197,263 +139,252 @@ measurementId: "G-RXHE019ZWT"
 };
 
 let db = null;
-let allPosts = [];
+let storage = null;
 
-// ===== INITIALIZE FIREBASE =====
+// Initialize Firebase
 function initFirebase() {
 try {
-// Load Firebase SDK
+// Load Firebase SDKs
 const script1 = document.createElement('script');
 script1.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
 script1.onload = () => {
 const script2 = document.createElement('script');
 script2.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js';
 script2.onload = () => {
+const script3 = document.createElement('script');
+script3.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js';
+script3.onload = () => {
 firebase.initializeApp(firebaseConfig);
 db = firebase.firestore();
-loadPosts();
+storage = firebase.storage();
+console.log("Firebase initialized for publisher");
+loadStats();
+};
+document.head.appendChild(script3);
 };
 document.head.appendChild(script2);
 };
 document.head.appendChild(script1);
-
 } catch (error) {
 console.error("Firebase error:", error);
-document.getElementById('loadingPosts').innerHTML = "Connection error";
+showStatus("Error connecting to database", "error");
 }
 }
 
-// ===== LOAD POSTS =====
-function loadPosts() {
-if (!db) {
-document.getElementById('loadingPosts').innerHTML = "Database not connected";
-return;
-}
-
-document.getElementById('loadingPosts').classList.remove('hidden');
-document.getElementById('noPosts').classList.add('hidden');
-
-db.collection('posts')
-.orderBy('timestamp', 'desc')
-.limit(100)
-.onSnapshot(snapshot => {
-allPosts = [];
-snapshot.forEach(doc => {
-const data = doc.data();
-data.id = doc.id;
-allPosts.push(data);
+// Character counters
+document.getElementById('title').addEventListener('input', function() {
+document.getElementById('titleCount').textContent = this.value.length;
 });
 
-document.getElementById('postCount').textContent = allPosts.length;
-renderAllPosts(); // Render all posts initially
-filterPosts(); // Then filter based on current search
-
-}, error => {
-console.error("Posts error:", error);
-document.getElementById('loadingPosts').innerHTML = "Error loading posts";
-});
-}
-
-// ===== RENDER ALL POSTS (HIDDEN BY DEFAULT) =====
-function renderAllPosts() {
-const container = document.getElementById('postsContainer');
-const loading = document.getElementById('loadingPosts');
-const noPosts = document.getElementById('noPosts');
-
-loading.classList.add('hidden');
-
-if (allPosts.length === 0) {
-noPosts.classList.remove('hidden');
-noPosts.textContent = "No posts available yet";
-container.innerHTML = '';
-return;
-}
-
-noPosts.classList.add('hidden');
-
-let html = '';
-allPosts.forEach(post => {
-const date = post.timestamp?.toDate ? new Date(post.timestamp.toDate()).toLocaleString() : 'Recently';
-
-html += `
-<div class="post" id="post-${post.id}" data-title="${escapeHtml(post.title).toLowerCase()}">
-<div class="post-header">
-<span>${date}</span>
-<span>${post.mediaType || 'text'}</span>
-</div>
-
-<h3 class="post-title">${escapeHtml(post.title)}</h3>
-
-${post.content ? `<div class="post-description">${escapeHtml(post.content)}</div>` : ''}
-
-${post.mediaUrl ? `
-<div class="post-media">
-${post.mediaType === 'video' ? `
-<video controls playsinline>
-<source src="${escapeHtml(post.mediaUrl)}" type="video/mp4">
-</video>
-` : post.mediaType === 'image' ? `
-<img src="${escapeHtml(post.mediaUrl)}" alt="Post image" loading="lazy">
-` : ''}
-</div>
-<div class="post-url">${escapeHtml(truncateUrl(post.mediaUrl, 70))}</div>
-` : ''}
-
-<div class="post-actions">
-<span class="action-btn" onclick="copyLink('${post.id}')">Copy Link</span>
-<span class="action-btn" onclick="reportPost('${post.id}')">Report</span>
-</div>
-</div>
-`;
+document.getElementById('content').addEventListener('input', function() {
+document.getElementById('contentCount').textContent = this.value.length;
 });
 
-container.innerHTML = html;
-
-// Add video fullscreen on click for mobile
-setTimeout(() => {
-document.querySelectorAll('.post-media video').forEach(video => {
-video.addEventListener('click', function() {
-if (this.requestFullscreen) {
-this.requestFullscreen();
-} else if (this.webkitRequestFullscreen) {
-this.webkitRequestFullscreen();
-}
-});
-});
-}, 100);
-}
-
-// ===== INSTANT FILTERING =====
-function filterPosts() {
-const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-const searchInfo = document.getElementById('searchInfo');
-const allPostElements = document.querySelectorAll('.post');
-const noPosts = document.getElementById('noPosts');
-
-let visibleCount = 0;
-
-if (!searchTerm) {
-// Show ALL posts when search is empty
-allPostElements.forEach(post => {
-post.style.display = 'block';
-visibleCount++;
-});
-searchInfo.textContent = `Showing all ${allPosts.length} posts`;
-noPosts.classList.add('hidden');
-return;
-}
-
-// Hide all posts first
-allPostElements.forEach(post => {
-post.style.display = 'none';
-});
-
-// Show only posts with matching titles
-allPostElements.forEach(post => {
-const postTitle = post.getAttribute('data-title') || '';
-if (postTitle.includes(searchTerm)) {
-post.style.display = 'block';
-visibleCount++;
-}
-});
-
-// Update search info
-searchInfo.textContent = `Showing ${visibleCount} posts with titles containing "${searchTerm}"`;
-
-// Show "no results" if nothing matches
-if (visibleCount === 0) {
-noPosts.classList.remove('hidden');
-noPosts.textContent = `No posts found with title containing "${searchTerm}"`;
+// Media type toggle
+document.querySelectorAll('input[name="mediaType"]').forEach(radio => {
+radio.addEventListener('change', function() {
+const mediaUrlGroup = document.getElementById('mediaUrlGroup');
+if (this.value === 'none') {
+mediaUrlGroup.style.display = 'none';
+document.getElementById('mediaUrl').required = false;
 } else {
-noPosts.classList.add('hidden');
+mediaUrlGroup.style.display = 'block';
+document.getElementById('mediaUrl').required = true;
 }
+clearPreview();
 }
-
-function clearSearch() {
-document.getElementById('searchInput').value = '';
-filterPosts();
-}
-
-// INSTANT FILTERING AS YOU TYPE
-document.getElementById('searchInput').addEventListener('input', function() {
-filterPosts();
+);
 });
 
-// Clear search with Escape key
-document.getElementById('searchInput').addEventListener('keydown', function(e) {
-if (e.key === 'Escape') {
-this.value = '';
-filterPosts();
+// File upload handling
+document.getElementById('uploadArea').addEventListener('click', () => {
+document.getElementById('fileInput').click();
+});
+
+document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+
+// Drag and drop
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover', (e) => {
+e.preventDefault();
+uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+e.preventDefault();
+uploadArea.classList.remove('dragover');
+if (e.dataTransfer.files.length) {
+handleFileSelect({ target: { files: e.dataTransfer.files } });
 }
 });
 
-// ===== POST ACTIONS =====
-function copyLink(postId) {
-const url = window.location.href.split('#')[0] + '#' + postId;
-navigator.clipboard.writeText(url).then(() => {
-showNotification("Link copied!");
-});
+function handleFileSelect(e) {
+const file = e.target.files[0];
+if (!file) return;
+
+document.getElementById('fileName').textContent = file.name;
+
+// Show preview
+const preview = document.getElementById('preview');
+preview.innerHTML = '';
+
+if (file.type.startsWith('image/')) {
+const reader = new FileReader();
+reader.onload = (e) => {
+preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+};
+reader.readAsDataURL(file);
+} else if (file.type.startsWith('video/')) {
+const video = document.createElement('video');
+video.src = URL.createObjectURL(file);
+video.controls = true;
+video.style.maxWidth = '100%';
+preview.appendChild(video);
 }
 
-function reportPost(postId) {
-if (confirm("Report this post as inappropriate?")) {
-console.log(`Post ${postId} reported`);
-showNotification("Post reported. Thank you!");
+// Upload to Firebase Storage
+uploadToStorage(file);
+}
 
-if (db) {
+async function uploadToStorage(file) {
+showStatus("Uploading file...", "loading");
+
 try {
-db.collection('reports').add({
-postId: postId,
-reason: "User reported",
-timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-userAgent: navigator.userAgent.substring(0, 200)
-});
+const storageRef = storage.ref();
+const fileRef = storageRef.child('posts/' + Date.now() + '_' + file.name);
+const snapshot = await fileRef.put(file);
+const downloadURL = await snapshot.ref.getDownloadURL();
+
+document.getElementById('mediaUrl').value = downloadURL;
+showStatus("File uploaded successfully!", "success");
+
+// Auto-select correct media type
+if (file.type.startsWith('image/')) {
+document.querySelector('input[value="image"]').checked = true;
+document.getElementById('mediaUrlGroup').style.display = 'block';
+} else if (file.type.startsWith('video/')) {
+document.querySelector('input[value="video"]').checked = true;
+document.getElementById('mediaUrlGroup').style.display = 'block';
+}
+
 } catch (error) {
-console.error("Error saving report:", error);
-}
-}
+console.error("Upload error:", error);
+showStatus("Upload failed: " + error.message, "error");
 }
 }
 
-// ===== UTILITIES =====
-function showNotification(message) {
-const notification = document.getElementById('notification');
-notification.textContent = message;
-notification.style.display = 'block';
+// Publish post
+async function publishPost() {
+const title = document.getElementById('title').value.trim();
+const content = document.getElementById('content').value.trim();
+const mediaType = document.querySelector('input[name="mediaType"]:checked').value;
+const mediaUrl = document.getElementById('mediaUrl').value.trim();
 
+// Validation
+if (!title) {
+showStatus("Title is required", "error");
+return;
+}
+
+if (mediaType !== 'none' && !mediaUrl) {
+showStatus("Media URL is required", "error");
+return;
+}
+
+showStatus("Publishing post...", "loading");
+
+const postData = {
+title: title,
+content: content || null,
+mediaType: mediaType !== 'none' ? mediaType : null,
+mediaUrl: mediaUrl || null,
+timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+publishedBy: "Publisher",
+ipHash: "anonymous" // You could add IP hashing here
+};
+
+try {
+await db.collection('posts').add(postData);
+showStatus("Post published successfully!", "success");
+clearForm();
+loadStats(); // Refresh stats
+} catch (error) {
+console.error("Publish error:", error);
+showStatus("Publish failed: " + error.message, "error");
+}
+}
+
+// Clear form
+function clearForm() {
+if (confirm("Clear all fields?")) {
+document.getElementById('title').value = '';
+document.getElementById('content').value = '';
+document.getElementById('mediaUrl').value = '';
+document.querySelector('input[value="none"]').checked = true;
+document.getElementById('mediaUrlGroup').style.display = 'none';
+document.getElementById('fileName').textContent = '';
+document.getElementById('preview').innerHTML = '';
+document.getElementById('fileInput').value = '';
+document.getElementById('titleCount').textContent = '0';
+document.getElementById('contentCount').textContent = '0';
+showStatus("Form cleared", "success");
+}
+}
+
+function clearPreview() {
+document.getElementById('fileName').textContent = '';
+document.getElementById('preview').innerHTML = '';
+document.getElementById('fileInput').value = '';
+}
+
+// Status messages
+function showStatus(message, type) {
+const status = document.getElementById('status');
+status.textContent = message;
+status.className = 'status ' + type;
 setTimeout(() => {
-notification.style.display = 'none';
-}, 2000);
+if (type !== 'loading') {
+status.style.display = 'none';
+}
+}, 5000);
 }
 
-function escapeHtml(text) {
-if (!text) return '';
-const div = document.createElement('div');
-div.textContent = text;
-return div.innerHTML;
+// Stats functions
+async function loadStats() {
+if (!db) return;
+
+try {
+const snapshot = await db.collection('posts').get();
+const total = snapshot.size;
+document.getElementById('totalPosts').textContent = total;
+
+// Today's posts
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const todaySnapshot = await db.collection('posts')
+.where('timestamp', '>=', today)
+.get();
+document.getElementById('todayPosts').textContent = todaySnapshot.size;
+} catch (error) {
+console.error("Stats error:", error);
+}
 }
 
-function truncateUrl(url, maxLength) {
-if (url.length <= maxLength) return url;
-return url.substring(0, maxLength) + '...';
+function showStats() {
+document.getElementById('statsPanel').style.display = 'block';
+loadStats();
 }
 
-// ===== HIDDEN LINKS =====
-const hiddenLinks = [
-"https://bestgore.com/",
-"https://doxbin.net",
-"https://watchpeopldie.tv",
-"https://www.gorecenter.com/"
-];
-
-window.hiddenLinks = hiddenLinks;
-
-// ===== INITIALIZATION =====
-if (localStorage.getItem('accepted') === 'true') {
-document.getElementById('entryPage').classList.add('hidden');
-document.getElementById('mainPage').classList.remove('hidden');
-initFirebase();
+function hideStats() {
+document.getElementById('statsPanel').style.display = 'none';
 }
+
+// Initialize on load
+window.onload = initFirebase;
 </script>
 </body>
 </html>
