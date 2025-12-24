@@ -3,1158 +3,798 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeakStream</title>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    
+    <title>Entry Point</title>
     <style>
-        /* WARNING PAGE STYLES */
+        /* === COMMON STYLES === */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
+            font-family: Arial, sans-serif;
             background-color: #000;
             color: #fff;
-            min-height: 100vh;
+            height: 100vh;
             overflow-x: hidden;
         }
         
-        /* Warning Page Styles */
-        .warning-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+        .hidden {
+            display: none !important;
         }
         
-        .warning-content {
-            max-width: 900px;
-            width: 100%;
-            background: rgba(20, 20, 20, 0.95);
-            border-radius: 15px;
+        /* === ENTRY PAGE STYLES === */
+        #entryPage {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: #000;
+        }
+        
+        .banner {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            border: 2px solid #333;
             overflow: hidden;
-            box-shadow: 0 0 30px rgba(255, 50, 50, 0.3);
-            border: 2px solid #ff3333;
-            position: relative;
-            animation: pulse 4s infinite;
         }
         
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(255, 50, 50, 0.3); }
-            50% { box-shadow: 0 0 50px rgba(255, 50, 50, 0.5); }
-        }
-        
-        .warning-header {
-            padding: 25px;
-            text-align: center;
-            background: linear-gradient(to right, #8b0000, #660000);
-            position: relative;
-        }
-        
-        .warning-header h1 {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
-        }
-        
-        .warning-header h2 {
-            font-size: 1.5rem;
-            color: #ffcccb;
-            font-weight: 500;
-        }
-        
-        .warning-icon {
-            font-size: 3rem;
-            color: #ff3333;
-            margin-bottom: 15px;
-            animation: blink 2s infinite;
-        }
-        
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        .image-container {
+        .banner img {
             width: 100%;
-            padding: 20px;
+            display: block;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            margin: 20px 0;
+            color: #fff;
+        }
+        
+        .buttons {
             display: flex;
-            justify-content: center;
-        }
-        
-        .warning-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            border: 3px solid #ff3333;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-        }
-        
-        .warning-text-section {
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .warning-text {
-            font-size: 1.3rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            color: #f0f0f0;
-            background-color: rgba(40, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid #ff3333;
-        }
-        
-        .warning-list {
-            text-align: left;
-            display: inline-block;
-            margin-bottom: 30px;
-            background-color: rgba(60, 0, 0, 0.4);
-            padding: 20px 30px;
-            border-radius: 10px;
-        }
-        
-        .warning-list li {
-            margin-bottom: 12px;
-            padding-left: 10px;
-            font-size: 1.1rem;
-        }
-        
-        .warning-list i {
-            color: #ff3333;
-            margin-right: 10px;
-        }
-        
-        .warning-buttons {
-            display: flex;
-            justify-content: center;
             gap: 30px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+            margin: 30px 0;
         }
         
-        .warning-button {
-            padding: 18px 40px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 220px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        
-        .accept-button {
-            background: linear-gradient(to right, #008000, #004d00);
-            color: white;
-            box-shadow: 0 5px 15px rgba(0, 100, 0, 0.4);
-        }
-        
-        .accept-button:hover {
-            background: linear-gradient(to right, #00a000, #006600);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 150, 0, 0.6);
-        }
-        
-        .decline-button {
-            background: linear-gradient(to right, #b30000, #800000);
-            color: white;
-            box-shadow: 0 5px 15px rgba(150, 0, 0, 0.4);
-        }
-        
-        .decline-button:hover {
-            background: linear-gradient(to right, #cc0000, #990000);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(200, 0, 0, 0.6);
-        }
-        
-        .warning-countdown {
-            margin-top: 25px;
+        .btn {
+            padding: 15px 40px;
             font-size: 1.2rem;
-            color: #ffcc00;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 10px;
+            border: none;
             border-radius: 5px;
-            display: inline-block;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
         }
         
-        .warning-footer {
-            margin-top: 30px;
-            font-size: 0.9rem;
-            color: #aaa;
-            text-align: center;
-            padding: 15px;
-            border-top: 1px solid #333;
+        .btn-no {
+            background: #ff0000;
+            color: white;
+            animation: pulse-red 2s infinite;
         }
         
-        /* MAIN PLATFORM STYLES (Hidden by default) */
-        .main-platform {
-            display: none;
+        .btn-no:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+        
+        .btn-yes {
+            background: #000;
+            color: #fff;
+            border: 2px solid #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-yes:hover {
+            animation: glitch 0.3s infinite;
+        }
+        
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(255, 0, 0, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+        }
+        
+        @keyframes glitch {
+            0% { background: #000; color: #fff; }
+            20% { background: #fff; color: #000; }
+            40% { background: #000; color: #fff; }
+            60% { background: #fff; color: #000; }
+            80% { background: #000; color: #fff; }
+            100% { background: #000; color: #fff; }
+        }
+        
+        /* === MAIN PAGE STYLES === */
+        #mainPage {
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
         }
         
         .header {
-            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
-            padding: 20px 40px;
+            background-color: #111;
+            padding: 10px 20px;
+            border-bottom: 1px solid #333;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #ff3333;
-            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
         
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo-icon {
-            color: #ff3333;
-            font-size: 2.5rem;
-        }
-        
-        .logo-text {
-            font-size: 2.2rem;
-            font-weight: 800;
-            background: linear-gradient(90deg, #ff3333, #ff6666);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
-            letter-spacing: 2px;
-        }
-        
-        .admin-btn {
-            background: linear-gradient(135deg, #8b0000, #660000);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 1rem;
+        .logo {
+            font-size: 1.2rem;
             font-weight: bold;
+            color: #fff;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
         
-        .admin-btn:hover {
-            background: linear-gradient(135deg, #a30000, #800000);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        .stats {
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            min-height: calc(100vh - 50px);
+        }
+        
+        .sidebar {
+            background-color: #111;
+            padding: 15px;
+            border-right: 1px solid #333;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+        
+        .sidebar h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+        
+        .sidebar a {
+            color: #666;
+            text-decoration: none;
+            display: block;
+            padding: 3px 0;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        .sidebar a:hover {
+            color: #fff;
         }
         
         .main-content {
-            padding: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .page-title {
-            text-align: center;
-            margin-bottom: 40px;
-            font-size: 2.5rem;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-            position: relative;
-        }
-        
-        .page-title::after {
-            content: '';
-            display: block;
-            width: 150px;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #ff3333, transparent);
-            margin: 15px auto;
-        }
-        
-        /* MODAL STYLES */
-        .admin-modal, .post-modal, .final-warning-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.95);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .admin-form, .post-form, .final-warning-content {
-            background: linear-gradient(135deg, #1a1a1a, #000000);
-            padding: 40px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            border: 2px solid #ff3333;
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.3);
-            text-align: center;
+            padding: 15px;
         }
         
         .post-form {
-            max-width: 700px;
-            border-color: #008000;
-            box-shadow: 0 0 40px rgba(0, 255, 0, 0.2);
-        }
-        
-        .final-warning-content {
-            border-color: #ff3333;
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
-        }
-        
-        .admin-form h2, .post-form h2, .final-warning-content h2 {
-            margin-bottom: 25px;
-            color: #ff3333;
-            font-size: 1.8rem;
+            background-color: #111;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
         }
         
         .post-form h2 {
-            color: #00ff00;
-        }
-        
-        .final-warning-content h2 {
-            font-size: 2.5rem;
-            text-shadow: 0 0 10px red;
-        }
-        
-        .admin-form input {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 20px;
-            background-color: #222;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #fff;
+            font-size: 1.1rem;
         }
         
         .form-group {
-            margin-bottom: 25px;
-            text-align: left;
+            margin-bottom: 10px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #ccc;
-            font-weight: 500;
+            margin-bottom: 3px;
+            color: #666;
+            font-size: 0.8rem;
         }
         
-        .form-group input, .form-group textarea {
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
             width: 100%;
-            padding: 15px;
-            background-color: #222;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
+            padding: 8px;
+            background-color: #000;
+            border: 1px solid #333;
+            color: #fff;
+            font-size: 0.9rem;
         }
         
         .form-group textarea {
-            min-height: 120px;
+            height: 60px;
             resize: vertical;
         }
         
-        .admin-form button, .final-warning-button, .final-warning-cancel {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #008000, #004d00);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
+        .url-inputs {
+            display: grid;
+            grid-template-columns: 1fr 80px;
+            gap: 8px;
+            align-items: end;
+        }
+        
+        .main-btn {
+            padding: 8px 15px;
+            background-color: #000;
+            color: #fff;
+            border: 1px solid #333;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .main-btn:hover {
+            background-color: #333;
+        }
+        
+        .video-host-link {
+            margin-top: 10px;
+            padding: 8px;
+            background: #1a1a1a;
+            font-size: 0.8rem;
+        }
+        
+        .video-host-link a {
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .video-host-link a:hover {
+            color: #fff;
+        }
+        
+        .posts-container {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .post {
+            background-color: #111;
+            padding: 15px;
+            border: 1px solid #333;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 10px;
+            color: #666;
+            font-size: 0.8rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
         }
         
-        .final-warning-cancel {
-            background: linear-gradient(135deg, #8b0000, #660000);
+        .post-media {
+            margin: 10px 0;
         }
         
-        .admin-form button:hover, .final-warning-button:hover {
-            background: linear-gradient(135deg, #00a000, #006600);
-            transform: translateY(-2px);
+        .post-media video {
+            width: 100%;
+            max-height: 300px;
+            background: #000;
         }
         
-        .final-warning-cancel:hover {
-            background: linear-gradient(135deg, #a30000, #800000);
-            transform: translateY(-2px);
+        .post-media img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            background: #000;
+        }
+        
+        .post-title {
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .post-description {
+            color: #888;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .post-url {
+            color: #666;
+            font-size: 0.7rem;
+            word-break: break-all;
+            padding: 6px;
+            background: #1a1a1a;
+            margin: 8px 0;
         }
         
         .post-actions {
             display: flex;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 10px;
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.8rem;
         }
         
-        .post-actions button {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
+        .action-btn {
             cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 3px 6px;
         }
         
-        .submit-post {
-            background: linear-gradient(135deg, #008000, #004d00);
-            color: white;
-        }
-        
-        .close-post {
-            background: linear-gradient(135deg, #8b0000, #660000);
-            color: white;
-        }
-        
-        /* VIDEOS GRID */
-        .videos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
-            margin-top: 30px;
-        }
-        
-        .video-card {
-            background: linear-gradient(135deg, #1a1a1a, #121212);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border: 1px solid #333;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        }
-        
-        .video-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(255, 0, 0, 0.2);
-            border-color: #ff3333;
-        }
-        
-        .video-thumbnail {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-bottom: 2px solid #333;
-        }
-        
-        .video-info {
-            padding: 20px;
-        }
-        
-        .video-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 10px;
+        .action-btn:hover {
             color: #fff;
-            line-height: 1.4;
         }
         
-        .video-description {
-            color: #aaa;
-            font-size: 0.95rem;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-        
-        .video-meta {
-            display: flex;
-            justify-content: space-between;
-            color: #777;
-            font-size: 0.85rem;
-        }
-        
-        .video-link {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #8b0000, #660000);
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-align: center;
-            width: 100%;
-        }
-        
-        .video-link:hover {
-            background: linear-gradient(135deg, #a30000, #800000);
-            transform: translateY(-2px);
-        }
-        
-        /* LOADING STATES */
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: #777;
-            font-size: 1.2rem;
-        }
-        
-        .loading::after {
-            content: '...';
-            animation: dots 1.5s infinite;
-        }
-        
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #777;
-        }
-        
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        
-        /* NOTIFICATION */
-        .notification {
+        .new-post-notification {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            padding: 15px 25px;
-            border-radius: 8px;
-            font-weight: bold;
-            z-index: 1002;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
+            top: 10px;
+            right: 10px;
+            background-color: #fff;
+            color: #000;
+            padding: 8px 15px;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s;
+            font-size: 0.9rem;
         }
         
-        .notification.show {
-            opacity: 1;
-            transform: translateY(0);
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
-        .notification.success {
-            background: linear-gradient(135deg, #008000, #004d00);
-            color: white;
-            border-left: 5px solid #00ff00;
+        .back-btn {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background-color: #111;
+            color: #666;
+            border: 1px solid #333;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            z-index: 100;
         }
         
-        .notification.error {
-            background: linear-gradient(135deg, #8b0000, #660000);
-            color: white;
-            border-left: 5px solid #ff3333;
+        .back-btn:hover {
+            color: #fff;
+            border-color: #fff;
         }
         
-        /* GLITCH EFFECT */
-        .glitch {
-            position: relative;
-            display: inline-block;
+        .no-posts {
+            text-align: center;
+            color: #666;
+            padding: 30px;
+            font-size: 0.9rem;
         }
         
-        .glitch::before,
-        .glitch::after {
-            content: "WARNING";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.8;
+        .media-preview {
+            margin: 8px 0;
+            padding: 8px;
+            background: #1a1a1a;
+            display: none;
         }
         
-        .glitch::before {
-            color: #0ff;
-            z-index: -1;
-            animation: glitch-1 2s infinite;
+        .media-preview.active {
+            display: block;
         }
         
-        .glitch::after {
-            color: #f0f;
-            z-index: -2;
-            animation: glitch-2 2s infinite;
-        }
-        
-        @keyframes glitch-1 {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-        
-        @keyframes glitch-2 {
-            0% { transform: translate(0); }
-            10% { transform: translate(2px, -2px); }
-            30% { transform: translate(-2px, 2px); }
-            50% { transform: translate(2px, 2px); }
-            70% { transform: translate(-2px, -2px); }
-            90% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-        
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .warning-header h1 {
-                font-size: 2.2rem;
-            }
-            
-            .warning-header h2 {
-                font-size: 1.2rem;
-            }
-            
-            .warning-text {
-                font-size: 1.1rem;
-            }
-            
-            .warning-button {
-                padding: 15px 30px;
-                font-size: 1.2rem;
-                min-width: 200px;
-            }
-            
-            .warning-buttons {
-                gap: 15px;
-            }
-            
-            .header {
-                padding: 15px 20px;
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .main-content {
-                padding: 20px;
-            }
-            
-            .page-title {
-                font-size: 2rem;
-            }
-            
-            .videos-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-                gap: 20px;
-            }
-            
-            .admin-form, .post-form, .final-warning-content {
-                padding: 25px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .warning-header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .warning-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .warning-button {
-                width: 100%;
-                max-width: 300px;
-            }
-            
-            .warning-list {
-                padding: 15px;
-            }
+        .preview-container {
+            max-height: 150px;
+            overflow: hidden;
         }
     </style>
 </head>
 <body>
-    <!-- AGE VERIFICATION WARNING PAGE -->
-    <div class="warning-container" id="warningPage">
-        <div class="warning-content">
-            <div class="warning-header">
-                <div class="warning-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <h1 class="glitch">WARNING</h1>
-                <h2>Restricted Content - Age Verification Required</h2>
-            </div>
-            
-            <div class="image-container">
-                <img src="https://i.postimg.cc/7hy8mx8n/image.jpg" alt="Warning Image" class="warning-image" id="warningImage">
-            </div>
-            
-            <div class="warning-text-section">
-                <div class="warning-text">
-                    <p>You are about to access <strong>LeakStream</strong> - a platform containing restricted content that requires age verification and confirmation of understanding of the risks involved. By proceeding, you acknowledge that you are of legal age (18+ or 21+ depending on your jurisdiction) and accept full responsibility for your actions.</p>
-                </div>
-                
-                <ul class="warning-list">
-                    <li><i class="fas fa-skull-crossbones"></i> This content may contain material unsuitable for minors</li>
-                    <li><i class="fas fa-brain"></i> Exposure may cause psychological discomfort</li>
-                    <li><i class="fas fa-exclamation-circle"></i> You proceed at your own risk and discretion</li>
-                    <li><i class="fas fa-user-shield"></i> Your response will be recorded for security purposes</li>
-                </ul>
-                
-                <div class="warning-buttons">
-                    <button class="warning-button accept-button" id="acceptWarningBtn">
-                        <i class="fas fa-check-circle"></i> Yes, I Accept My Fate
-                    </button>
-                    <button class="warning-button decline-button" id="declineWarningBtn">
-                        <i class="fas fa-times-circle"></i> No, Take Me Away
-                    </button>
-                </div>
-                
-                <div class="warning-countdown" id="warningCountdown">
-                    Auto-redirect in: <span id="warningTimer">10</span> seconds
-                </div>
-                
-                <div class="warning-footer">
-                    <p><i class="fas fa-shield-alt"></i> This verification system is in place to protect vulnerable users. All actions are logged.</p>
-                </div>
-            </div>
+    <!-- ENTRY PAGE -->
+    <div id="entryPage">
+        <h1 class="title">ENTRY POINT</h1>
+        
+        <div class="banner">
+            <img src="https://i.postimg.cc/W1LwgPyX/image.png" alt="Banner" onerror="this.style.display='none'">
+        </div>
+        
+        <div class="buttons">
+            <button class="btn btn-no" onclick="redirectNo()">No</button>
+            <button class="btn btn-yes" onclick="enterMainPage()">Yes, I accept my fate</button>
         </div>
     </div>
     
-    <!-- FINAL WARNING MODAL -->
-    <div class="final-warning-modal" id="finalWarningModal">
-        <div class="final-warning-content">
-            <h2>FINAL WARNING</h2>
-            <p style="font-size: 1.4rem; margin-bottom: 30px; color: #ffcccb; line-height: 1.5;">
-                You are about to proceed to <strong>LeakStream</strong> restricted content. This is your last chance to turn back. Are you absolutely sure you want to continue?
-            </p>
-            <button class="final-warning-button" id="finalAcceptBtn">
-                <i class="fas fa-door-open"></i> ENTER AT YOUR OWN RISK
-            </button>
-            <button class="final-warning-cancel" id="finalCancelBtn">
-                <i class="fas fa-sign-out-alt"></i> NO, TAKE ME BACK
-            </button>
+    <!-- MAIN PAGE -->
+    <div id="mainPage" class="hidden">
+        <div class="header">
+            <div class="logo" onclick="showEntryPage()">STREAM</div>
+            <div class="stats">Posts: <span id="postCount">0</span></div>
         </div>
-    </div>
-    
-    <!-- MAIN PLATFORM (Hidden initially) -->
-    <div class="main-platform" id="mainPlatform">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo-container">
-                <i class="fas fa-fire logo-icon"></i>
-                <h1 class="logo-text">LeakStream</h1>
-            </div>
-            <button class="admin-btn" id="adminBtn">
-                <i class="fas fa-lock"></i> Admin Access
-            </button>
-        </header>
         
-        <!-- Main Content -->
-        <main class="main-content">
-            <h2 class="page-title">Latest Leaks</h2>
+        <div class="container">
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h3>Browse</h3>
+                    <ul>
+                        <li><a onclick="filterPosts('all')">All</a></li>
+                        <li><a onclick="filterPosts('video')">Videos</a></li>
+                        <li><a onclick="filterPosts('image')">Images</a></li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Links</h3>
+                    <ul>
+                        <li><a href="https://imagekit.io/login/?target=%2Fdashboard%2Fmedia-library" target="_blank">Video Host</a></li>
+                        <li><a href="https://imgbb.com/" target="_blank">Image Host</a></li>
+                        <li><a href="https://streamable.com/" target="_blank">Streamable</a></li>
+                    </ul>
+                </div>
+            </div>
             
-            <div id="videosContainer">
-                <div class="loading">Loading videos</div>
-            </div>
-        </main>
-        
-        <!-- Admin Login Modal -->
-        <div class="admin-modal" id="adminModal">
-            <div class="admin-form">
-                <h2><i class="fas fa-user-secret"></i> Admin Authentication</h2>
-                <input type="password" id="adminCode" placeholder="Enter Admin Code">
-                <button id="verifyAdminBtn">Verify Code</button>
+            <div class="main-content">
+                <div class="post-form">
+                    <h2>New Post</h2>
+                    
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="postTitle" placeholder="Title">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="postContent" placeholder="Description"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="mediaType" onchange="toggleMediaInput()">
+                            <option value="video">Video</option>
+                            <option value="image">Image</option>
+                            <option value="link">Link</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>URL</label>
+                        <div class="url-inputs">
+                            <input type="url" id="mediaUrl" placeholder="https://">
+                            <button class="main-btn" onclick="testUrl()">Test</button>
+                        </div>
+                    </div>
+                    
+                    <button class="main-btn" onclick="createPost()" style="width:100%;">Post</button>
+                    
+                    <div class="video-host-link">
+                        <a href="https://imagekit.io/login/?target=%2Fdashboard%2Fmedia-library" target="_blank">
+                            Free video host
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="posts-container" id="postsContainer">
+                    <div class="no-posts" id="noPosts">
+                        No posts
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Post Video Modal -->
-        <div class="post-modal" id="postModal">
-            <div class="post-form">
-                <h2><i class="fas fa-video"></i> Post New Video</h2>
-                <div class="form-group">
-                    <label for="videoTitle">Video Title</label>
-                    <input type="text" id="videoTitle" placeholder="Enter video title">
-                </div>
-                <div class="form-group">
-                    <label for="videoDescription">Description</label>
-                    <textarea id="videoDescription" placeholder="Enter video description"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="videoLink">Video URL</label>
-                    <input type="url" id="videoLink" placeholder="https://example.com/video.mp4">
-                </div>
-                <div class="form-group">
-                    <label for="thumbnailLink">Thumbnail URL (Optional)</label>
-                    <input type="url" id="thumbnailLink" placeholder="https://example.com/thumbnail.jpg">
-                </div>
-                <div class="post-actions">
-                    <button class="submit-post" id="submitVideoBtn">Post Video</button>
-                    <button class="close-post" id="closePostBtn">Cancel</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Notification -->
-        <div class="notification" id="notification"></div>
+        <button class="back-btn" onclick="showEntryPage()">← Back</button>
+        <div class="new-post-notification" id="newPostNotification">New post</div>
     </div>
     
-    <!-- Font Awesome -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAyTSyWhLVe22jynP94cp9OEg6IC5-OhdE",
-            authDomain: "leakstream-4f62f.firebaseapp.com",
-            projectId: "leakstream-4f62f",
-            storageBucket: "leakstream-4f62f.firebasestorage.app",
-            messagingSenderId: "886997714546",
-            appId: "1:886997714546:web:b7fcbb9b28010d5ec564eb",
-            measurementId: "G-RXHE019ZWT"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        
-        // ============ AGE VERIFICATION SECTION ============
-        const warningPage = document.getElementById('warningPage');
-        const acceptWarningBtn = document.getElementById('acceptWarningBtn');
-        const declineWarningBtn = document.getElementById('declineWarningBtn');
-        const warningTimer = document.getElementById('warningTimer');
-        const finalWarningModal = document.getElementById('finalWarningModal');
-        const finalAcceptBtn = document.getElementById('finalAcceptBtn');
-        const finalCancelBtn = document.getElementById('finalCancelBtn');
-        const warningImage = document.getElementById('warningImage');
-        const mainPlatform = document.getElementById('mainPlatform');
-        
-        // Redirect URLs
-        const declineRedirect = "https://youtu.be/TJmTHuuYx3k";
-        
-        // Countdown timer (auto-accept after 10 seconds)
-        let countdown = 10;
-        const countdownInterval = setInterval(() => {
-            countdown--;
-            warningTimer.textContent = countdown;
-            
-            if (countdown <= 0) {
-                clearInterval(countdownInterval);
-                showFinalWarning();
+        // ===== PAGE NAVIGATION =====
+        function showEntryPage() {
+            if (confirm("Go back?")) {
+                document.getElementById('entryPage').classList.remove('hidden');
+                document.getElementById('mainPage').classList.add('hidden');
+                if (window.postsListener) {
+                    window.postsListener();
+                }
             }
-        }, 1000);
-        
-        // Handle image error
-        warningImage.onerror = function() {
-            this.src = 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=750&q=80';
-        };
-        
-        // Accept button click
-        acceptWarningBtn.addEventListener('click', function() {
-            clearInterval(countdownInterval);
-            showFinalWarning();
-        });
-        
-        // Decline button click
-        declineWarningBtn.addEventListener('click', function() {
-            clearInterval(countdownInterval);
-            
-            // Add visual feedback
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecting...';
-            this.disabled = true;
-            
-            // Redirect to YouTube
-            setTimeout(() => {
-                window.location.href = declineRedirect;
-            }, 1000);
-        });
-        
-        // Show final warning modal
-        function showFinalWarning() {
-            finalWarningModal.style.display = 'flex';
         }
         
-        // Final accept button
-        finalAcceptBtn.addEventListener('click', function() {
-            // Hide warning page and show main platform
-            warningPage.style.display = 'none';
-            finalWarningModal.style.display = 'none';
-            mainPlatform.style.display = 'block';
-            
-            // Initialize the main platform
-            initializeMainPlatform();
-        });
+        function enterMainPage() {
+            document.getElementById('entryPage').classList.add('hidden');
+            document.getElementById('mainPage').classList.remove('hidden');
+            initializeFirebase();
+        }
         
-        // Final cancel button
-        finalCancelBtn.addEventListener('click', function() {
-            finalWarningModal.style.display = 'none';
-            window.location.href = declineRedirect;
-        });
+        function redirectNo() {
+            window.location.href = "https://youtu.be/e_04ZrNroTo";
+        }
         
-        // ============ MAIN PLATFORM SECTION ============
-        function initializeMainPlatform() {
-            // DOM Elements for main platform
-            const adminBtn = document.getElementById('adminBtn');
-            const adminModal = document.getElementById('adminModal');
-            const adminCodeInput = document.getElementById('adminCode');
-            const verifyAdminBtn = document.getElementById('verifyAdminBtn');
-            const postModal = document.getElementById('postModal');
-            const videoTitleInput = document.getElementById('videoTitle');
-            const videoDescriptionInput = document.getElementById('videoDescription');
-            const videoLinkInput = document.getElementById('videoLink');
-            const thumbnailLinkInput = document.getElementById('thumbnailLink');
-            const submitVideoBtn = document.getElementById('submitVideoBtn');
-            const closePostBtn = document.getElementById('closePostBtn');
-            const videosContainer = document.getElementById('videosContainer');
-            const notification = document.getElementById('notification');
+        // Glitch effect
+        const yesBtn = document.querySelector('.btn-yes');
+        if (yesBtn) {
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    yesBtn.style.animation = 'glitch 0.3s';
+                    setTimeout(() => {
+                        yesBtn.style.animation = '';
+                    }, 300);
+                }
+            }, 2000);
+        }
+        
+        // ===== FIREBASE CONFIG =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyDlEGndjR_x651X77k0A41mydFo3Emw3So",
+            authDomain: "leakstreamnew.firebaseapp.com",
+            projectId: "leakstreamnew",
+            storageBucket: "leakstreamnew.firebasestorage.app",
+            messagingSenderId: "295121939490",
+            appId: "1:295121939490:web:d4bd6404d47cb70421ee7b",
+            measurementId: "G-Y2LY4BHWD3"
+        };
+        
+        // ===== FIREBASE INIT =====
+        let db;
+        
+        function initializeFirebase() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                loadPosts();
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+        
+        // ===== POST CREATION =====
+        function toggleMediaInput() {
+            const type = document.getElementById('mediaType').value;
+            const input = document.getElementById('mediaUrl');
             
-            // Admin Code
-            const ADMIN_CODE = "UNDESCRIMINATED-2012";
-            let isAdmin = false;
+            if (type === 'video') {
+                input.placeholder = "https://video.mp4";
+            } else if (type === 'image') {
+                input.placeholder = "https://image.jpg";
+            } else {
+                input.placeholder = "https://";
+            }
+        }
+        
+        function testUrl() {
+            const url = document.getElementById('mediaUrl').value.trim();
+            if (!url) return;
             
-            // Show notification
-            function showNotification(message, type) {
-                notification.textContent = message;
-                notification.className = `notification ${type}`;
-                notification.classList.add('show');
-                
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
+            if (!isValidUrl(url)) {
+                alert("Invalid URL");
+                return;
             }
             
-            // Open admin modal
-            adminBtn.addEventListener('click', () => {
-                if (!isAdmin) {
-                    adminModal.style.display = 'flex';
-                } else {
-                    openPostModal();
-                }
-            });
+            showNotification("URL OK");
+        }
+        
+        async function createPost() {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+            const mediaUrl = document.getElementById('mediaUrl').value.trim();
+            const mediaType = document.getElementById('mediaType').value;
             
-            // Verify admin code
-            verifyAdminBtn.addEventListener('click', () => {
-                const enteredCode = adminCodeInput.value.trim();
-                
-                if (enteredCode === ADMIN_CODE) {
-                    isAdmin = true;
-                    adminModal.style.display = 'none';
-                    adminCodeInput.value = '';
-                    showNotification('Admin access granted!', 'success');
-                    
-                    // Update admin button
-                    adminBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Post New Video';
-                } else {
-                    showNotification('Invalid admin code!', 'error');
-                }
-            });
-            
-            // Close admin modal when clicking outside
-            adminModal.addEventListener('click', (e) => {
-                if (e.target === adminModal) {
-                    adminModal.style.display = 'none';
-                    adminCodeInput.value = '';
-                }
-            });
-            
-            // Open post modal
-            function openPostModal() {
-                postModal.style.display = 'flex';
+            if (!title) {
+                alert("Enter title");
+                return;
             }
             
-            // Close post modal
-            closePostBtn.addEventListener('click', () => {
-                postModal.style.display = 'none';
-                clearPostForm();
-            });
-            
-            // Close post modal when clicking outside
-            postModal.addEventListener('click', (e) => {
-                if (e.target === postModal) {
-                    postModal.style.display = 'none';
-                    clearPostForm();
-                }
-            });
-            
-            // Clear post form
-            function clearPostForm() {
-                videoTitleInput.value = '';
-                videoDescriptionInput.value = '';
-                videoLinkInput.value = '';
-                thumbnailLinkInput.value = '';
+            if (!mediaUrl && mediaType !== 'link') {
+                alert("Enter URL");
+                return;
             }
             
-            // Submit new video
-            submitVideoBtn.addEventListener('click', async () => {
-                const title = videoTitleInput.value.trim();
-                const description = videoDescriptionInput.value.trim();
-                const videoLink = videoLinkInput.value.trim();
-                const thumbnailLink = thumbnailLinkInput.value.trim();
-                
-                // Validation
-                if (!title || !videoLink) {
-                    showNotification('Title and video link are required!', 'error');
-                    return;
-                }
-                
-                if (!isValidUrl(videoLink)) {
-                    showNotification('Please enter a valid video URL!', 'error');
-                    return;
-                }
-                
-                if (thumbnailLink && !isValidUrl(thumbnailLink)) {
-                    showNotification('Please enter a valid thumbnail URL!', 'error');
-                    return;
-                }
-                
-                try {
-                    // Create video object
-                    const videoData = {
-                        title: title,
-                        description: description || 'No description provided',
-                        videoLink: videoLink,
-                        thumbnailLink: thumbnailLink || 'https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        views: 0
-                    };
-                    
-                    // Add to Firestore
-                    await db.collection('videos').add(videoData);
-                    
-                    // Success
-                    showNotification('Video posted successfully!', 'success');
-                    postModal.style.display = 'none';
-                    clearPostForm();
-                    
-                    // Refresh videos list
-                    loadVideos();
-                    
-                } catch (error) {
-                    console.error('Error posting video:', error);
-                    showNotification('Failed to post video. Please try again.', 'error');
-                }
-            });
+            if (mediaUrl && !isValidUrl(mediaUrl)) {
+                alert("Invalid URL");
+                return;
+            }
             
-            // Load videos from Firestore
-            async function loadVideos() {
-                try {
-                    videosContainer.innerHTML = '<div class="loading">Loading videos</div>';
+            const postData = {
+                title: title,
+                content: content,
+                mediaUrl: mediaUrl,
+                mediaType: mediaType,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                votes: 0
+            };
+            
+            try {
+                await db.collection('posts').add(postData);
+                
+                document.getElementById('postTitle').value = '';
+                document.getElementById('postContent').value = '';
+                document.getElementById('mediaUrl').value = '';
+                
+                showNotification("Posted");
+                
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+        
+        // ===== POSTS DISPLAY =====
+        function loadPosts() {
+            if (!db) return;
+            
+            window.postsListener = db.collection('posts')
+                .orderBy('timestamp', 'desc')
+                .limit(50)
+                .onSnapshot((snapshot) => {
+                    const container = document.getElementById('postsContainer');
+                    const noPosts = document.getElementById('noPosts');
                     
-                    const querySnapshot = await db.collection('videos')
-                        .orderBy('timestamp', 'desc')
-                        .get();
+                    let postCount = 0;
+                    let html = '';
                     
-                    if (querySnapshot.empty) {
-                        videosContainer.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-video-slash"></i>
-                                <h3>No videos found</h3>
-                                <p>Be the first to post a video!</p>
-                            </div>
-                        `;
-                        return;
-                    }
-                    
-                    videosContainer.innerHTML = '<div class="videos-grid"></div>';
-                    const videosGrid = document.querySelector('.videos-grid');
-                    
-                    querySnapshot.forEach((doc) => {
-                        const video = doc.data();
-                        const videoId = doc.id;
-                        
-                        const videoCard = document.createElement('div');
-                        videoCard.className = 'video-card';
-                        videoCard.innerHTML = `
-                            <img src="${video.thumbnailLink}" alt="${video.title}" class="video-thumbnail" onerror="this.src='https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'">
-                            <div class="video-info">
-                                <h3 class="video-title">${video.title}</h3>
-                                <p class="video-description">${video.description}</p>
-                                <div class="video-meta">
-                                    <span><i class="fas fa-eye"></i> ${video.views || 0} views</span>
-                                    <span><i class="fas fa-calendar"></i> ${formatDate(video.timestamp)}</span>
-                                </div>
-                                <a href="${video.videoLink}" target="_blank" class="video-link">
-                                    <i class="fas fa-play"></i> Watch Now
-                                </a>
-                            </div>
-                        `;
-                        
-                        videosGrid.appendChild(videoCard);
+                    snapshot.forEach((doc) => {
+                        const post = doc.data();
+                        post.id = doc.id;
+                        html += renderPost(post);
+                        postCount++;
                     });
                     
-                } catch (error) {
-                    console.error('Error loading videos:', error);
-                    videosContainer.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <h3>Error loading videos</h3>
-                            <p>Please try again later</p>
+                    if (postCount > 0) {
+                        noPosts.style.display = 'none';
+                        container.innerHTML = html;
+                    } else {
+                        noPosts.style.display = 'block';
+                        container.innerHTML = '';
+                        container.appendChild(noPosts);
+                    }
+                    
+                    document.getElementById('postCount').textContent = postCount;
+                    
+                }, (error) => {
+                    console.error("Error:", error);
+                });
+        }
+        
+        function renderPost(post) {
+            const date = post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString() : '';
+            
+            let mediaHTML = '';
+            if (post.mediaUrl) {
+                if (post.mediaType === 'video') {
+                    mediaHTML = `
+                        <div class="post-media">
+                            <video controls>
+                                <source src="${escapeHtml(post.mediaUrl)}" type="video/mp4">
+                            </video>
+                        </div>
+                    `;
+                } else if (post.mediaType === 'image') {
+                    mediaHTML = `
+                        <div class="post-media">
+                            <img src="${escapeHtml(post.mediaUrl)}" alt="Image">
                         </div>
                     `;
                 }
             }
             
-            // Helper function to format date
-            function formatDate(timestamp) {
-                if (!timestamp) return 'Just now';
-                
-                const date = timestamp.toDate();
-                const now = new Date();
-                const diffInHours = (now - date) / (1000 * 60 * 60);
-                
-                if (diffInHours < 24) {
-                    return 'Today';
-                } else if (diffInHours < 48) {
-                    return 'Yesterday';
-                } else {
-                    return date.toLocaleDateString();
-                }
-            }
-            
-            // Helper function to validate URL
-            function isValidUrl(string) {
-                try {
-                    new URL(string);
-                    return true;
-                } catch (_) {
-                    return false;
-                }
-            }
-            
-            // Load videos initially
-            loadVideos();
-            
-            // Set up real-time listener for new videos
-            db.collection('videos')
-                .orderBy('timestamp', 'desc')
-                .onSnapshot((snapshot) => {
-                    if (!snapshot.metadata.hasPendingWrites) {
-                        loadVideos();
-                    }
-                });
+            return `
+                <div class="post" id="post-${post.id}">
+                    <div class="post-header">
+                        <span>${date}</span>
+                        <span>${post.mediaType || ''}</span>
+                    </div>
+                    
+                    <h3 class="post-title">${escapeHtml(post.title)}</h3>
+                    
+                    ${post.content ? `<div class="post-description">${escapeHtml(post.content)}</div>` : ''}
+                    
+                    ${mediaHTML}
+                    
+                    ${post.mediaUrl ? `
+                        <div class="post-url">
+                            ${escapeHtml(post.mediaUrl)}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="post-actions">
+                        <span class="action-btn" onclick="votePost('${post.id}', 1)">▲ ${post.votes || 0}</span>
+                        <span class="action-btn" onclick="votePost('${post.id}', -1)">▼</span>
+                        <span class="action-btn" onclick="copyLink('${post.id}')">Copy</span>
+                    </div>
+                </div>
+            `;
         }
         
-        // Add background animation to warning page
-        document.addEventListener('DOMContentLoaded', function() {
-            const container = document.querySelector('.warning-content');
-            let angle = 0;
+        // ===== POST ACTIONS =====
+        async function votePost(postId, change) {
+            if (!db) return;
             
-            setInterval(() => {
-                angle += 0.5;
-                const x = Math.sin(angle * Math.PI / 180) * 5;
-                const y = Math.cos(angle * Math.PI / 180) * 5;
-                container.style.boxShadow = `${x}px ${y}px 30px rgba(255, 50, 50, 0.4)`;
-            }, 50);
+            try {
+                const postRef = db.collection('posts').doc(postId);
+                await postRef.update({
+                    votes: firebase.firestore.FieldValue.increment(change)
+                });
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+        
+        function copyLink(postId) {
+            const url = window.location.href.split('#')[0] + '#' + postId;
+            navigator.clipboard.writeText(url).then(() => {
+                showNotification("Copied");
+            });
+        }
+        
+        // ===== FILTERS =====
+        function filterPosts(type) {
+            const posts = document.querySelectorAll('.post');
+            
+            posts.forEach(post => {
+                let show = true;
+                const postType = post.querySelector('.post-header span:last-child').textContent.trim();
+                
+                if (type === 'video') {
+                    show = postType.includes('video');
+                } else if (type === 'image') {
+                    show = postType.includes('image');
+                }
+                
+                post.style.display = show ? 'block' : 'none';
+            });
+        }
+        
+        // ===== HELPERS =====
+        function showNotification(message) {
+            const notification = document.getElementById('newPostNotification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+        
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Auto-enter if already accepted
+        if (localStorage.getItem('accepted') === 'true') {
+            enterMainPage();
+        } else {
+            const originalEnter = enterMainPage;
+            enterMainPage = function() {
+                localStorage.setItem('accepted', 'true');
+                originalEnter();
+            };
+        }
+        
+        // URL change listener
+        document.getElementById('mediaUrl').addEventListener('input', function() {
+            const url = this.value.trim();
+            if (url && isValidUrl(url)) {
+                // Auto-preview would go here
+            }
         });
     </script>
 </body>
