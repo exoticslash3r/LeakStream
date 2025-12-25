@@ -222,6 +222,66 @@
             box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); 
         }
         
+        /* Search suggestions */
+        .search-suggestions {
+            position: absolute;
+            background: #111;
+            border: 2px solid #800;
+            border-top: none;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+        
+        .search-suggestion-item {
+            padding: 12px 15px;
+            color: #ccc;
+            cursor: pointer;
+            font-family: 'Creepster', cursive;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .search-suggestion-item:hover {
+            background: #800;
+            color: #fff;
+        }
+        
+        .search-suggestion-item.highlight {
+            background: #a00;
+            color: #fff;
+        }
+        
+        /* Search keywords display */
+        .search-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+            padding: 10px;
+            background: rgba(128, 0, 0, 0.1);
+            border: 1px solid #333;
+        }
+        
+        .keyword-tag {
+            background: #800;
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-family: 'Creepster', cursive;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .keyword-tag.highlight {
+            background: #f00;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        
         /* Bigger content display - Scrollable */
         .content-scroll-container {
             width: 100%;
@@ -229,32 +289,42 @@
             margin-bottom: 40px;
         }
         
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
         .content-item {
             background: #111;
             border: 2px solid #333;
-            margin-bottom: 30px;
             transition: all 0.3s;
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         
         .content-item:hover {
             border-color: #800;
             box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+            transform: translateY(-5px);
         }
         
-        /* Media container - BIGGER and BETTER */
+        /* Media container - WIDER and BIGGER */
         .media-container {
             width: 100%;
             background: #000;
             position: relative;
             overflow: hidden;
+            aspect-ratio: 16/9;
         }
         
         /* Video player - FIXED BRIGHTNESS */
         .direct-video {
             width: 100%;
-            height: auto;
-            max-height: 600px;
+            height: 100%;
+            object-fit: cover;
             background: #000;
             display: block;
             filter: brightness(1) contrast(1) saturate(1.1);
@@ -264,9 +334,8 @@
         /* Image viewer - FIXED BRIGHTNESS */
         .direct-image {
             width: 100%;
-            height: auto;
-            max-height: 600px;
-            object-fit: contain;
+            height: 100%;
+            object-fit: cover;
             background: #000;
             display: block;
             filter: brightness(1) contrast(1) saturate(1.1);
@@ -276,31 +345,31 @@
         /* Link viewer */
         .link-viewer {
             width: 100%;
-            min-height: 400px;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background: linear-gradient(45deg, #222, #111);
             color: #800;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-family: 'Creepster', cursive;
             text-align: center;
-            padding: 40px;
+            padding: 20px;
         }
         
         .link-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
+            font-size: 3rem;
+            margin-bottom: 15px;
             color: #800;
         }
         
         .link-viewer a {
             color: #0f0;
             text-decoration: none;
-            font-size: 1.2rem;
-            margin-top: 20px;
-            padding: 12px 25px;
+            font-size: 1rem;
+            margin-top: 15px;
+            padding: 10px 20px;
             border: 2px solid #0f0;
             background: rgba(0, 68, 0, 0.3);
             transition: all 0.3s;
@@ -313,29 +382,45 @@
         
         /* Content info */
         .content-info { 
-            padding: 25px; 
+            padding: 20px; 
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
         
         .content-title { 
-            font-size: 2rem; 
-            margin-bottom: 15px; 
+            font-size: 1.5rem; 
+            margin-bottom: 12px; 
             color: #fff; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px; 
             line-height: 1.3;
-        }
-        
-        @media (max-width: 768px) {
-            .content-title {
-                font-size: 1.6rem;
-            }
+            flex-grow: 1;
         }
         
         .content-description { 
             color: #999; 
             margin-bottom: 15px; 
-            line-height: 1.6; 
-            font-size: 1.1rem; 
+            line-height: 1.5; 
+            font-size: 1rem; 
+            flex-grow: 1;
+        }
+        
+        /* Content tags */
+        .content-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .content-tag {
+            background: #222;
+            color: #ccc;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-family: 'Creepster', cursive;
         }
         
         /* Content actions */
@@ -343,26 +428,24 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center;
-            padding: 20px 25px;
+            padding: 15px 20px;
             background: rgba(0, 0, 0, 0.3);
             border-top: 1px solid #333;
-            flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
         }
         
         .source-link {
             background: #004400; 
             color: #0f0; 
-            padding: 12px 25px; 
+            padding: 10px 20px; 
             text-decoration: none; 
             border: 2px solid #0f0; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s;
             text-align: center;
             flex: 1;
-            min-width: 200px;
         }
         
         .source-link:hover {
@@ -375,15 +458,14 @@
             background: #400000; 
             color: #f00; 
             border: 2px solid #f00; 
-            padding: 12px 25px; 
+            padding: 10px 20px; 
             cursor: pointer; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s;
             text-align: center;
             flex: 1;
-            min-width: 200px;
         }
         
         .report-btn:hover {
@@ -400,11 +482,11 @@
             background: rgba(0, 0, 0, 0.8);
             color: white;
             border: 2px solid #800;
-            padding: 10px 20px;
+            padding: 8px 16px;
             cursor: pointer;
             font-family: 'Creepster', cursive;
             z-index: 10;
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: all 0.3s;
         }
         
@@ -554,19 +636,13 @@
         
         /* Mobile optimizations */
         @media (max-width: 768px) {
-            .media-container {
-                max-height: 400px;
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 20px;
             }
             
-            .direct-video,
-            .direct-image {
-                max-height: 400px;
-            }
-            
-            .link-viewer {
-                min-height: 300px;
-                font-size: 1.5rem;
-                padding: 30px;
+            .content-title {
+                font-size: 1.3rem;
             }
             
             .content-actions {
@@ -595,27 +671,13 @@
         }
         
         @media (max-width: 480px) {
-            .media-container {
-                max-height: 300px;
-            }
-            
-            .direct-video,
-            .direct-image {
-                max-height: 300px;
-            }
-            
-            .link-viewer {
-                min-height: 250px;
-                font-size: 1.3rem;
-                padding: 20px;
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
             
             .content-title {
-                font-size: 1.4rem;
-            }
-            
-            .content-description {
-                font-size: 1rem;
+                font-size: 1.2rem;
             }
             
             .logo {
@@ -693,7 +755,9 @@
                 <div class="logo">LeakStream</div>
             </div>
             <div class="search-container">
-                <input type="text" id="searchBar" placeholder="Search by title...">
+                <input type="text" id="searchBar" placeholder="Search by title, description, or keywords...">
+                <div class="search-suggestions" id="searchSuggestions"></div>
+                <div class="search-keywords" id="searchKeywords"></div>
                 <div class="search-info" id="searchInfo">
                     Loading content...
                 </div>
@@ -702,7 +766,7 @@
         
         <!-- Content Scroll Container -->
         <div class="content-scroll-container" id="contentContainer">
-            <!-- Content loads here directly - 5 items per page -->
+            <!-- Content loads here in grid layout -->
         </div>
         
         <!-- Pagination -->
@@ -763,10 +827,12 @@
 
         // App state
         let currentPage = 1;
-        let itemsPerPage = 5;
+        let itemsPerPage = 12; // Increased items per page for better scrolling
         let allContent = [];
         let filteredContent = [];
         let currentSearchTerm = '';
+        let searchKeywords = [];
+        let allKeywords = [];
 
         // Create snow effect
         function createSnow() {
@@ -831,6 +897,18 @@
             }
         }
 
+        // Extract keywords from text
+        function extractKeywords(text) {
+            if (!text) return [];
+            const words = text.toLowerCase()
+                .replace(/[^\w\s]/g, ' ')
+                .split(/\s+/)
+                .filter(word => word.length > 2 && !['the', 'and', 'for', 'are', 'you', 'this', 'that', 'with'].includes(word));
+            
+            // Get unique words
+            return [...new Set(words)];
+        }
+
         // Load all content from database
         async function loadAllContent() {
             try {
@@ -842,21 +920,38 @@
                     .get();
                 
                 allContent = [];
+                allKeywords = new Set(); // Reset keywords set
+                
                 snapshot.forEach(doc => {
-                    allContent.push({
+                    const data = {
                         id: doc.id,
                         ...doc.data()
-                    });
+                    };
+                    
+                    // Extract keywords from title and description
+                    const titleKeywords = extractKeywords(data.title);
+                    const descKeywords = extractKeywords(data.description);
+                    const tags = data.tags || [];
+                    
+                    // Combine all keywords
+                    const itemKeywords = [...titleKeywords, ...descKeywords, ...tags];
+                    data.keywords = [...new Set(itemKeywords)]; // Store unique keywords
+                    
+                    // Add to global keywords set
+                    itemKeywords.forEach(keyword => allKeywords.add(keyword));
+                    
+                    allContent.push(data);
                 });
                 
-                console.log(`Loaded ${allContent.length} items`);
+                console.log(`Loaded ${allContent.length} items with ${allKeywords.size} unique keywords`);
                 
-                // FIX 1: Always show all content initially, not just filtered
+                // Show all content initially
                 filteredContent = [...allContent];
                 
                 // Display first page
                 displayCurrentPage();
                 updatePagination();
+                updateKeywordsDisplay();
                 
             } catch (error) {
                 console.error("Error loading content:", error);
@@ -864,17 +959,72 @@
             }
         }
 
-        // Filter content based on search term
-        function filterContent(searchTerm) {
-            currentSearchTerm = searchTerm.toLowerCase().trim();
+        // Update keywords display
+        function updateKeywordsDisplay() {
+            const keywordsContainer = document.getElementById('searchKeywords');
+            keywordsContainer.innerHTML = '';
             
-            if (!currentSearchTerm) {
-                // FIX 1: Show ALL content when search is empty
+            if (searchKeywords.length === 0) {
+                keywordsContainer.style.display = 'none';
+                return;
+            }
+            
+            keywordsContainer.style.display = 'flex';
+            searchKeywords.forEach(keyword => {
+                const tag = document.createElement('span');
+                tag.className = 'keyword-tag';
+                tag.textContent = keyword;
+                tag.onclick = () => removeKeyword(keyword);
+                keywordsContainer.appendChild(tag);
+            });
+        }
+
+        // Add keyword to search
+        function addKeyword(keyword) {
+            if (!searchKeywords.includes(keyword)) {
+                searchKeywords.push(keyword);
+                updateKeywordsDisplay();
+                filterContent();
+            }
+        }
+
+        // Remove keyword from search
+        function removeKeyword(keyword) {
+            searchKeywords = searchKeywords.filter(k => k !== keyword);
+            updateKeywordsDisplay();
+            filterContent();
+        }
+
+        // Filter content based on search term and keywords
+        function filterContent() {
+            const searchTerm = currentSearchTerm.toLowerCase().trim();
+            
+            if (!searchTerm && searchKeywords.length === 0) {
+                // No search - show all content
                 filteredContent = [...allContent];
             } else {
-                filteredContent = allContent.filter(item => 
-                    item.title.toLowerCase().includes(currentSearchTerm)
-                );
+                filteredContent = allContent.filter(item => {
+                    let matches = true;
+                    
+                    // Check search term
+                    if (searchTerm) {
+                        const titleMatch = item.title.toLowerCase().includes(searchTerm);
+                        const descMatch = item.description?.toLowerCase().includes(searchTerm) || false;
+                        matches = matches && (titleMatch || descMatch);
+                    }
+                    
+                    // Check keywords
+                    if (searchKeywords.length > 0) {
+                        const hasKeywords = searchKeywords.some(keyword => 
+                            item.keywords.some(itemKeyword => 
+                                itemKeyword.includes(keyword) || keyword.includes(itemKeyword)
+                            )
+                        );
+                        matches = matches && hasKeywords;
+                    }
+                    
+                    return matches;
+                });
             }
             
             // Reset to first page when searching
@@ -883,8 +1033,6 @@
             // Display results
             displayCurrentPage();
             updatePagination();
-            
-            // Update search info
             updateSearchInfo();
         }
 
@@ -895,10 +1043,17 @@
             const startIndex = (currentPage - 1) * itemsPerPage + 1;
             const endIndex = Math.min(currentPage * itemsPerPage, totalItems);
             
-            if (currentSearchTerm) {
-                searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} results for: <span class="search-highlight">"${currentSearchTerm}"</span>`;
+            if (currentSearchTerm || searchKeywords.length > 0) {
+                let searchText = '';
+                if (currentSearchTerm) {
+                    searchText += `Search: "${currentSearchTerm}"`;
+                }
+                if (searchKeywords.length > 0) {
+                    if (searchText) searchText += ' | ';
+                    searchText += `Keywords: ${searchKeywords.join(', ')}`;
+                }
+                searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} results for: <span class="search-highlight">${searchText}</span>`;
             } else {
-                // FIX 1: Show "Showing all posts" when no search term
                 if (totalItems > 0) {
                     searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} posts`;
                 } else {
@@ -907,16 +1062,14 @@
             }
             
             if (totalItems === 0) {
-                searchInfo.innerHTML = currentSearchTerm ? 
-                    `No results found for: <span class="search-highlight">"${currentSearchTerm}"</span>` :
-                    'No posts available';
+                const searchText = currentSearchTerm || searchKeywords.join(', ');
+                searchInfo.innerHTML = `No results found for: <span class="search-highlight">"${searchText}"</span>`;
             }
         }
 
         // Display current page content
         function displayCurrentPage() {
             const container = document.getElementById('contentContainer');
-            container.innerHTML = '';
             
             if (filteredContent.length === 0) {
                 container.innerHTML = `
@@ -932,10 +1085,14 @@
             const endIndex = Math.min(startIndex + itemsPerPage, filteredContent.length);
             const pageItems = filteredContent.slice(startIndex, endIndex);
             
+            // Create grid container
+            container.innerHTML = '<div class="content-grid" id="contentGrid"></div>';
+            const grid = document.getElementById('contentGrid');
+            
             // Create content items
             pageItems.forEach(item => {
                 const contentItem = createContentItem(item);
-                container.appendChild(contentItem);
+                grid.appendChild(contentItem);
             });
             
             updateSearchInfo();
@@ -947,13 +1104,31 @@
             item.className = 'content-item';
             item.dataset.id = data.id;
             
+            // Highlight search terms in title and description
+            let titleHtml = data.title;
+            let descHtml = data.description || 'No description provided';
+            
+            // Highlight search term
+            if (currentSearchTerm) {
+                const regex = new RegExp(`(${currentSearchTerm})`, 'gi');
+                titleHtml = titleHtml.replace(regex, '<span class="search-highlight">$1</span>');
+                descHtml = descHtml.replace(regex, '<span class="search-highlight">$1</span>');
+            }
+            
+            // Highlight keywords
+            searchKeywords.forEach(keyword => {
+                const regex = new RegExp(`(${keyword})`, 'gi');
+                titleHtml = titleHtml.replace(regex, '<span class="search-highlight">$1</span>');
+                descHtml = descHtml.replace(regex, '<span class="search-highlight">$1</span>');
+            });
+            
             let mediaContent = '';
             
             // Different media types
             if (data.type === 'video') {
                 mediaContent = `
                     <div class="media-container">
-                        <video class="direct-video" controls controlsList="nodownload" preload="metadata">
+                        <video class="direct-video" controls controlsList="nodownload" preload="metadata" playsinline>
                             <source src="${data.link}" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
@@ -976,30 +1151,78 @@
                             <div class="link-icon">🔗</div>
                             <div>EXTERNAL LINK</div>
                             <a href="${data.link}" target="_blank" onclick="event.stopPropagation();">
-                                OPEN LINK IN NEW TAB
+                                OPEN LINK
                             </a>
                         </div>
                     </div>
                 `;
             }
             
+            // Create tags from keywords
+            let tagsHtml = '';
+            if (data.keywords && data.keywords.length > 0) {
+                const displayKeywords = data.keywords.slice(0, 5); // Show only first 5 keywords
+                tagsHtml = '<div class="content-tags">';
+                displayKeywords.forEach(keyword => {
+                    tagsHtml += `<span class="content-tag">${keyword}</span>`;
+                });
+                tagsHtml += '</div>';
+            }
+            
             item.innerHTML = `
                 ${mediaContent}
                 <div class="content-info">
-                    <h3 class="content-title">${data.title}</h3>
-                    <p class="content-description">${data.description || 'No description provided'}</p>
+                    <h3 class="content-title">${titleHtml}</h3>
+                    <p class="content-description">${descHtml}</p>
+                    ${tagsHtml}
                 </div>
                 <div class="content-actions">
                     <a href="${data.link}" target="_blank" class="source-link" onclick="event.stopPropagation();">
-                        OPEN ORIGINAL SOURCE
+                        OPEN SOURCE
                     </a>
                     <button class="report-btn" onclick="event.stopPropagation(); reportPost('${data.id}')">
-                        REPORT CONTENT
+                        REPORT
                     </button>
                 </div>
             `;
             
             return item;
+        }
+
+        // Show search suggestions
+        function showSearchSuggestions() {
+            const suggestionsContainer = document.getElementById('searchSuggestions');
+            const searchTerm = currentSearchTerm.toLowerCase().trim();
+            
+            if (searchTerm.length < 2) {
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+            
+            // Filter keywords that match search term
+            const matchingKeywords = Array.from(allKeywords)
+                .filter(keyword => keyword.includes(searchTerm))
+                .slice(0, 10); // Show top 10
+            
+            if (matchingKeywords.length === 0) {
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+            
+            suggestionsContainer.innerHTML = '';
+            matchingKeywords.forEach(keyword => {
+                const suggestion = document.createElement('div');
+                suggestion.className = 'search-suggestion-item';
+                suggestion.textContent = keyword;
+                suggestion.onclick = () => {
+                    addKeyword(keyword);
+                    document.getElementById('searchBar').value = '';
+                    suggestionsContainer.style.display = 'none';
+                };
+                suggestionsContainer.appendChild(suggestion);
+            });
+            
+            suggestionsContainer.style.display = 'block';
         }
 
         // Update pagination buttons
@@ -1068,30 +1291,73 @@
             });
         }
 
-        // Setup search with debounce
+        // Setup search with real-time filtering
         function setupSearch() {
             const searchBar = document.getElementById('searchBar');
-            let searchTimeout;
+            const suggestionsContainer = document.getElementById('searchSuggestions');
             
+            // Real-time search
             searchBar.addEventListener('input', function() {
-                clearTimeout(searchTimeout);
-                const searchTerm = this.value;
+                currentSearchTerm = this.value;
                 
-                searchTimeout = setTimeout(() => {
-                    // FIX 1: If search is empty, show ALL posts
-                    filterContent(searchTerm);
-                }, 500);
+                // Show suggestions
+                showSearchSuggestions();
+                
+                // Filter content in real-time
+                filterContent();
             });
             
-            // FIX 1: Initialize with all posts showing
-            filterContent('');
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchBar.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                    suggestionsContainer.style.display = 'none';
+                }
+            });
+            
+            // Keyboard navigation for suggestions
+            let selectedSuggestionIndex = -1;
+            
+            searchBar.addEventListener('keydown', function(e) {
+                const suggestions = suggestionsContainer.querySelectorAll('.search-suggestion-item');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, suggestions.length - 1);
+                    updateSuggestionSelection(suggestions);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, -1);
+                    updateSuggestionSelection(suggestions);
+                } else if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
+                    e.preventDefault();
+                    suggestions[selectedSuggestionIndex].click();
+                } else if (e.key === 'Enter' && this.value.trim()) {
+                    // Add search term as keyword
+                    const keyword = this.value.trim().toLowerCase();
+                    if (keyword.length > 2) {
+                        addKeyword(keyword);
+                        this.value = '';
+                        suggestionsContainer.style.display = 'none';
+                    }
+                } else if (e.key === 'Escape') {
+                    suggestionsContainer.style.display = 'none';
+                }
+            });
+            
+            function updateSuggestionSelection(suggestions) {
+                suggestions.forEach((suggestion, index) => {
+                    suggestion.classList.toggle('highlight', index === selectedSuggestionIndex);
+                });
+            }
+            
+            // Initialize with all posts
+            filterContent();
         }
 
         // Toggle fullscreen for media
         function toggleFullscreen(button) {
             event.stopPropagation();
             const mediaContainer = button.parentElement;
-            const mediaElement = mediaContainer.querySelector('video, img');
             
             if (!document.fullscreenElement) {
                 if (mediaContainer.requestFullscreen) {
@@ -1169,7 +1435,7 @@
         document.addEventListener('MSFullscreenChange', handleFullscreenChange);
         
         function handleFullscreenChange() {
-            // Fullscreen change handler - can add additional logic here
+            // Fullscreen change handler
         }
 
         // Handle keyboard navigation for pagination
