@@ -134,12 +134,28 @@
             width: 100%;
         }
         
-        /* Header */
+        /* Header - Updated to include logo image */
         .header { 
             text-align: center; 
             margin-bottom: 30px; 
             padding-bottom: 20px; 
             border-bottom: 2px solid #800; 
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .logo-image {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(2px 2px 4px rgba(255, 0, 0, 0.5));
         }
         
         .logo { 
@@ -148,7 +164,6 @@
             font-family: 'UnifrakturMaguntia', cursive; 
             text-transform: uppercase; 
             letter-spacing: 5px; 
-            margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(255, 0, 0, 0.5);
             line-height: 1.2;
         }
@@ -158,12 +173,28 @@
                 font-size: 2.5rem;
                 letter-spacing: 3px;
             }
+            
+            .logo-image {
+                height: 60px;
+            }
+            
+            .logo-container {
+                gap: 15px;
+            }
         }
         
         @media (max-width: 480px) {
             .logo {
                 font-size: 2rem;
                 letter-spacing: 2px;
+            }
+            
+            .logo-image {
+                height: 50px;
+            }
+            
+            .logo-container {
+                gap: 10px;
             }
         }
         
@@ -655,7 +686,12 @@
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
         <div class="header">
-            <div class="logo">LeakStream</div>
+            <div class="logo-container">
+                <img src="https://i.postimg.cc/W1Jg7yv0/leakstream-removebg-preview.png" 
+                     alt="LeakStream Logo" 
+                     class="logo-image">
+                <div class="logo">LeakStream</div>
+            </div>
             <div class="search-container">
                 <input type="text" id="searchBar" placeholder="Search by title...">
                 <div class="search-info" id="searchInfo">
@@ -815,7 +851,7 @@
                 
                 console.log(`Loaded ${allContent.length} items`);
                 
-                // Update filtered content (initially same as all content)
+                // FIX 1: Always show all content initially, not just filtered
                 filteredContent = [...allContent];
                 
                 // Display first page
@@ -833,6 +869,7 @@
             currentSearchTerm = searchTerm.toLowerCase().trim();
             
             if (!currentSearchTerm) {
+                // FIX 1: Show ALL content when search is empty
                 filteredContent = [...allContent];
             } else {
                 filteredContent = allContent.filter(item => 
@@ -861,13 +898,18 @@
             if (currentSearchTerm) {
                 searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} results for: <span class="search-highlight">"${currentSearchTerm}"</span>`;
             } else {
-                searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} items`;
+                // FIX 1: Show "Showing all posts" when no search term
+                if (totalItems > 0) {
+                    searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} posts`;
+                } else {
+                    searchInfo.innerHTML = 'No posts available';
+                }
             }
             
             if (totalItems === 0) {
                 searchInfo.innerHTML = currentSearchTerm ? 
                     `No results found for: <span class="search-highlight">"${currentSearchTerm}"</span>` :
-                    'No content available';
+                    'No posts available';
             }
         }
 
@@ -879,7 +921,7 @@
             if (filteredContent.length === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 60px; color: #ccc; font-family: 'Creepster', cursive; font-size: 1.8rem; border: 2px solid #800; background: rgba(20, 20, 20, 0.8);">
-                        No content found
+                        No posts found
                     </div>
                 `;
                 return;
@@ -1036,9 +1078,13 @@
                 const searchTerm = this.value;
                 
                 searchTimeout = setTimeout(() => {
+                    // FIX 1: If search is empty, show ALL posts
                     filterContent(searchTerm);
                 }, 500);
             });
+            
+            // FIX 1: Initialize with all posts showing
+            filterContent('');
         }
 
         // Toggle fullscreen for media
