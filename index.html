@@ -47,22 +47,185 @@
                text-transform: uppercase; letter-spacing: 8px; background: linear-gradient(45deg, #800, #400); 
                padding: 10px 30px; border: 3px solid #800; }
         
-        /* Videos grid */
-        .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+        /* Videos grid - UPDATED FOR DIRECT VIEWING */
+        .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
                       gap: 30px; margin-top: 40px; }
-        .video-card { background: #111; overflow: hidden; border: 2px solid #333; transition: all 0.3s; }
-        .video-card:hover { transform: translateY(-10px); border-color: #800; 
-                           box-shadow: 0 15px 40px rgba(255, 0, 0, 0.3); }
-        .video-thumbnail { width: 100%; height: 250px; object-fit: cover; background: #222; }
-        .video-info { padding: 25px; }
-        .video-title { font-size: 1.5rem; margin-bottom: 15px; color: #fff; 
+        
+        .content-card { 
+            background: #111; 
+            border: 2px solid #333; 
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content-card:hover { 
+            transform: translateY(-10px); 
+            border-color: #800; 
+            box-shadow: 0 15px 40px rgba(255, 0, 0, 0.3); 
+        }
+        
+        /* Media container for direct viewing */
+        .media-container {
+            width: 100%;
+            height: 300px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Direct video player */
+        .direct-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+        
+        /* Direct image viewer */
+        .direct-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+        
+        /* Link viewer */
+        .link-viewer {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #222, #111);
+            color: #800;
+            font-size: 2rem;
+            font-family: 'Creepster', cursive;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .link-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #800;
+        }
+        
+        .link-viewer a {
+            color: #0f0;
+            text-decoration: none;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: 1px solid #0f0;
+            background: rgba(0, 68, 0, 0.3);
+        }
+        
+        .link-viewer a:hover {
+            background: rgba(0, 68, 0, 0.5);
+        }
+        
+        /* Content info */
+        .content-info { padding: 20px; flex-grow: 1; }
+        .content-title { font-size: 1.5rem; margin-bottom: 15px; color: #fff; 
                       font-family: 'Creepster', cursive; letter-spacing: 1px; }
-        .video-description { color: #999; margin-bottom: 20px; line-height: 1.6; }
-        .video-actions { display: flex; justify-content: space-between; align-items: center; }
-        .video-link { background: #004400; color: #0f0; padding: 12px 25px; text-decoration: none; 
-                     border: 1px solid #0f0; font-family: 'Creepster', cursive; letter-spacing: 1px; }
-        .report-btn { background: #400000; color: #f00; border: 1px solid #f00; padding: 12px 25px; 
-                     cursor: pointer; font-family: 'Creepster', cursive; letter-spacing: 1px; }
+        .content-description { color: #999; margin-bottom: 20px; line-height: 1.6; font-size: 1.1rem; }
+        
+        /* Content actions */
+        .content-actions { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid #333;
+        }
+        
+        .source-link {
+            background: #004400; 
+            color: #0f0; 
+            padding: 10px 20px; 
+            text-decoration: none; 
+            border: 1px solid #0f0; 
+            font-family: 'Creepster', cursive; 
+            letter-spacing: 1px;
+            font-size: 1rem;
+        }
+        
+        .source-link:hover {
+            background: #006600;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .report-btn { 
+            background: #400000; 
+            color: #f00; 
+            border: 1px solid #f00; 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            font-family: 'Creepster', cursive; 
+            letter-spacing: 1px;
+            font-size: 1rem;
+        }
+        
+        .report-btn:hover {
+            background: #660000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+        
+        /* Video controls */
+        video::-webkit-media-controls {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        
+        video::-webkit-media-controls-panel {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        
+        /* Fullscreen button */
+        .fullscreen-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 1px solid #800;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: 'Creepster', cursive;
+            z-index: 10;
+            display: none;
+        }
+        
+        .media-container:hover .fullscreen-btn {
+            display: block;
+        }
+        
+        /* Status messages */
+        .status-message { 
+            padding: 20px; 
+            margin: 20px 0; 
+            text-align: center; 
+            font-family: 'Creepster', cursive; 
+            letter-spacing: 2px; 
+            display: none; 
+        }
+        
+        .error-message { 
+            background: rgba(128, 0, 0, 0.2); 
+            border: 2px solid #f00; 
+            color: #f00; 
+        }
+        
+        .success-message { 
+            background: rgba(0, 128, 0, 0.2); 
+            border: 2px solid #0f0; 
+            color: #0f0; 
+        }
         
         /* Scrollbar */
         ::-webkit-scrollbar { width: 12px; }
@@ -70,11 +233,33 @@
         ::-webkit-scrollbar-thumb { background: #800; }
         ::-webkit-scrollbar-thumb:hover { background: #a00; }
         
-        /* Status messages */
-        .status-message { padding: 20px; margin: 20px 0; text-align: center; font-family: 'Creepster', cursive; 
-                         letter-spacing: 2px; display: none; }
-        .error-message { background: rgba(128, 0, 0, 0.2); border: 2px solid #f00; color: #f00; }
-        .success-message { background: rgba(0, 128, 0, 0.2); border: 2px solid #0f0; color: #0f0; }
+        /* No results */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
+            color: #ccc;
+            font-size: 2rem;
+            font-family: 'Creepster', cursive;
+            border: 2px solid #800;
+            background: rgba(20, 20, 20, 0.8);
+        }
+        
+        /* Search info */
+        .search-info {
+            color: #ccc;
+            font-family: 'Creepster', cursive;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            padding: 10px;
+            background: rgba(128, 0, 0, 0.1);
+            border: 1px solid #333;
+        }
+        
+        .search-highlight {
+            color: #ff4444;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -101,10 +286,14 @@
             <div class="logo">LeakStream</div>
             <div class="search-container">
                 <input type="text" id="searchBar" placeholder="Search by title...">
+                <div class="search-info" id="searchInfo">
+                    Showing all content. Type to search...
+                </div>
             </div>
         </div>
+        
         <div class="videos-grid" id="videosGrid">
-            <!-- Content loads here -->
+            <!-- Content loads here directly -->
         </div>
     </div>
 
@@ -140,13 +329,11 @@
         // Initialize Firebase
         let db, auth;
         try {
-            // Check if Firebase is already initialized
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
                 console.log("Firebase initialized successfully");
             }
             
-            // Get Firebase services
             db = firebase.firestore();
             auth = firebase.auth();
             
@@ -203,8 +390,8 @@
                 await auth.signInAnonymously();
                 console.log("Signed in anonymously");
                 
-                // Load initial videos
-                await loadVideos();
+                // Load initial content
+                await loadContent();
                 
                 // Setup search
                 setupSearch();
@@ -217,25 +404,28 @@
             }
         }
 
-        // Load videos
-        async function loadVideos(searchTerm = '') {
+        // Load content
+        async function loadContent(searchTerm = '') {
             try {
-                console.log("Loading videos, search term:", searchTerm);
+                console.log("Loading content, search term:", searchTerm);
                 
                 let query = db.collection('posts').where('spamReports', '<', 5);
                 
                 const snapshot = await query.get();
-                const videosGrid = document.getElementById('videosGrid');
-                videosGrid.innerHTML = '';
+                const contentGrid = document.getElementById('videosGrid');
+                contentGrid.innerHTML = '';
                 
                 if (snapshot.empty) {
-                    videosGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ccc; font-size: 2rem; padding: 40px;">No content found</div>';
+                    contentGrid.innerHTML = '<div class="no-results">No content found</div>';
+                    document.getElementById('searchInfo').textContent = 'No content available';
                     return;
                 }
                 
                 let visibleCount = 0;
+                let totalCount = 0;
                 
                 snapshot.forEach(doc => {
+                    totalCount++;
                     const data = doc.data();
                     
                     // Filter by search term (title only)
@@ -244,50 +434,116 @@
                     }
                     
                     visibleCount++;
-                    const videoCard = createVideoCard(doc.id, data);
-                    videosGrid.appendChild(videoCard);
+                    const contentCard = createContentCard(doc.id, data);
+                    contentGrid.appendChild(contentCard);
                 });
                 
+                // Update search info
+                if (searchTerm) {
+                    document.getElementById('searchInfo').innerHTML = 
+                        `Showing ${visibleCount} of ${totalCount} results matching: <span class="search-highlight">${searchTerm}</span>`;
+                } else {
+                    document.getElementById('searchInfo').textContent = 
+                        `Showing all content (${visibleCount} items). Type to search...`;
+                }
+                
                 if (visibleCount === 0) {
-                    videosGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #ccc; font-size: 2rem; padding: 40px;">
-                        No content found matching "${searchTerm}"
-                    </div>`;
+                    contentGrid.innerHTML = `<div class="no-results">No content found matching "${searchTerm}"</div>`;
                 }
                 
             } catch (error) {
-                console.error("Error loading videos:", error);
+                console.error("Error loading content:", error);
                 showStatus("Error loading content. Please try again.");
             }
         }
 
-        // Create video card
-        function createVideoCard(id, data) {
+        // Create content card with direct viewing
+        function createContentCard(id, data) {
             const card = document.createElement('div');
-            card.className = 'video-card';
+            card.className = 'content-card';
+            card.dataset.id = id;
             
-            let thumbnail = '';
-            if (data.type === 'image' || data.type === 'video') {
-                thumbnail = `<img src="${data.link}" class="video-thumbnail" alt="${data.title}" 
-                             onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"250\"><rect width=\"400\" height=\"250\" fill=\"%23222\"/><text x=\"200\" y=\"125\" font-family=\"Arial\" font-size=\"24\" fill=\"%23800\" text-anchor=\"middle\">${data.type.toUpperCase()}</text></svg>'">`;
-            } else {
-                thumbnail = `<div class="video-thumbnail" style="display: flex; align-items: center; justify-content: center; background: #222; color: #800; font-size: 2rem; font-family: Creepster;">
-                    LINK
-                </div>`;
+            let mediaContent = '';
+            
+            // Different media types
+            if (data.type === 'video') {
+                mediaContent = `
+                    <div class="media-container">
+                        <video class="direct-video" controls controlsList="nodownload">
+                            <source src="${data.link}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <button class="fullscreen-btn" onclick="toggleFullscreen(this)">Fullscreen</button>
+                    </div>
+                `;
+            } else if (data.type === 'image') {
+                mediaContent = `
+                    <div class="media-container">
+                        <img src="${data.link}" class="direct-image" alt="${data.title}" 
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\"><rect width=\"400\" height=\"300\" fill=\"%23222\"/><text x=\"200\" y=\"150\" font-family=\"Arial\" font-size=\"24\" fill=\"%23800\" text-anchor=\"middle\">IMAGE NOT FOUND</text></svg>'">
+                        <button class="fullscreen-btn" onclick="toggleFullscreen(this)">Fullscreen</button>
+                    </div>
+                `;
+            } else if (data.type === 'link') {
+                mediaContent = `
+                    <div class="media-container">
+                        <div class="link-viewer">
+                            <div class="link-icon">🔗</div>
+                            <div>External Link</div>
+                            <a href="${data.link}" target="_blank" onclick="event.stopPropagation();">
+                                Open Link in New Tab
+                            </a>
+                        </div>
+                    </div>
+                `;
             }
             
             card.innerHTML = `
-                ${thumbnail}
-                <div class="video-info">
-                    <h3 class="video-title">${data.title}</h3>
-                    <p class="video-description">${data.description || 'No description'}</p>
-                    <div class="video-actions">
-                        <a href="${data.link}" target="_blank" class="video-link">View ${data.type}</a>
-                        <button class="report-btn" onclick="reportPost('${id}')">Report</button>
-                    </div>
+                ${mediaContent}
+                <div class="content-info">
+                    <h3 class="content-title">${data.title}</h3>
+                    <p class="content-description">${data.description || 'No description provided'}</p>
+                </div>
+                <div class="content-actions">
+                    <a href="${data.link}" target="_blank" class="source-link" onclick="event.stopPropagation();">
+                        Open Original Source
+                    </a>
+                    <button class="report-btn" onclick="event.stopPropagation(); reportPost('${id}')">
+                        Report Content
+                    </button>
                 </div>
             `;
             
             return card;
+        }
+
+        // Toggle fullscreen for media
+        function toggleFullscreen(button) {
+            event.stopPropagation();
+            const mediaContainer = button.parentElement;
+            const mediaElement = mediaContainer.querySelector('video, img');
+            
+            if (!document.fullscreenElement) {
+                if (mediaContainer.requestFullscreen) {
+                    mediaContainer.requestFullscreen();
+                } else if (mediaContainer.mozRequestFullScreen) {
+                    mediaContainer.mozRequestFullScreen();
+                } else if (mediaContainer.webkitRequestFullscreen) {
+                    mediaContainer.webkitRequestFullscreen();
+                } else if (mediaContainer.msRequestFullscreen) {
+                    mediaContainer.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
         }
 
         // Setup search
@@ -300,7 +556,7 @@
                 const searchTerm = this.value.trim();
                 
                 searchTimeout = setTimeout(() => {
-                    loadVideos(searchTerm);
+                    loadContent(searchTerm);
                 }, 300);
             });
         }
@@ -339,8 +595,8 @@
                         alert('Content reported successfully');
                     }
                     
-                    // Reload videos
-                    loadVideos(document.getElementById('searchBar').value);
+                    // Reload content
+                    loadContent(document.getElementById('searchBar').value);
                 }
                 
             } catch (error) {
@@ -351,6 +607,23 @@
 
         // Start snow animation
         window.addEventListener('load', createSnow);
+        
+        // Handle fullscreen changes
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+        
+        function handleFullscreenChange() {
+            const fullscreenElement = document.fullscreenElement || 
+                                     document.webkitFullscreenElement || 
+                                     document.mozFullScreenElement || 
+                                     document.msFullscreenElement;
+            
+            if (!fullscreenElement) {
+                // Exit fullscreen - do any cleanup here
+            }
+        }
     </script>
 </body>
 </html>
