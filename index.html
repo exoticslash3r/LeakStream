@@ -114,6 +114,7 @@
             padding: 20px 0;
             border-bottom: 1px solid #333;
             margin-bottom: 30px;
+            text-align: center;
         }
 
         .logo {
@@ -121,14 +122,24 @@
             font-weight: bold;
             letter-spacing: 5px;
             text-transform: uppercase;
-            text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #666;
+            font-size: 14px;
+            letter-spacing: 2px;
         }
 
         /* Search Bar */
         .search-container {
             margin-bottom: 40px;
-            position: relative;
+            position: sticky;
+            top: 0;
+            background: #000;
+            padding: 20px 0;
+            z-index: 100;
+            border-bottom: 1px solid #333;
         }
 
         #searchInput {
@@ -170,88 +181,119 @@
             background: #222;
         }
 
-        /* Media Grid */
-        .media-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
+        /* Media Feed */
+        .media-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
             margin-bottom: 50px;
         }
 
         .media-item {
             position: relative;
-            background: #111;
-            border: 1px solid #333;
+            background: #000;
+            border-bottom: 1px solid #222;
+            padding: 20px 0;
+            width: 100%;
+        }
+
+        .media-item:last-child {
+            border-bottom: none;
         }
 
         .media-container {
             position: relative;
             width: 100%;
-            padding-top: 56.25%;
+            max-height: 600px;
             overflow: hidden;
+            margin-bottom: 15px;
         }
 
         .media-content {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            display: block;
+            max-height: 600px;
+            object-fit: contain;
+            background: #000;
+        }
+
+        video.media-content {
+            width: 100%;
+            height: auto;
+            max-height: 600px;
+            background: #000;
+        }
+
+        img.media-content {
+            width: 100%;
+            height: auto;
+            max-height: 600px;
+            object-fit: contain;
         }
 
         .media-logo {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 40px;
-            height: 40px;
+            top: 15px;
+            left: 15px;
+            width: 50px;
+            height: 50px;
             z-index: 2;
             filter: brightness(1.5) contrast(1.2);
         }
 
         .media-controls {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
+            bottom: 15px;
+            right: 15px;
             display: flex;
-            gap: 8px;
+            gap: 10px;
             z-index: 2;
         }
 
         .control-btn {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             border: 1px solid #fff;
             color: #fff;
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
+            transition: all 0.3s;
         }
 
         .control-btn:hover {
             background: rgba(255, 255, 255, 0.9);
             color: #000;
+            transform: scale(1.1);
         }
 
         .media-info {
-            padding: 15px;
+            padding: 0 10px;
         }
 
         .media-title {
-            font-size: 16px;
-            margin-bottom: 8px;
+            font-size: 20px;
+            margin-bottom: 10px;
             font-weight: bold;
             color: #fff;
+            letter-spacing: 1px;
         }
 
         .media-desc {
             color: #aaa;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .media-meta {
+            color: #666;
             font-size: 14px;
-            line-height: 1.5;
+            display: flex;
+            gap: 15px;
         }
 
         /* Timeout Screen */
@@ -373,15 +415,46 @@
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 100px 20px;
             color: #666;
-            grid-column: 1/-1;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: #666;
+            font-size: 12px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .media-grid {
-                grid-template-columns: 1fr;
+            .media-container {
+                max-height: 400px;
+            }
+            
+            .media-content {
+                max-height: 400px;
+            }
+            
+            video.media-content {
+                max-height: 400px;
+            }
+            
+            img.media-content {
+                max-height: 400px;
             }
             
             .gate-content {
@@ -395,6 +468,45 @@
             
             .age-btn {
                 width: 100%;
+            }
+            
+            .media-title {
+                font-size: 18px;
+            }
+            
+            .media-desc {
+                font-size: 14px;
+            }
+            
+            .media-logo {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .media-container {
+                max-height: 300px;
+            }
+            
+            .media-content {
+                max-height: 300px;
+            }
+            
+            video.media-content {
+                max-height: 300px;
+            }
+            
+            img.media-content {
+                max-height: 300px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .logo {
+                font-size: 24px;
             }
         }
     </style>
@@ -456,16 +568,19 @@
     <div class="container" id="mainContainer">
         <header>
             <div class="logo">LEAKSTREAM</div>
+            <div class="tagline">WIDE MEDIA FEED</div>
         </header>
 
         <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search videos and images...">
+            <input type="text" id="searchInput" placeholder="SEARCH VIDEOS AND IMAGES...">
             <div class="search-results" id="searchResults"></div>
         </div>
 
         <div class="loading" id="loading">LOADING CONTENT...</div>
 
-        <div class="media-grid" id="mediaGrid"></div>
+        <div class="media-feed" id="mediaFeed"></div>
+
+        <div class="scroll-indicator">SCROLL ↓</div>
     </div>
 
     <script>
@@ -489,8 +604,12 @@
         let currentReportPostId = null;
         let spamCounter = {};
         let searchTimeout = null;
+        let lastDoc = null;
+        let loadingMore = false;
+        let hasMore = true;
         const MAX_SPAM_ATTEMPTS = 5;
         const TIMEOUT_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+        const PAGE_SIZE = 10;
 
         // ========== AGE VERIFICATION ==========
         function verifyAge(isAdult) {
@@ -518,6 +637,7 @@
             document.getElementById('mainContainer').style.display = 'block';
             initializeApp();
             startSnowAnimation();
+            setupInfiniteScroll();
         }
 
         function checkAgeVerification() {
@@ -561,14 +681,25 @@
             // Initialize auth
             auth.signInAnonymously()
                 .then(() => {
-                    loadMedia();
+                    loadInitialMedia();
                     setupRealtimeListener();
                     setupSearch();
                 })
                 .catch(error => {
                     console.error('Auth error:', error);
-                    loadMedia(); // Load anyway
+                    loadInitialMedia(); // Load anyway
                 });
+        }
+
+        // ========== INFINITE SCROLL ==========
+        function setupInfiniteScroll() {
+            window.addEventListener('scroll', () => {
+                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+                
+                if (scrollTop + clientHeight >= scrollHeight - 100 && !loadingMore && hasMore) {
+                    loadMoreMedia();
+                }
+            });
         }
 
         // ========== TIMEOUT SYSTEM ==========
@@ -606,17 +737,30 @@
         }
 
         // ========== MEDIA LOADING ==========
-        function loadMedia() {
+        function loadInitialMedia() {
             const loading = document.getElementById('loading');
             loading.classList.add('active');
             
             db.collection('posts')
                 .orderBy('timestamp', 'desc')
-                .limit(100)
+                .limit(PAGE_SIZE)
                 .get()
                 .then(snapshot => {
                     loading.classList.remove('active');
+                    
+                    if (snapshot.empty) {
+                        showEmptyState();
+                        hasMore = false;
+                        return;
+                    }
+                    
+                    lastDoc = snapshot.docs[snapshot.docs.length - 1];
                     displayMedia(snapshot);
+                    
+                    // Check if we have more
+                    if (snapshot.docs.length < PAGE_SIZE) {
+                        hasMore = false;
+                    }
                 })
                 .catch(error => {
                     console.error('Load error:', error);
@@ -624,43 +768,78 @@
                 });
         }
 
+        function loadMoreMedia() {
+            if (loadingMore || !hasMore) return;
+            
+            loadingMore = true;
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            loading.textContent = 'LOADING MORE...';
+            
+            db.collection('posts')
+                .orderBy('timestamp', 'desc')
+                .startAfter(lastDoc)
+                .limit(PAGE_SIZE)
+                .get()
+                .then(snapshot => {
+                    loading.classList.remove('active');
+                    loadingMore = false;
+                    
+                    if (snapshot.empty) {
+                        hasMore = false;
+                        return;
+                    }
+                    
+                    lastDoc = snapshot.docs[snapshot.docs.length - 1];
+                    displayMedia(snapshot);
+                    
+                    if (snapshot.docs.length < PAGE_SIZE) {
+                        hasMore = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Load more error:', error);
+                    loadingMore = false;
+                    loading.classList.remove('active');
+                });
+        }
+
         function setupRealtimeListener() {
             db.collection('posts')
                 .orderBy('timestamp', 'desc')
-                .limit(100)
+                .limit(50)
                 .onSnapshot(snapshot => {
-                    displayMedia(snapshot);
+                    // For real-time updates, we could handle new posts differently
+                    // For now, just reload if empty
+                    const mediaFeed = document.getElementById('mediaFeed');
+                    if (mediaFeed.children.length === 0) {
+                        loadInitialMedia();
+                    }
                 }, error => {
                     console.error('Realtime error:', error);
                 });
         }
 
         function displayMedia(snapshot) {
-            const mediaGrid = document.getElementById('mediaGrid');
+            const mediaFeed = document.getElementById('mediaFeed');
             const loading = document.getElementById('loading');
             
             loading.classList.remove('active');
             
             if (snapshot.empty) {
-                mediaGrid.innerHTML = `
-                    <div class="empty-state">
-                        <p>No content available yet.</p>
-                        <p>Be the first to publish something.</p>
-                    </div>
-                `;
+                if (mediaFeed.children.length === 0) {
+                    showEmptyState();
+                }
                 return;
             }
             
-            mediaGrid.innerHTML = '';
-            
             snapshot.forEach(doc => {
-                const data = doc.data();
-                createMediaElement(doc.id, data);
+                createMediaElement(doc.id, doc.data());
             });
         }
 
         function createMediaElement(id, data) {
-            const mediaGrid = document.getElementById('mediaGrid');
+            const mediaFeed = document.getElementById('mediaFeed');
             
             const isVideo = data.url.match(/\.(mp4|webm|mov|avi|mkv)$/i) || data.type === 'video';
             const isImage = data.url.match(/\.(jpg|jpeg|png|gif|webp|bmp)$/i) || data.type === 'image';
@@ -672,7 +851,7 @@
             let mediaContent = '';
             if (isVideo) {
                 mediaContent = `
-                    <video class="media-content" controls preload="metadata">
+                    <video class="media-content" controls preload="metadata" playsinline>
                         <source src="${data.url}" type="video/mp4">
                         Your browser does not support video tag.
                     </video>
@@ -683,11 +862,16 @@
                 `;
             } else {
                 mediaContent = `
-                    <div class="media-content" style="background: #222; display: flex; align-items: center; justify-content: center;">
-                        <a href="${data.url}" target="_blank" style="color: #fff; text-decoration: none; padding: 20px;">VIEW LINK</a>
+                    <div class="media-content" style="background: #222; display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                        <a href="${data.url}" target="_blank" style="color: #fff; text-decoration: none; padding: 20px; border: 1px solid #fff;">VIEW LINK</a>
                     </div>
                 `;
             }
+            
+            // Format timestamp
+            const timestamp = data.timestamp ? 
+                new Date(data.timestamp.toDate()).toLocaleString() : 
+                'Recently';
             
             mediaItem.innerHTML = `
                 <div class="media-container">
@@ -695,7 +879,7 @@
                     <img src="https://i.postimg.cc/W1Jg7yv0/leakstream-removebg-preview.png" 
                          class="media-logo" alt="Logo">
                     <div class="media-controls">
-                        <button class="control-btn" onclick="downloadMedia('${id}', '${data.url}')" title="Download">
+                        <button class="control-btn" onclick="downloadMedia('${id}', '${escapeHtml(data.url)}')" title="Download">
                             ↓
                         </button>
                         <button class="control-btn" onclick="openReportModal('${id}')" title="Report">
@@ -705,11 +889,26 @@
                 </div>
                 <div class="media-info">
                     <div class="media-title">${escapeHtml(data.title || 'Untitled')}</div>
-                    <div class="media-desc">${escapeHtml(data.description || 'No description')}</div>
+                    <div class="media-desc">${escapeHtml(data.description || 'No description provided')}</div>
+                    <div class="media-meta">
+                        <span>${timestamp}</span>
+                        <span>Type: ${isVideo ? 'Video' : isImage ? 'Image' : 'Link'}</span>
+                    </div>
                 </div>
             `;
             
-            mediaGrid.appendChild(mediaItem);
+            mediaFeed.appendChild(mediaItem);
+        }
+
+        function showEmptyState() {
+            const mediaFeed = document.getElementById('mediaFeed');
+            mediaFeed.innerHTML = `
+                <div class="empty-state">
+                    <h3>NO CONTENT AVAILABLE</h3>
+                    <p>The feed is currently empty.</p>
+                    <p>Be the first to publish something.</p>
+                </div>
+            `;
         }
 
         function escapeHtml(text) {
@@ -730,7 +929,7 @@
                 
                 if (query.length < 2) {
                     searchResults.style.display = 'none';
-                    filterMedia('');
+                    resetSearch();
                     return;
                 }
                 
@@ -749,12 +948,20 @@
 
         function performSearch(query) {
             const searchResults = document.getElementById('searchResults');
+            const mediaFeed = document.getElementById('mediaFeed');
+            
+            // Clear current feed
+            mediaFeed.innerHTML = '';
+            document.getElementById('loading').classList.add('active');
             
             db.collection('posts')
                 .orderBy('timestamp', 'desc')
                 .get()
                 .then(snapshot => {
+                    document.getElementById('loading').classList.remove('active');
+                    
                     const results = [];
+                    const searchItems = [];
                     
                     snapshot.forEach(doc => {
                         const data = doc.data();
@@ -767,22 +974,37 @@
                                 keyword.toLowerCase().includes(query)))) {
                             results.push({
                                 id: doc.id,
-                                title: title,
-                                description: description
+                                data: data
+                            });
+                            searchItems.push({
+                                id: doc.id,
+                                title: title
                             });
                         }
                     });
                     
-                    if (results.length > 0) {
-                        displaySearchResults(results, query);
+                    // Display search results dropdown
+                    if (searchItems.length > 0) {
+                        displaySearchResults(searchItems, query);
                     } else {
                         searchResults.style.display = 'none';
-                        filterMedia(query);
+                        mediaFeed.innerHTML = `
+                            <div class="empty-state">
+                                <h3>NO RESULTS FOUND</h3>
+                                <p>No content matches "${query}"</p>
+                                <p>Try different search terms</p>
+                            </div>
+                        `;
                     }
+                    
+                    // Display filtered media
+                    results.forEach(result => {
+                        createMediaElement(result.id, result.data);
+                    });
                 })
                 .catch(error => {
                     console.error('Search error:', error);
-                    filterMedia(query);
+                    document.getElementById('loading').classList.remove('active');
                 });
         }
 
@@ -796,14 +1018,13 @@
                 item.textContent = result.title || 'Untitled';
                 item.onclick = () => {
                     searchResults.style.display = 'none';
-                    filterMedia(query);
-                    // Scroll to the specific item if needed
+                    // Scroll to the specific item
                     const mediaItem = document.querySelector(`.media-item[data-id="${result.id}"]`);
                     if (mediaItem) {
                         mediaItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        mediaItem.style.outline = '1px solid #fff';
+                        mediaItem.style.backgroundColor = '#111';
                         setTimeout(() => {
-                            mediaItem.style.outline = 'none';
+                            mediaItem.style.backgroundColor = '';
                         }, 2000);
                     }
                 };
@@ -813,45 +1034,12 @@
             searchResults.style.display = 'block';
         }
 
-        function filterMedia(query) {
-            const mediaItems = document.querySelectorAll('.media-item');
-            let visibleCount = 0;
-            
-            mediaItems.forEach(item => {
-                const title = item.querySelector('.media-title').textContent.toLowerCase();
-                const desc = item.querySelector('.media-desc').textContent.toLowerCase();
-                
-                if (!query || title.includes(query) || desc.includes(query)) {
-                    item.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-            
-            // Show empty state if no results
-            const mediaGrid = document.getElementById('mediaGrid');
-            if (visibleCount === 0 && query) {
-                const emptyState = document.createElement('div');
-                emptyState.className = 'empty-state';
-                emptyState.innerHTML = `
-                    <p>No results found for "${query}"</p>
-                    <p>Try different search terms</p>
-                `;
-                
-                // Remove existing empty state if any
-                const existingEmpty = mediaGrid.querySelector('.empty-state');
-                if (existingEmpty) {
-                    existingEmpty.remove();
-                }
-                
-                mediaGrid.appendChild(emptyState);
-            } else {
-                const existingEmpty = mediaGrid.querySelector('.empty-state');
-                if (existingEmpty && existingEmpty.textContent.includes('results')) {
-                    existingEmpty.remove();
-                }
-            }
+        function resetSearch() {
+            const mediaFeed = document.getElementById('mediaFeed');
+            mediaFeed.innerHTML = '';
+            lastDoc = null;
+            hasMore = true;
+            loadInitialMedia();
         }
 
         // ========== DOWNLOAD FUNCTION ==========
@@ -884,7 +1072,7 @@
                     postId: postId,
                     userId: userId,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    ip: 'unknown' // Note: Can't get IP client-side
+                    ip: 'unknown'
                 });
                 
             } catch (error) {
