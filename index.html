@@ -3,130 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Publish Content - LeakStream</title>
+    <title>LeakStream Viewer</title>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Arial', sans-serif; background: #000; color: #fff; min-height: 100vh; 
-               display: flex; justify-content: center; align-items: center; padding: 20px; }
+        body { font-family: 'Arial', sans-serif; background: #000; min-height: 100vh; color: #fff; }
         
-        /* Blood rain */
-        .blood-drop { position: absolute; width: 2px; height: 20px; background: #800; opacity: 0; 
-                     animation: bloodRain linear infinite; pointer-events: none; z-index: 1; }
-        @keyframes bloodRain { 
-            0% { top: -20px; opacity: 1; transform: translateX(0); }
-            100% { top: 100vh; opacity: 0; transform: translateX(10px); }
+        /* Snow effect */
+        .snow { position: fixed; top: -10px; width: 10px; height: 10px; background: #8b0000; border-radius: 50%; 
+                opacity: 0.8; animation: snowfall linear infinite; z-index: 1000; pointer-events: none; }
+        @keyframes snowfall { 
+            0% { transform: translateY(0) translateX(0); opacity: 0.8; }
+            100% { transform: translateY(100vh) translateX(20px); opacity: 0; }
         }
         
-        /* Scrollable container */
-        .page-container { width: 100%; max-height: 95vh; overflow-y: auto; padding: 20px; }
-        .page-container::-webkit-scrollbar { width: 12px; }
-        .page-container::-webkit-scrollbar-track { background: #111; }
-        .page-container::-webkit-scrollbar-thumb { background: #800; }
-        .page-container::-webkit-scrollbar-thumb:hover { background: #a00; }
+        /* Age verification */
+        .age-verification { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; 
+                            display: flex; align-items: center; justify-content: center; z-index: 10000; }
+        .verification-box { background: rgba(20, 20, 20, 0.95); padding: 50px; border: 3px solid #800; 
+                           text-align: center; max-width: 700px; width: 90%; }
+        .verification-box h1 { color: #fff; margin-bottom: 30px; font-size: 3.5rem; 
+                              font-family: 'UnifrakturMaguntia', cursive; letter-spacing: 5px; }
+        .verification-box p { color: #ccc; margin-bottom: 30px; font-size: 1.3rem; line-height: 1.6; }
+        .warning-text { color: #ff4444 !important; font-weight: bold; font-size: 1.5rem !important; 
+                       margin: 20px 0; font-family: 'Creepster', cursive; }
+        .button-group { display: flex; gap: 30px; justify-content: center; margin-top: 40px; }
+        .age-btn { padding: 20px 40px; font-size: 1.3rem; border: none; border-radius: 0; cursor: pointer; 
+                  transition: all 0.3s; font-family: 'Creepster', cursive; letter-spacing: 2px; 
+                  text-transform: uppercase; }
+        .age-btn.yes { background: #004400; color: #00ff00; border: 2px solid #00ff00; }
+        .age-btn.no { background: #400000; color: #ff0000; border: 2px solid #ff0000; }
+        .age-btn:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3); }
         
-        /* Publish form */
-        .publish-container { background: rgba(20, 20, 20, 0.95); padding: 40px; border: 3px solid #800; 
-                            max-width: 700px; margin: 0 auto; }
-        h1 { color: #fff; margin-bottom: 30px; text-align: center; font-size: 3rem; 
-             font-family: 'UnifrakturMaguntia', cursive; border-bottom: 2px solid #800; padding-bottom: 20px; }
+        /* Main content */
+        .main-content { display: none; padding: 20px; max-width: 1400px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; 
+                 flex-wrap: wrap; gap: 30px; padding-bottom: 20px; border-bottom: 2px solid #800; }
+        .search-container { flex-grow: 1; max-width: 800px; }
+        #searchBar { width: 100%; padding: 20px; border: 2px solid #800; background: #111; color: #fff; 
+                    font-family: 'Creepster', cursive; letter-spacing: 2px; font-size: 1.2rem; }
+        #searchBar:focus { outline: none; border-color: #f00; box-shadow: 0 0 20px rgba(255, 0, 0, 0.3); }
+        .logo { color: #fff; font-size: 4rem; font-family: 'UnifrakturMaguntia', cursive; 
+               text-transform: uppercase; letter-spacing: 8px; background: linear-gradient(45deg, #800, #400); 
+               padding: 10px 30px; border: 3px solid #800; }
         
-        .form-group { margin-bottom: 25px; }
-        label { display: block; margin-bottom: 10px; color: #ccc; font-size: 1.2rem; 
-               font-family: 'Creepster', cursive; letter-spacing: 2px; }
-        input, textarea, select { width: 100%; padding: 15px; border: 2px solid #333; background: #111; 
-                                 color: #fff; font-size: 1.1rem; }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: #800; 
-                                                   box-shadow: 0 0 20px rgba(255, 0, 0, 0.3); }
-        textarea { min-height: 120px; resize: vertical; }
+        /* Videos grid */
+        .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+                      gap: 30px; margin-top: 40px; }
+        .video-card { background: #111; overflow: hidden; border: 2px solid #333; transition: all 0.3s; }
+        .video-card:hover { transform: translateY(-10px); border-color: #800; 
+                           box-shadow: 0 15px 40px rgba(255, 0, 0, 0.3); }
+        .video-thumbnail { width: 100%; height: 250px; object-fit: cover; background: #222; }
+        .video-info { padding: 25px; }
+        .video-title { font-size: 1.5rem; margin-bottom: 15px; color: #fff; 
+                      font-family: 'Creepster', cursive; letter-spacing: 1px; }
+        .video-description { color: #999; margin-bottom: 20px; line-height: 1.6; }
+        .video-actions { display: flex; justify-content: space-between; align-items: center; }
+        .video-link { background: #004400; color: #0f0; padding: 12px 25px; text-decoration: none; 
+                     border: 1px solid #0f0; font-family: 'Creepster', cursive; letter-spacing: 1px; }
+        .report-btn { background: #400000; color: #f00; border: 1px solid #f00; padding: 12px 25px; 
+                     cursor: pointer; font-family: 'Creepster', cursive; letter-spacing: 1px; }
         
-        .upload-hint { font-size: 0.9rem; color: #999; margin-top: 5px; display: block; }
-        .warning-hint { color: #ff4444 !important; font-weight: bold; }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #800; }
+        ::-webkit-scrollbar-thumb:hover { background: #a00; }
         
-        .hoster-links { display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap; }
-        .hoster-link { flex: 1; min-width: 250px; padding: 15px; text-align: center; 
-                      background: #004400; color: #0f0; text-decoration: none; border: 1px solid #0f0; 
-                      font-family: 'Creepster', cursive; transition: all 0.3s; }
-        .hoster-link:hover { background: #006600; transform: translateY(-3px); 
-                           box-shadow: 0 0 20px rgba(0, 255, 0, 0.3); }
-        .hoster-link:nth-child(2) { background: #002244; border-color: #00f; color: #88f; }
-        .hoster-link:nth-child(2):hover { background: #003366; box-shadow: 0 0 20px rgba(0, 100, 255, 0.3); }
-        
-        .submit-btn { width: 100%; padding: 20px; background: #004400; color: #0f0; border: 2px solid #0f0; 
-                     font-size: 1.5rem; cursor: pointer; margin-top: 30px; font-family: 'Creepster', cursive; 
-                     letter-spacing: 3px; transition: all 0.3s; }
-        .submit-btn:hover { background: #006600; box-shadow: 0 0 30px rgba(0, 255, 0, 0.4); transform: translateY(-5px); }
-        .submit-btn:disabled { background: #333; color: #666; border-color: #666; cursor: not-allowed; 
-                              transform: none; box-shadow: none; }
-        
-        .status-message { padding: 20px; margin: 20px 0; text-align: center; border: 2px solid; 
-                         font-family: 'Creepster', cursive; display: none; }
-        .success { background: rgba(0, 68, 0, 0.3); color: #0f0; border-color: #0f0; }
-        .error { background: rgba(68, 0, 0, 0.3); color: #f00; border-color: #f00; }
-        
-        .back-link { display: block; text-align: center; margin-top: 25px; color: #ccc; 
-                    text-decoration: none; padding: 10px; border: 1px solid #333; 
-                    font-family: 'Creepster', cursive; }
-        .back-link:hover { color: #fff; border-color: #800; background: rgba(128, 0, 0, 0.1); }
+        /* Status messages */
+        .status-message { padding: 20px; margin: 20px 0; text-align: center; font-family: 'Creepster', cursive; 
+                         letter-spacing: 2px; display: none; }
+        .error-message { background: rgba(128, 0, 0, 0.2); border: 2px solid #f00; color: #f00; }
+        .success-message { background: rgba(0, 128, 0, 0.2); border: 2px solid #0f0; color: #0f0; }
     </style>
 </head>
 <body>
-    <!-- Blood rain -->
-    <div class="blood-drop"></div>
-    <div class="blood-drop"></div>
-    <div class="blood-drop"></div>
-    
-    <div class="page-container">
-        <div class="publish-container">
-            <h1>Publish Content</h1>
-            
-            <form id="publishForm">
-                <div class="form-group">
-                    <label for="title">Title *</label>
-                    <input type="text" id="title" required maxlength="100" placeholder="Enter title">
-                    <span class="upload-hint warning-hint">Required field</span>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description">Description *</label>
-                    <textarea id="description" required maxlength="500" placeholder="Enter description"></textarea>
-                    <span class="upload-hint">Maximum 500 characters</span>
-                </div>
-                
-                <div class="form-group">
-                    <label for="type">Content Type *</label>
-                    <select id="type" required>
-                        <option value="">Select type</option>
-                        <option value="image">Image</option>
-                        <option value="video">Video</option>
-                        <option value="link">Link</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="link">Direct Link *</label>
-                    <input type="url" id="link" required placeholder="https://example.com/file.jpg">
-                    <span class="upload-hint warning-hint">Paste direct link from hoster</span>
-                    
-                    <div class="hoster-links">
-                        <a href="https://imagekit.io/dashboard/media-library" target="_blank" class="hoster-link">
-                            Upload Videos/Images
-                        </a>
-                        <a href="https://imgbb.com/" target="_blank" class="hoster-link">
-                            Upload Images
-                        </a>
-                    </div>
-                    
-                    <span class="upload-hint">
-                        Upload to hoster, get direct link, paste here
-                    </span>
-                </div>
-                
-                <button type="submit" class="submit-btn" id="submitBtn">Publish Content</button>
-            </form>
-            
-            <div id="statusMessage" class="status-message"></div>
-            <a href="index.html" class="back-link">← Back to Viewer</a>
+    <!-- Age Verification -->
+    <div class="age-verification">
+        <div class="verification-box">
+            <h1>Age Verification Required</h1>
+            <p>This website contains content that may not be suitable for minors. You must be 18 years or older to access this site.</p>
+            <p class="warning-text">WARNING: This site contains explicit material</p>
+            <p>By clicking "Yes", you confirm that you are of legal age and accept all consequences.</p>
+            <div class="button-group">
+                <button class="age-btn yes" onclick="verifyAge(true)">Yes, I am 18+</button>
+                <button class="age-btn no" onclick="verifyAge(false)">No, I am too young</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Message -->
+    <div id="statusMessage" class="status-message"></div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <div class="logo">LeakStream</div>
+            <div class="search-container">
+                <input type="text" id="searchBar" placeholder="Search by title...">
+            </div>
+        </div>
+        <div class="videos-grid" id="videosGrid">
+            <!-- Content loads here -->
         </div>
     </div>
 
@@ -147,150 +125,232 @@
             measurementId: "G-RXHE019ZWT"
         };
 
-        // Initialize Firebase
-        let db, auth;
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-                console.log("Firebase initialized successfully");
-            }
-            
-            db = firebase.firestore();
-            auth = firebase.auth();
-            
-        } catch (error) {
-            console.error("Firebase initialization failed:", error);
-            showStatus("Firebase initialization failed", "error");
-        }
-
         // Show status message
         function showStatus(message, type = 'error') {
             const statusDiv = document.getElementById('statusMessage');
             statusDiv.textContent = message;
-            statusDiv.className = `status-message ${type}`;
+            statusDiv.className = `status-message ${type}-message`;
             statusDiv.style.display = 'block';
-            
-            // Scroll to message
-            statusDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
             
             if (type === 'success') {
                 setTimeout(() => statusDiv.style.display = 'none', 3000);
             }
         }
 
-        // Create blood rain
-        function createBloodRain() {
-            for (let i = 0; i < 20; i++) {
-                let drop = document.createElement('div');
-                drop.className = 'blood-drop';
-                drop.style.left = Math.random() * 100 + 'vw';
-                drop.style.animationDuration = Math.random() * 2 + 1 + 's';
-                drop.style.opacity = Math.random() * 0.5 + 0.1;
-                document.body.appendChild(drop);
+        // Initialize Firebase
+        let db, auth;
+        try {
+            // Check if Firebase is already initialized
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+                console.log("Firebase initialized successfully");
+            }
+            
+            // Get Firebase services
+            db = firebase.firestore();
+            auth = firebase.auth();
+            
+            // Enable offline persistence
+            db.enablePersistence().catch((err) => {
+                console.log("Persistence failed:", err);
+            });
+            
+        } catch (error) {
+            console.error("Firebase initialization failed:", error);
+            showStatus("Firebase initialization failed. Check console for details.");
+        }
+
+        // Create snow effect
+        function createSnow() {
+            for (let i = 0; i < 100; i++) {
+                let snow = document.createElement('div');
+                snow.className = 'snow';
+                snow.style.left = Math.random() * 100 + 'vw';
+                snow.style.animationDuration = Math.random() * 3 + 2 + 's';
+                snow.style.opacity = Math.random() * 0.8 + 0.2;
+                document.body.appendChild(snow);
+            }
+        }
+
+        // Age verification
+        function verifyAge(isAdult) {
+            if (isAdult) {
+                document.querySelector('.age-verification').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                createSnow();
+                initializeApp();
+            } else {
+                document.body.innerHTML = `
+                    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #000;">
+                        <div style="text-align: center; padding: 40px; border: 3px solid #800; background: #111; color: #fff;">
+                            <h1 style="font-size: 4rem; margin-bottom: 30px; color: #f00; font-family: 'Creepster', cursive;">
+                                Access Denied
+                            </h1>
+                            <p style="font-size: 2rem;">You must be 18+ to access this website.</p>
+                        </div>
+                    </div>
+                `;
+                setTimeout(() => window.location.href = 'https://www.google.com', 3000);
             }
         }
 
         // Initialize app
         async function initializeApp() {
             try {
-                console.log("Initializing publishing app...");
+                console.log("Initializing app...");
                 
                 // Sign in anonymously
                 await auth.signInAnonymously();
                 console.log("Signed in anonymously");
                 
-                // Setup form
-                setupForm();
+                // Load initial videos
+                await loadVideos();
                 
-                // Create blood rain
-                createBloodRain();
+                // Setup search
+                setupSearch();
                 
-                showStatus("Ready to publish content", "success");
+                showStatus("Connected to database successfully", "success");
                 
             } catch (error) {
                 console.error("App initialization failed:", error);
-                showStatus("Error connecting to database", "error");
+                showStatus("Error connecting to database. Please refresh the page.");
             }
         }
 
-        // Setup form
-        function setupForm() {
-            const form = document.getElementById('publishForm');
-            const submitBtn = document.getElementById('submitBtn');
+        // Load videos
+        async function loadVideos(searchTerm = '') {
+            try {
+                console.log("Loading videos, search term:", searchTerm);
+                
+                let query = db.collection('posts').where('spamReports', '<', 5);
+                
+                const snapshot = await query.get();
+                const videosGrid = document.getElementById('videosGrid');
+                videosGrid.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    videosGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ccc; font-size: 2rem; padding: 40px;">No content found</div>';
+                    return;
+                }
+                
+                let visibleCount = 0;
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    
+                    // Filter by search term (title only)
+                    if (searchTerm && !data.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        return; // Skip if doesn't match search
+                    }
+                    
+                    visibleCount++;
+                    const videoCard = createVideoCard(doc.id, data);
+                    videosGrid.appendChild(videoCard);
+                });
+                
+                if (visibleCount === 0) {
+                    videosGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #ccc; font-size: 2rem; padding: 40px;">
+                        No content found matching "${searchTerm}"
+                    </div>`;
+                }
+                
+            } catch (error) {
+                console.error("Error loading videos:", error);
+                showStatus("Error loading content. Please try again.");
+            }
+        }
+
+        // Create video card
+        function createVideoCard(id, data) {
+            const card = document.createElement('div');
+            card.className = 'video-card';
             
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
+            let thumbnail = '';
+            if (data.type === 'image' || data.type === 'video') {
+                thumbnail = `<img src="${data.link}" class="video-thumbnail" alt="${data.title}" 
+                             onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"250\"><rect width=\"400\" height=\"250\" fill=\"%23222\"/><text x=\"200\" y=\"125\" font-family=\"Arial\" font-size=\"24\" fill=\"%23800\" text-anchor=\"middle\">${data.type.toUpperCase()}</text></svg>'">`;
+            } else {
+                thumbnail = `<div class="video-thumbnail" style="display: flex; align-items: center; justify-content: center; background: #222; color: #800; font-size: 2rem; font-family: Creepster;">
+                    LINK
+                </div>`;
+            }
+            
+            card.innerHTML = `
+                ${thumbnail}
+                <div class="video-info">
+                    <h3 class="video-title">${data.title}</h3>
+                    <p class="video-description">${data.description || 'No description'}</p>
+                    <div class="video-actions">
+                        <a href="${data.link}" target="_blank" class="video-link">View ${data.type}</a>
+                        <button class="report-btn" onclick="reportPost('${id}')">Report</button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Setup search
+        function setupSearch() {
+            const searchBar = document.getElementById('searchBar');
+            let searchTimeout;
+            
+            searchBar.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const searchTerm = this.value.trim();
                 
-                const title = document.getElementById('title').value.trim();
-                const description = document.getElementById('description').value.trim();
-                const type = document.getElementById('type').value;
-                const link = document.getElementById('link').value.trim();
-                
-                // Validation
-                if (!title || !description || !type || !link) {
-                    showStatus("Please fill all required fields", "error");
-                    return;
-                }
-                
-                try {
-                    new URL(link);
-                } catch {
-                    showStatus("Please enter a valid URL", "error");
-                    return;
-                }
-                
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Publishing...';
-                
-                try {
-                    const user = auth.currentUser;
-                    
-                    if (!user) {
-                        throw new Error("Not authenticated");
-                    }
-                    
-                    // Create post
-                    await db.collection('posts').add({
-                        title: title,
-                        description: description,
-                        type: type,
-                        link: link,
-                        userId: user.uid,
-                        spamReports: 0,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    console.log("Post created successfully");
-                    
-                    // Show success
-                    showStatus("Content published successfully! Redirecting...", "success");
-                    
-                    // Reset form
-                    form.reset();
-                    
-                    // Redirect to viewer
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 2000);
-                    
-                } catch (error) {
-                    console.error("Error publishing:", error);
-                    
-                    if (error.code === 'permission-denied') {
-                        showStatus("Permission denied. Check Firestore rules.", "error");
-                    } else {
-                        showStatus("Error publishing content. Please try again.", "error");
-                    }
-                    
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Publish Content';
-                }
+                searchTimeout = setTimeout(() => {
+                    loadVideos(searchTerm);
+                }, 300);
             });
         }
 
-        // Start app
-        window.addEventListener('load', initializeApp);
+        // Report post
+        async function reportPost(postId) {
+            try {
+                if (!confirm('Report this content as inappropriate?')) return;
+                
+                const user = auth.currentUser;
+                const postRef = db.collection('posts').doc(postId);
+                const postDoc = await postRef.get();
+                
+                if (postDoc.exists) {
+                    const data = postDoc.data();
+                    const currentReports = data.spamReports || 0;
+                    
+                    // Add report
+                    await db.collection('reports').add({
+                        postId: postId,
+                        userId: user.uid,
+                        timestamp: new Date(),
+                        reason: 'inappropriate'
+                    });
+                    
+                    // Update report count
+                    await postRef.update({
+                        spamReports: currentReports + 1
+                    });
+                    
+                    // Delete if 5+ reports
+                    if (currentReports + 1 >= 5) {
+                        await postRef.delete();
+                        alert('Content removed due to multiple reports');
+                    } else {
+                        alert('Content reported successfully');
+                    }
+                    
+                    // Reload videos
+                    loadVideos(document.getElementById('searchBar').value);
+                }
+                
+            } catch (error) {
+                console.error("Error reporting post:", error);
+                alert('Error reporting content');
+            }
+        }
+
+        // Start snow animation
+        window.addEventListener('load', createSnow);
     </script>
 </body>
 </html>
