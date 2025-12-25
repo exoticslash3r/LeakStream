@@ -128,34 +128,38 @@
         /* Main content */
         .main-content { 
             display: none; 
-            max-width: 1200px; 
+            max-width: 1400px; 
             margin: 0 auto; 
             padding: 20px;
             width: 100%;
         }
         
-        /* Header - Updated to include logo image */
+        /* Header with logo and image */
         .header { 
             text-align: center; 
             margin-bottom: 30px; 
             padding-bottom: 20px; 
             border-bottom: 2px solid #800; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
         
         .logo-container {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 20px;
-            margin-bottom: 20px;
             flex-wrap: wrap;
+            justify-content: center;
         }
         
         .logo-image {
             height: 80px;
             width: auto;
             object-fit: contain;
-            filter: drop-shadow(2px 2px 4px rgba(255, 0, 0, 0.5));
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.5));
         }
         
         .logo { 
@@ -199,132 +203,66 @@
         }
         
         .search-container { 
-            max-width: 600px; 
-            margin: 0 auto;
+            max-width: 800px; 
+            margin: 20px auto 0;
             width: 100%;
         }
         
         #searchBar { 
             width: 100%; 
-            padding: 15px; 
+            padding: 15px 20px; 
             border: 2px solid #800; 
             background: #111; 
             color: #fff; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px; 
-            font-size: 1.1rem; 
+            font-size: 1.2rem; 
             border-radius: 0;
+            transition: all 0.3s;
         }
         
         #searchBar:focus { 
             outline: none; 
             border-color: #f00; 
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); 
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); 
+            background: #222;
         }
         
-        /* Search suggestions */
-        .search-suggestions {
-            position: absolute;
-            background: #111;
-            border: 2px solid #800;
-            border-top: none;
-            width: 100%;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 100;
-            display: none;
-        }
-        
-        .search-suggestion-item {
-            padding: 12px 15px;
-            color: #ccc;
-            cursor: pointer;
-            font-family: 'Creepster', cursive;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            border-bottom: 1px solid #333;
-        }
-        
-        .search-suggestion-item:hover {
-            background: #800;
-            color: #fff;
-        }
-        
-        .search-suggestion-item.highlight {
-            background: #a00;
-            color: #fff;
-        }
-        
-        /* Search keywords display */
-        .search-keywords {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-            justify-content: center;
-            padding: 10px;
-            background: rgba(128, 0, 0, 0.1);
-            border: 1px solid #333;
-        }
-        
-        .keyword-tag {
-            background: #800;
-            color: #fff;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-family: 'Creepster', cursive;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-        }
-        
-        .keyword-tag.highlight {
-            background: #f00;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-        }
-        
-        /* Bigger content display - Scrollable */
+        /* Content display - Bigger and Scrollable */
         .content-scroll-container {
             width: 100%;
             min-height: 500px;
             margin-bottom: 40px;
         }
         
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
-        }
-        
         .content-item {
             background: #111;
-            border: 2px solid #333;
+            border: 3px solid #333;
+            margin-bottom: 30px;
             transition: all 0.3s;
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
+            overflow: hidden;
         }
         
         .content-item:hover {
             border-color: #800;
-            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+            box-shadow: 0 15px 40px rgba(255, 0, 0, 0.4);
             transform: translateY(-5px);
         }
         
-        /* Media container - WIDER and BIGGER */
+        /* Media container - BIGGER and BETTER */
         .media-container {
             width: 100%;
             background: #000;
             position: relative;
             overflow: hidden;
-            aspect-ratio: 16/9;
         }
         
         /* Video player - FIXED BRIGHTNESS */
         .direct-video {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            max-height: 700px;
             background: #000;
             display: block;
             filter: brightness(1) contrast(1) saturate(1.1);
@@ -334,8 +272,9 @@
         /* Image viewer - FIXED BRIGHTNESS */
         .direct-image {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            max-height: 700px;
+            object-fit: contain;
             background: #000;
             display: block;
             filter: brightness(1) contrast(1) saturate(1.1);
@@ -345,31 +284,31 @@
         /* Link viewer */
         .link-viewer {
             width: 100%;
-            height: 100%;
+            min-height: 400px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background: linear-gradient(45deg, #222, #111);
             color: #800;
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-family: 'Creepster', cursive;
             text-align: center;
-            padding: 20px;
+            padding: 40px;
         }
         
         .link-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
+            font-size: 5rem;
+            margin-bottom: 20px;
             color: #800;
         }
         
         .link-viewer a {
             color: #0f0;
             text-decoration: none;
-            font-size: 1rem;
-            margin-top: 15px;
-            padding: 10px 20px;
+            font-size: 1.3rem;
+            margin-top: 20px;
+            padding: 15px 30px;
             border: 2px solid #0f0;
             background: rgba(0, 68, 0, 0.3);
             transition: all 0.3s;
@@ -378,49 +317,34 @@
         .link-viewer a:hover {
             background: rgba(0, 68, 0, 0.5);
             transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 255, 0, 0.3);
         }
         
         /* Content info */
         .content-info { 
-            padding: 20px; 
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
+            padding: 30px; 
         }
         
         .content-title { 
-            font-size: 1.5rem; 
-            margin-bottom: 12px; 
+            font-size: 2.2rem; 
+            margin-bottom: 20px; 
             color: #fff; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px; 
             line-height: 1.3;
-            flex-grow: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .content-title {
+                font-size: 1.8rem;
+            }
         }
         
         .content-description { 
             color: #999; 
             margin-bottom: 15px; 
-            line-height: 1.5; 
-            font-size: 1rem; 
-            flex-grow: 1;
-        }
-        
-        /* Content tags */
-        .content-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        
-        .content-tag {
-            background: #222;
-            color: #ccc;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-family: 'Creepster', cursive;
+            line-height: 1.6; 
+            font-size: 1.2rem; 
         }
         
         /* Content actions */
@@ -428,29 +352,31 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center;
-            padding: 15px 20px;
+            padding: 25px 30px;
             background: rgba(0, 0, 0, 0.3);
             border-top: 1px solid #333;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 20px;
         }
         
         .source-link {
             background: #004400; 
             color: #0f0; 
-            padding: 10px 20px; 
+            padding: 15px 30px; 
             text-decoration: none; 
             border: 2px solid #0f0; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px;
-            font-size: 1rem;
+            font-size: 1.2rem;
             transition: all 0.3s;
             text-align: center;
             flex: 1;
+            min-width: 250px;
         }
         
         .source-link:hover {
             background: #006600;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
             transform: translateY(-3px);
         }
         
@@ -458,40 +384,42 @@
             background: #400000; 
             color: #f00; 
             border: 2px solid #f00; 
-            padding: 10px 20px; 
+            padding: 15px 30px; 
             cursor: pointer; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px;
-            font-size: 1rem;
+            font-size: 1.2rem;
             transition: all 0.3s;
             text-align: center;
             flex: 1;
+            min-width: 250px;
         }
         
         .report-btn:hover {
             background: #660000;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
             transform: translateY(-3px);
         }
         
         /* Fullscreen button */
         .fullscreen-btn {
             position: absolute;
-            bottom: 15px;
-            right: 15px;
+            bottom: 20px;
+            right: 20px;
             background: rgba(0, 0, 0, 0.8);
             color: white;
             border: 2px solid #800;
-            padding: 8px 16px;
+            padding: 12px 25px;
             cursor: pointer;
             font-family: 'Creepster', cursive;
             z-index: 10;
-            font-size: 0.9rem;
+            font-size: 1.1rem;
             transition: all 0.3s;
         }
         
         .fullscreen-btn:hover {
-            background: rgba(128, 0, 0, 0.8);
+            background: rgba(128, 0, 0, 0.9);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
         }
         
         /* Pagination */
@@ -508,11 +436,11 @@
             background: #111;
             color: #ccc;
             border: 2px solid #800;
-            padding: 12px 20px;
+            padding: 15px 25px;
             cursor: pointer;
             font-family: 'Creepster', cursive;
-            font-size: 1.2rem;
-            min-width: 50px;
+            font-size: 1.3rem;
+            min-width: 60px;
             text-align: center;
             transition: all 0.3s;
         }
@@ -521,6 +449,7 @@
             background: #800;
             color: #fff;
             transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.3);
         }
         
         .page-btn.active {
@@ -535,13 +464,13 @@
         }
         
         .prev-btn, .next-btn {
-            padding: 12px 30px;
-            min-width: 120px;
+            padding: 15px 35px;
+            min-width: 140px;
         }
         
         .page-numbers {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -578,22 +507,39 @@
             color: #ccc;
             font-family: 'Creepster', cursive;
             margin-top: 15px;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             padding: 15px;
             background: rgba(128, 0, 0, 0.1);
             border: 1px solid #333;
             text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .search-highlight {
             color: #ff4444;
             font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        
+        /* No content message */
+        .no-content {
+            text-align: center;
+            padding: 80px 20px;
+            color: #ccc;
+            font-family: 'Creepster', cursive;
+            font-size: 2.2rem;
+            border: 3px solid #800;
+            background: rgba(20, 20, 20, 0.8);
+            margin: 30px 0;
         }
         
         /* Scrollbar */
         ::-webkit-scrollbar { 
-            width: 10px; 
-            height: 10px;
+            width: 12px; 
+            height: 12px;
         }
         
         ::-webkit-scrollbar-track { 
@@ -613,20 +559,20 @@
         .loading-spinner {
             display: none;
             text-align: center;
-            padding: 40px;
+            padding: 60px;
             color: #800;
             font-family: 'Creepster', cursive;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
         }
         
         .spinner {
-            border: 5px solid #333;
-            border-top: 5px solid #800;
+            border: 6px solid #333;
+            border-top: 6px solid #800;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 0 auto 30px;
         }
         
         @keyframes spin {
@@ -636,13 +582,23 @@
         
         /* Mobile optimizations */
         @media (max-width: 768px) {
-            .content-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                gap: 20px;
+            .media-container {
+                max-height: 400px;
             }
             
-            .content-title {
-                font-size: 1.3rem;
+            .direct-video,
+            .direct-image {
+                max-height: 400px;
+            }
+            
+            .link-viewer {
+                min-height: 300px;
+                font-size: 1.8rem;
+                padding: 30px;
+            }
+            
+            .link-icon {
+                font-size: 4rem;
             }
             
             .content-actions {
@@ -652,6 +608,7 @@
             .source-link,
             .report-btn {
                 width: 100%;
+                min-width: auto;
             }
             
             .pagination {
@@ -659,29 +616,48 @@
             }
             
             .page-btn {
-                padding: 10px 15px;
-                font-size: 1rem;
-                min-width: 40px;
+                padding: 12px 20px;
+                font-size: 1.1rem;
+                min-width: 50px;
             }
             
             .prev-btn, .next-btn {
-                min-width: 100px;
-                padding: 10px 20px;
+                min-width: 120px;
+                padding: 12px 25px;
             }
         }
         
         @media (max-width: 480px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
+            .media-container {
+                max-height: 300px;
+            }
+            
+            .direct-video,
+            .direct-image {
+                max-height: 300px;
+            }
+            
+            .link-viewer {
+                min-height: 250px;
+                font-size: 1.5rem;
+                padding: 20px;
+            }
+            
+            .link-icon {
+                font-size: 3rem;
             }
             
             .content-title {
-                font-size: 1.2rem;
+                font-size: 1.6rem;
             }
             
-            .logo {
-                font-size: 1.8rem;
+            .content-description {
+                font-size: 1.1rem;
+            }
+            
+            .search-info {
+                font-size: 1.1rem;
+                min-height: 50px;
             }
             
             .verification-box {
@@ -702,8 +678,8 @@
         /* Touch device optimizations */
         @media (hover: none) {
             .content-item:hover {
-                transform: none;
-                box-shadow: none;
+                transform: translateY(0);
+                box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
             }
             
             .fullscreen-btn {
@@ -715,7 +691,7 @@
             .report-btn:hover,
             .page-btn:hover,
             .age-btn:hover {
-                transform: none;
+                transform: translateY(0);
                 box-shadow: none;
             }
         }
@@ -749,24 +725,21 @@
     <div class="main-content" id="mainContent">
         <div class="header">
             <div class="logo-container">
-                <img src="https://i.postimg.cc/W1Jg7yv0/leakstream-removebg-preview.png" 
-                     alt="LeakStream Logo" 
-                     class="logo-image">
+                <img src="https://i.postimg.cc/W1Jg7yv0/leakstream-removebg-preview.png" alt="LeakStream Logo" class="logo-image">
                 <div class="logo">LeakStream</div>
             </div>
-            <div class="search-container">
-                <input type="text" id="searchBar" placeholder="Search by title, description, or keywords...">
-                <div class="search-suggestions" id="searchSuggestions"></div>
-                <div class="search-keywords" id="searchKeywords"></div>
-                <div class="search-info" id="searchInfo">
-                    Loading content...
-                </div>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" id="searchBar" placeholder="Search videos, images, links... (Type to search in real-time)">
+            <div class="search-info" id="searchInfo">
+                Loading content from database...
             </div>
         </div>
         
         <!-- Content Scroll Container -->
         <div class="content-scroll-container" id="contentContainer">
-            <!-- Content loads here in grid layout -->
+            <!-- Content loads here directly - 5 items per page -->
         </div>
         
         <!-- Pagination -->
@@ -827,12 +800,10 @@
 
         // App state
         let currentPage = 1;
-        let itemsPerPage = 12; // Increased items per page for better scrolling
+        let itemsPerPage = 5;
         let allContent = [];
         let filteredContent = [];
         let currentSearchTerm = '';
-        let searchKeywords = [];
-        let allKeywords = [];
 
         // Create snow effect
         function createSnow() {
@@ -877,9 +848,15 @@
                 console.log("Initializing app...");
                 showLoading(true);
                 
+                // Update search info immediately
+                document.getElementById('searchInfo').innerHTML = 'Connecting to database...';
+                
                 // Sign in anonymously
                 await auth.signInAnonymously();
                 console.log("Signed in anonymously");
+                
+                // Update search info
+                document.getElementById('searchInfo').innerHTML = 'Loading content...';
                 
                 // Load all content
                 await loadAllContent();
@@ -893,20 +870,9 @@
             } catch (error) {
                 console.error("App initialization failed:", error);
                 showStatus("Error connecting to database. Please refresh the page.", "error");
+                document.getElementById('searchInfo').innerHTML = 'Error connecting to database';
                 showLoading(false);
             }
-        }
-
-        // Extract keywords from text
-        function extractKeywords(text) {
-            if (!text) return [];
-            const words = text.toLowerCase()
-                .replace(/[^\w\s]/g, ' ')
-                .split(/\s+/)
-                .filter(word => word.length > 2 && !['the', 'and', 'for', 'are', 'you', 'this', 'that', 'with'].includes(word));
-            
-            // Get unique words
-            return [...new Set(words)];
         }
 
         // Load all content from database
@@ -914,117 +880,51 @@
             try {
                 console.log("Loading all content...");
                 
+                // Show loading in search info
+                document.getElementById('searchInfo').innerHTML = 'Loading posts from database...';
+                
                 const snapshot = await db.collection('posts')
                     .where('spamReports', '<', 5)
                     .orderBy('timestamp', 'desc')
                     .get();
                 
                 allContent = [];
-                allKeywords = new Set(); // Reset keywords set
-                
                 snapshot.forEach(doc => {
-                    const data = {
+                    allContent.push({
                         id: doc.id,
                         ...doc.data()
-                    };
-                    
-                    // Extract keywords from title and description
-                    const titleKeywords = extractKeywords(data.title);
-                    const descKeywords = extractKeywords(data.description);
-                    const tags = data.tags || [];
-                    
-                    // Combine all keywords
-                    const itemKeywords = [...titleKeywords, ...descKeywords, ...tags];
-                    data.keywords = [...new Set(itemKeywords)]; // Store unique keywords
-                    
-                    // Add to global keywords set
-                    itemKeywords.forEach(keyword => allKeywords.add(keyword));
-                    
-                    allContent.push(data);
+                    });
                 });
                 
-                console.log(`Loaded ${allContent.length} items with ${allKeywords.size} unique keywords`);
+                console.log(`Loaded ${allContent.length} items`);
                 
-                // Show all content initially
+                // Update filtered content (initially same as all content)
                 filteredContent = [...allContent];
                 
                 // Display first page
                 displayCurrentPage();
                 updatePagination();
-                updateKeywordsDisplay();
                 
             } catch (error) {
                 console.error("Error loading content:", error);
                 showStatus("Error loading content. Please try again.", "error");
+                document.getElementById('searchInfo').innerHTML = 'Error loading content';
             }
         }
 
-        // Update keywords display
-        function updateKeywordsDisplay() {
-            const keywordsContainer = document.getElementById('searchKeywords');
-            keywordsContainer.innerHTML = '';
+        // Filter content based on search term - REAL TIME SEARCH
+        function filterContent(searchTerm) {
+            currentSearchTerm = searchTerm.toLowerCase().trim();
             
-            if (searchKeywords.length === 0) {
-                keywordsContainer.style.display = 'none';
-                return;
-            }
-            
-            keywordsContainer.style.display = 'flex';
-            searchKeywords.forEach(keyword => {
-                const tag = document.createElement('span');
-                tag.className = 'keyword-tag';
-                tag.textContent = keyword;
-                tag.onclick = () => removeKeyword(keyword);
-                keywordsContainer.appendChild(tag);
-            });
-        }
-
-        // Add keyword to search
-        function addKeyword(keyword) {
-            if (!searchKeywords.includes(keyword)) {
-                searchKeywords.push(keyword);
-                updateKeywordsDisplay();
-                filterContent();
-            }
-        }
-
-        // Remove keyword from search
-        function removeKeyword(keyword) {
-            searchKeywords = searchKeywords.filter(k => k !== keyword);
-            updateKeywordsDisplay();
-            filterContent();
-        }
-
-        // Filter content based on search term and keywords
-        function filterContent() {
-            const searchTerm = currentSearchTerm.toLowerCase().trim();
-            
-            if (!searchTerm && searchKeywords.length === 0) {
-                // No search - show all content
+            if (!currentSearchTerm) {
                 filteredContent = [...allContent];
             } else {
-                filteredContent = allContent.filter(item => {
-                    let matches = true;
-                    
-                    // Check search term
-                    if (searchTerm) {
-                        const titleMatch = item.title.toLowerCase().includes(searchTerm);
-                        const descMatch = item.description?.toLowerCase().includes(searchTerm) || false;
-                        matches = matches && (titleMatch || descMatch);
-                    }
-                    
-                    // Check keywords
-                    if (searchKeywords.length > 0) {
-                        const hasKeywords = searchKeywords.some(keyword => 
-                            item.keywords.some(itemKeyword => 
-                                itemKeyword.includes(keyword) || keyword.includes(itemKeyword)
-                            )
-                        );
-                        matches = matches && hasKeywords;
-                    }
-                    
-                    return matches;
-                });
+                // Search in title, description, and type
+                filteredContent = allContent.filter(item => 
+                    item.title.toLowerCase().includes(currentSearchTerm) ||
+                    (item.description && item.description.toLowerCase().includes(currentSearchTerm)) ||
+                    (item.type && item.type.toLowerCase().includes(currentSearchTerm))
+                );
             }
             
             // Reset to first page when searching
@@ -1033,6 +933,8 @@
             // Display results
             displayCurrentPage();
             updatePagination();
+            
+            // Update search info
             updateSearchInfo();
         }
 
@@ -1043,40 +945,46 @@
             const startIndex = (currentPage - 1) * itemsPerPage + 1;
             const endIndex = Math.min(currentPage * itemsPerPage, totalItems);
             
-            if (currentSearchTerm || searchKeywords.length > 0) {
-                let searchText = '';
-                if (currentSearchTerm) {
-                    searchText += `Search: "${currentSearchTerm}"`;
-                }
-                if (searchKeywords.length > 0) {
-                    if (searchText) searchText += ' | ';
-                    searchText += `Keywords: ${searchKeywords.join(', ')}`;
-                }
-                searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} results for: <span class="search-highlight">${searchText}</span>`;
+            if (currentSearchTerm) {
+                searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} results for: <span class="search-highlight">"${currentSearchTerm}"</span>`;
             } else {
                 if (totalItems > 0) {
                     searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} posts`;
                 } else {
-                    searchInfo.innerHTML = 'No posts available';
+                    searchInfo.innerHTML = 'No posts available. Check back later!';
                 }
             }
             
-            if (totalItems === 0) {
-                const searchText = currentSearchTerm || searchKeywords.join(', ');
-                searchInfo.innerHTML = `No results found for: <span class="search-highlight">"${searchText}"</span>`;
+            if (totalItems === 0 && currentSearchTerm) {
+                searchInfo.innerHTML = `No results found for: <span class="search-highlight">"${currentSearchTerm}"</span>`;
             }
         }
 
         // Display current page content
         function displayCurrentPage() {
             const container = document.getElementById('contentContainer');
+            container.innerHTML = '';
             
             if (filteredContent.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 60px; color: #ccc; font-family: 'Creepster', cursive; font-size: 1.8rem; border: 2px solid #800; background: rgba(20, 20, 20, 0.8);">
-                        No posts found
-                    </div>
-                `;
+                if (currentSearchTerm) {
+                    container.innerHTML = `
+                        <div class="no-content">
+                            No posts found for "${currentSearchTerm}"<br>
+                            <span style="font-size: 1.5rem; color: #999; margin-top: 20px; display: block;">
+                                Try a different search term
+                            </span>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="no-content">
+                            No posts available yet<br>
+                            <span style="font-size: 1.5rem; color: #999; margin-top: 20px; display: block;">
+                                Check back later for new content
+                            </span>
+                        </div>
+                    `;
+                }
                 return;
             }
             
@@ -1085,14 +993,10 @@
             const endIndex = Math.min(startIndex + itemsPerPage, filteredContent.length);
             const pageItems = filteredContent.slice(startIndex, endIndex);
             
-            // Create grid container
-            container.innerHTML = '<div class="content-grid" id="contentGrid"></div>';
-            const grid = document.getElementById('contentGrid');
-            
             // Create content items
             pageItems.forEach(item => {
                 const contentItem = createContentItem(item);
-                grid.appendChild(contentItem);
+                container.appendChild(contentItem);
             });
             
             updateSearchInfo();
@@ -1104,31 +1008,13 @@
             item.className = 'content-item';
             item.dataset.id = data.id;
             
-            // Highlight search terms in title and description
-            let titleHtml = data.title;
-            let descHtml = data.description || 'No description provided';
-            
-            // Highlight search term
-            if (currentSearchTerm) {
-                const regex = new RegExp(`(${currentSearchTerm})`, 'gi');
-                titleHtml = titleHtml.replace(regex, '<span class="search-highlight">$1</span>');
-                descHtml = descHtml.replace(regex, '<span class="search-highlight">$1</span>');
-            }
-            
-            // Highlight keywords
-            searchKeywords.forEach(keyword => {
-                const regex = new RegExp(`(${keyword})`, 'gi');
-                titleHtml = titleHtml.replace(regex, '<span class="search-highlight">$1</span>');
-                descHtml = descHtml.replace(regex, '<span class="search-highlight">$1</span>');
-            });
-            
             let mediaContent = '';
             
             // Different media types
             if (data.type === 'video') {
                 mediaContent = `
                     <div class="media-container">
-                        <video class="direct-video" controls controlsList="nodownload" preload="metadata" playsinline>
+                        <video class="direct-video" controls controlsList="nodownload" preload="metadata">
                             <source src="${data.link}" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
@@ -1151,78 +1037,30 @@
                             <div class="link-icon">🔗</div>
                             <div>EXTERNAL LINK</div>
                             <a href="${data.link}" target="_blank" onclick="event.stopPropagation();">
-                                OPEN LINK
+                                OPEN LINK IN NEW TAB
                             </a>
                         </div>
                     </div>
                 `;
             }
             
-            // Create tags from keywords
-            let tagsHtml = '';
-            if (data.keywords && data.keywords.length > 0) {
-                const displayKeywords = data.keywords.slice(0, 5); // Show only first 5 keywords
-                tagsHtml = '<div class="content-tags">';
-                displayKeywords.forEach(keyword => {
-                    tagsHtml += `<span class="content-tag">${keyword}</span>`;
-                });
-                tagsHtml += '</div>';
-            }
-            
             item.innerHTML = `
                 ${mediaContent}
                 <div class="content-info">
-                    <h3 class="content-title">${titleHtml}</h3>
-                    <p class="content-description">${descHtml}</p>
-                    ${tagsHtml}
+                    <h3 class="content-title">${data.title}</h3>
+                    <p class="content-description">${data.description || 'No description provided'}</p>
                 </div>
                 <div class="content-actions">
                     <a href="${data.link}" target="_blank" class="source-link" onclick="event.stopPropagation();">
-                        OPEN SOURCE
+                        OPEN ORIGINAL SOURCE
                     </a>
                     <button class="report-btn" onclick="event.stopPropagation(); reportPost('${data.id}')">
-                        REPORT
+                        REPORT CONTENT
                     </button>
                 </div>
             `;
             
             return item;
-        }
-
-        // Show search suggestions
-        function showSearchSuggestions() {
-            const suggestionsContainer = document.getElementById('searchSuggestions');
-            const searchTerm = currentSearchTerm.toLowerCase().trim();
-            
-            if (searchTerm.length < 2) {
-                suggestionsContainer.style.display = 'none';
-                return;
-            }
-            
-            // Filter keywords that match search term
-            const matchingKeywords = Array.from(allKeywords)
-                .filter(keyword => keyword.includes(searchTerm))
-                .slice(0, 10); // Show top 10
-            
-            if (matchingKeywords.length === 0) {
-                suggestionsContainer.style.display = 'none';
-                return;
-            }
-            
-            suggestionsContainer.innerHTML = '';
-            matchingKeywords.forEach(keyword => {
-                const suggestion = document.createElement('div');
-                suggestion.className = 'search-suggestion-item';
-                suggestion.textContent = keyword;
-                suggestion.onclick = () => {
-                    addKeyword(keyword);
-                    document.getElementById('searchBar').value = '';
-                    suggestionsContainer.style.display = 'none';
-                };
-                suggestionsContainer.appendChild(suggestion);
-            });
-            
-            suggestionsContainer.style.display = 'block';
         }
 
         // Update pagination buttons
@@ -1291,73 +1129,42 @@
             });
         }
 
-        // Setup search with real-time filtering
+        // Setup search with immediate real-time filtering
         function setupSearch() {
             const searchBar = document.getElementById('searchBar');
-            const suggestionsContainer = document.getElementById('searchSuggestions');
+            let searchTimeout;
             
-            // Real-time search
+            // Clear placeholder on focus
+            searchBar.addEventListener('focus', function() {
+                this.placeholder = 'Searching in real-time...';
+            });
+            
+            searchBar.addEventListener('blur', function() {
+                this.placeholder = 'Search videos, images, links... (Type to search in real-time)';
+            });
+            
+            // Real-time search on every key press
             searchBar.addEventListener('input', function() {
-                currentSearchTerm = this.value;
+                clearTimeout(searchTimeout);
+                const searchTerm = this.value;
                 
-                // Show suggestions
-                showSearchSuggestions();
-                
-                // Filter content in real-time
-                filterContent();
-            });
-            
-            // Hide suggestions when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!searchBar.contains(e.target) && !suggestionsContainer.contains(e.target)) {
-                    suggestionsContainer.style.display = 'none';
+                // Show searching message
+                if (searchTerm.trim()) {
+                    document.getElementById('searchInfo').innerHTML = `Searching for: <span class="search-highlight">"${searchTerm}"</span>`;
                 }
-            });
-            
-            // Keyboard navigation for suggestions
-            let selectedSuggestionIndex = -1;
-            
-            searchBar.addEventListener('keydown', function(e) {
-                const suggestions = suggestionsContainer.querySelectorAll('.search-suggestion-item');
                 
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, suggestions.length - 1);
-                    updateSuggestionSelection(suggestions);
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, -1);
-                    updateSuggestionSelection(suggestions);
-                } else if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
-                    e.preventDefault();
-                    suggestions[selectedSuggestionIndex].click();
-                } else if (e.key === 'Enter' && this.value.trim()) {
-                    // Add search term as keyword
-                    const keyword = this.value.trim().toLowerCase();
-                    if (keyword.length > 2) {
-                        addKeyword(keyword);
-                        this.value = '';
-                        suggestionsContainer.style.display = 'none';
-                    }
-                } else if (e.key === 'Escape') {
-                    suggestionsContainer.style.display = 'none';
-                }
+                // Filter immediately for real-time feel
+                searchTimeout = setTimeout(() => {
+                    filterContent(searchTerm);
+                }, 100); // Reduced to 100ms for real-time feel
             });
-            
-            function updateSuggestionSelection(suggestions) {
-                suggestions.forEach((suggestion, index) => {
-                    suggestion.classList.toggle('highlight', index === selectedSuggestionIndex);
-                });
-            }
-            
-            // Initialize with all posts
-            filterContent();
         }
 
         // Toggle fullscreen for media
         function toggleFullscreen(button) {
             event.stopPropagation();
             const mediaContainer = button.parentElement;
+            const mediaElement = mediaContainer.querySelector('video, img');
             
             if (!document.fullscreenElement) {
                 if (mediaContainer.requestFullscreen) {
@@ -1435,7 +1242,7 @@
         document.addEventListener('MSFullscreenChange', handleFullscreenChange);
         
         function handleFullscreenChange() {
-            // Fullscreen change handler
+            // Fullscreen change handler - can add additional logic here
         }
 
         // Handle keyboard navigation for pagination
