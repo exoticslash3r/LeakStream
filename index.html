@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeakStream</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -14,7 +13,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Courier New', monospace;
         }
 
         body {
@@ -30,7 +29,7 @@
             position: fixed;
             top: -10px;
             color: #fff;
-            font-size: 1em;
+            font-size: 12px;
             user-select: none;
             pointer-events: none;
             z-index: 10000;
@@ -53,7 +52,7 @@
             width: 100%;
             height: 100vh;
             background: #000;
-            z-index: 9999;
+            z-index: 99999;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -64,18 +63,20 @@
             padding: 40px;
             max-width: 600px;
             text-align: center;
-            background: rgba(0, 0, 0, 0.8);
+            background: #000;
         }
 
         .gate-content h1 {
-            font-size: 2.5em;
+            font-size: 24px;
             margin-bottom: 20px;
             letter-spacing: 3px;
+            text-transform: uppercase;
         }
 
         .gate-content p {
             margin-bottom: 30px;
             color: #ccc;
+            line-height: 1.6;
         }
 
         .age-buttons {
@@ -85,13 +86,12 @@
         }
 
         .age-btn {
-            padding: 15px 30px;
+            padding: 12px 30px;
             border: 1px solid #fff;
             background: #000;
             color: #fff;
-            font-size: 1.1em;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
@@ -101,51 +101,28 @@
             color: #000;
         }
 
-        /* Main Content */
+        /* Main Container */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
-            display: none; /* Hidden until age verified */
+            display: none;
         }
 
         /* Header */
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             padding: 20px 0;
             border-bottom: 1px solid #333;
             margin-bottom: 30px;
         }
 
         .logo {
-            font-size: 2em;
+            font-size: 32px;
             font-weight: bold;
             letter-spacing: 5px;
             text-transform: uppercase;
-        }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .publish-btn {
-            padding: 10px 20px;
-            border: 1px solid #fff;
-            background: #000;
-            color: #fff;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s;
-        }
-
-        .publish-btn:hover {
-            background: #fff;
-            color: #000;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
         /* Search Bar */
@@ -160,11 +137,13 @@
             background: #111;
             border: 1px solid #333;
             color: #fff;
-            font-size: 1.1em;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
         }
 
-        #searchInput::placeholder {
-            color: #666;
+        #searchInput:focus {
+            outline: none;
+            border-color: #fff;
         }
 
         .search-results {
@@ -178,7 +157,7 @@
             max-height: 300px;
             overflow-y: auto;
             display: none;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .search-item {
@@ -194,8 +173,8 @@
         /* Media Grid */
         .media-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
             margin-bottom: 50px;
         }
 
@@ -203,13 +182,12 @@
             position: relative;
             background: #111;
             border: 1px solid #333;
-            overflow: hidden;
         }
 
         .media-container {
             position: relative;
             width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            padding-top: 56.25%;
             overflow: hidden;
         }
 
@@ -229,7 +207,7 @@
             width: 40px;
             height: 40px;
             z-index: 2;
-            filter: brightness(1.2) contrast(1.2);
+            filter: brightness(1.5) contrast(1.2);
         }
 
         .media-controls {
@@ -237,7 +215,7 @@
             bottom: 10px;
             right: 10px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             z-index: 2;
         }
 
@@ -245,13 +223,13 @@
             background: rgba(0, 0, 0, 0.7);
             border: 1px solid #fff;
             color: #fff;
-            width: 35px;
-            height: 35px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
+            font-size: 14px;
         }
 
         .control-btn:hover {
@@ -264,14 +242,15 @@
         }
 
         .media-title {
-            font-size: 1.2em;
-            margin-bottom: 10px;
+            font-size: 16px;
+            margin-bottom: 8px;
             font-weight: bold;
+            color: #fff;
         }
 
         .media-desc {
             color: #aaa;
-            font-size: 0.9em;
+            font-size: 14px;
             line-height: 1.5;
         }
 
@@ -283,7 +262,7 @@
             width: 100%;
             height: 100vh;
             background: #000;
-            z-index: 99999;
+            z-index: 99998;
             display: none;
             justify-content: center;
             align-items: center;
@@ -292,24 +271,24 @@
         .timeout-content {
             text-align: center;
             padding: 40px;
-            border: 1px solid #ff0000;
+            border: 1px solid #f00;
             animation: timeoutGlow 2s infinite;
         }
 
         @keyframes timeoutGlow {
-            0%, 100% { box-shadow: 0 0 50px #ff0000; }
-            50% { box-shadow: 0 0 50px #ffffff; }
+            0%, 100% { box-shadow: 0 0 30px #f00; }
+            50% { box-shadow: 0 0 30px #fff; }
         }
 
         .timeout-content h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            color: #ff0000;
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #f00;
         }
 
         .timeout-content p {
-            font-size: 1.2em;
-            margin-bottom: 10px;
+            font-size: 14px;
+            margin-bottom: 8px;
         }
 
         /* Report Modal */
@@ -319,8 +298,8 @@
             left: 0;
             width: 100%;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 9999;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 99997;
             display: none;
             justify-content: center;
             align-items: center;
@@ -331,25 +310,29 @@
             padding: 30px;
             border: 1px solid #333;
             width: 90%;
-            max-width: 500px;
+            max-width: 400px;
         }
 
         .report-content h3 {
             margin-bottom: 20px;
             text-align: center;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .report-reasons {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .reason-option {
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 14px;
         }
 
         .modal-buttons {
@@ -364,7 +347,9 @@
             background: #000;
             color: #fff;
             cursor: pointer;
-            transition: all 0.3s;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .modal-btn:hover {
@@ -376,24 +361,40 @@
         .loading {
             text-align: center;
             padding: 50px;
-            font-size: 1.2em;
+            font-size: 16px;
             color: #666;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            grid-column: 1/-1;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .media-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                grid-template-columns: 1fr;
             }
             
-            header {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
+            .gate-content {
+                padding: 30px 20px;
+                margin: 20px;
             }
             
             .age-buttons {
                 flex-direction: column;
+            }
+            
+            .age-btn {
+                width: 100%;
             }
         }
     </style>
@@ -402,9 +403,9 @@
     <!-- Age Gate -->
     <div class="age-gate" id="ageGate">
         <div class="gate-content">
-            <h1>⚠️ AGE VERIFICATION</h1>
-            <p>This website contains content that may not be suitable for minors. You must be 18 years or older to access this site.</p>
-            <p>By entering, you confirm you are 18+ and accept full responsibility for your actions.</p>
+            <h1>⚠️ AGE VERIFICATION REQUIRED</h1>
+            <p>This website contains content restricted to adults only. You must be at least 18 years old to access this site.</p>
+            <p>By entering, you confirm that you are of legal age and accept all responsibility for viewing the content.</p>
             <div class="age-buttons">
                 <button class="age-btn" onclick="verifyAge(true)">I AM 18+</button>
                 <button class="age-btn" onclick="verifyAge(false)">I AM TOO YOUNG</button>
@@ -418,14 +419,14 @@
             <h1>⏰ ACCESS SUSPENDED</h1>
             <p>You have been timed out for 24 hours</p>
             <p>Reason: Spam/Abuse Detected</p>
-            <p>Your access will be restored automatically</p>
+            <p>Access will be restored automatically</p>
         </div>
     </div>
 
     <!-- Report Modal -->
     <div class="report-modal" id="reportModal">
         <div class="report-content">
-            <h3>Report Content</h3>
+            <h3>REPORT CONTENT</h3>
             <div class="report-reasons">
                 <label class="reason-option">
                     <input type="radio" name="reportReason" value="inappropriate">
@@ -445,8 +446,8 @@
                 </label>
             </div>
             <div class="modal-buttons">
-                <button class="modal-btn" onclick="closeReportModal()">Cancel</button>
-                <button class="modal-btn" onclick="submitReport()">Submit Report</button>
+                <button class="modal-btn" onclick="closeReportModal()">CANCEL</button>
+                <button class="modal-btn" onclick="submitReport()">SUBMIT</button>
             </div>
         </div>
     </div>
@@ -455,11 +456,6 @@
     <div class="container" id="mainContainer">
         <header>
             <div class="logo">LEAKSTREAM</div>
-            <div class="header-controls">
-                <a href="publisher.html" class="publish-btn">
-                    <i class="fas fa-upload"></i> PUBLISH
-                </a>
-            </div>
         </header>
 
         <div class="search-container">
@@ -467,16 +463,13 @@
             <div class="search-results" id="searchResults"></div>
         </div>
 
-        <div class="media-grid" id="mediaGrid">
-            <!-- Media items will be inserted here -->
-        </div>
+        <div class="loading" id="loading">LOADING CONTENT...</div>
 
-        <div class="loading" id="loading">Loading content...</div>
+        <div class="media-grid" id="mediaGrid"></div>
     </div>
 
     <script>
-        // ========== CONFIGURATION ==========
-        // ⚠️ WARNING: Replace these with your rotated API keys!
+        // ========== FIREBASE CONFIGURATION ==========
         const firebaseConfig = {
             apiKey: "AIzaSyAyTSyWhLVe22jynP94cp9OEg6IC5-OhdE",
             authDomain: "leakstream-4f62f.firebaseapp.com",
@@ -492,25 +485,21 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // State variables
+        // ========== GLOBAL VARIABLES ==========
         let currentReportPostId = null;
         let spamCounter = {};
+        let searchTimeout = null;
         const MAX_SPAM_ATTEMPTS = 5;
         const TIMEOUT_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
         // ========== AGE VERIFICATION ==========
         function verifyAge(isAdult) {
-            const ageGate = document.getElementById('ageGate');
-            const mainContainer = document.getElementById('mainContainer');
-            
             if (isAdult) {
                 localStorage.setItem('ageVerified', 'true');
-                ageGate.style.display = 'none';
-                mainContainer.style.display = 'block';
-                initApp();
-                createSnow();
+                localStorage.setItem('ageVerifiedTime', Date.now());
+                showMainContent();
             } else {
-                ageGate.innerHTML = `
+                document.getElementById('ageGate').innerHTML = `
                     <div class="gate-content">
                         <h1>ACCESS DENIED</h1>
                         <p>You must be 18+ to access this content.</p>
@@ -518,121 +507,187 @@
                     </div>
                 `;
                 setTimeout(() => {
-                    window.location.href = 'https://www.google.com';
+                    window.close();
+                    window.location.href = 'about:blank';
                 }, 2000);
             }
         }
 
-        // Check if already verified
-        document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('ageVerified') === 'true') {
-                document.getElementById('ageGate').style.display = 'none';
-                document.getElementById('mainContainer').style.display = 'block';
-                initApp();
-                createSnow();
+        function showMainContent() {
+            document.getElementById('ageGate').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+            initializeApp();
+            startSnowAnimation();
+        }
+
+        function checkAgeVerification() {
+            const verified = localStorage.getItem('ageVerified');
+            const verifiedTime = parseInt(localStorage.getItem('ageVerifiedTime') || '0');
+            const oneDay = 24 * 60 * 60 * 1000;
+            
+            if (verified === 'true' && (Date.now() - verifiedTime) < oneDay) {
+                showMainContent();
+            } else {
+                localStorage.removeItem('ageVerified');
+                localStorage.removeItem('ageVerifiedTime');
             }
-        });
+        }
 
         // ========== SNOW ANIMATION ==========
-        function createSnow() {
-            setInterval(() => {
+        function startSnowAnimation() {
+            function createSnowflake() {
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake';
                 snowflake.innerHTML = '❄';
                 snowflake.style.left = Math.random() * 100 + 'vw';
-                snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
-                snowflake.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                snowflake.style.fontSize = (Math.random() * 10 + 8) + 'px';
+                snowflake.style.animationDuration = (Math.random() * 4 + 3) + 's';
+                snowflake.style.opacity = Math.random() * 0.7 + 0.3;
                 document.body.appendChild(snowflake);
                 
-                // Remove after animation
                 setTimeout(() => {
                     snowflake.remove();
-                }, 10000);
-            }, 100);
+                }, 7000);
+            }
+            
+            setInterval(createSnowflake, 150);
         }
 
-        // ========== FIREBASE DATA LOADING ==========
-        function initApp() {
-            // Sign in anonymously for tracking
+        // ========== APP INITIALIZATION ==========
+        function initializeApp() {
+            // Check for timeout
+            checkTimeoutStatus();
+            
+            // Initialize auth
             auth.signInAnonymously()
-                .catch(error => console.error('Auth error:', error));
-
-            // Load all media
-            loadMedia();
-            
-            // Setup real-time listener
-            setupRealtimeListener();
-            
-            // Setup search
-            setupSearch();
+                .then(() => {
+                    loadMedia();
+                    setupRealtimeListener();
+                    setupSearch();
+                })
+                .catch(error => {
+                    console.error('Auth error:', error);
+                    loadMedia(); // Load anyway
+                });
         }
 
+        // ========== TIMEOUT SYSTEM ==========
+        function checkTimeoutStatus() {
+            const timeoutUntil = localStorage.getItem('timeoutUntil');
+            if (timeoutUntil && Date.now() < parseInt(timeoutUntil)) {
+                showTimeoutScreen();
+            }
+        }
+
+        function showTimeoutScreen() {
+            const timeoutScreen = document.getElementById('timeoutScreen');
+            const mainContainer = document.getElementById('mainContainer');
+            
+            mainContainer.style.display = 'none';
+            timeoutScreen.style.display = 'flex';
+            
+            // Calculate remaining time
+            const timeoutUntil = parseInt(localStorage.getItem('timeoutUntil'));
+            const remaining = timeoutUntil - Date.now();
+            
+            // Auto-remove timeout
+            setTimeout(() => {
+                timeoutScreen.style.display = 'none';
+                mainContainer.style.display = 'block';
+                localStorage.removeItem('timeoutUntil');
+                localStorage.removeItem('spamCount');
+            }, remaining);
+        }
+
+        function triggerTimeout() {
+            localStorage.setItem('timeoutUntil', Date.now() + TIMEOUT_DURATION);
+            localStorage.setItem('spamCount', '0');
+            showTimeoutScreen();
+        }
+
+        // ========== MEDIA LOADING ==========
         function loadMedia() {
-            const mediaGrid = document.getElementById('mediaGrid');
             const loading = document.getElementById('loading');
+            loading.classList.add('active');
             
             db.collection('posts')
                 .orderBy('timestamp', 'desc')
-                .limit(50)
+                .limit(100)
                 .get()
                 .then(snapshot => {
-                    loading.style.display = 'none';
-                    if (snapshot.empty) {
-                        mediaGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666;">No content available yet.</p>';
-                        return;
-                    }
-                    
-                    snapshot.forEach(doc => {
-                        createMediaItem(doc.id, doc.data());
-                    });
+                    loading.classList.remove('active');
+                    displayMedia(snapshot);
                 })
                 .catch(error => {
-                    console.error('Error loading media:', error);
-                    loading.innerHTML = 'Error loading content';
+                    console.error('Load error:', error);
+                    loading.innerHTML = 'ERROR LOADING CONTENT';
                 });
         }
 
         function setupRealtimeListener() {
             db.collection('posts')
                 .orderBy('timestamp', 'desc')
-                .limit(50)
+                .limit(100)
                 .onSnapshot(snapshot => {
-                    const mediaGrid = document.getElementById('mediaGrid');
-                    const loading = document.getElementById('loading');
-                    loading.style.display = 'none';
-                    
-                    // Clear existing content
-                    mediaGrid.innerHTML = '';
-                    
-                    if (snapshot.empty) {
-                        mediaGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666;">No content available yet.</p>';
-                        return;
-                    }
-                    
-                    snapshot.forEach(doc => {
-                        createMediaItem(doc.id, doc.data());
-                    });
+                    displayMedia(snapshot);
+                }, error => {
+                    console.error('Realtime error:', error);
                 });
         }
 
-        function createMediaItem(docId, data) {
+        function displayMedia(snapshot) {
+            const mediaGrid = document.getElementById('mediaGrid');
+            const loading = document.getElementById('loading');
+            
+            loading.classList.remove('active');
+            
+            if (snapshot.empty) {
+                mediaGrid.innerHTML = `
+                    <div class="empty-state">
+                        <p>No content available yet.</p>
+                        <p>Be the first to publish something.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            mediaGrid.innerHTML = '';
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                createMediaElement(doc.id, data);
+            });
+        }
+
+        function createMediaElement(id, data) {
             const mediaGrid = document.getElementById('mediaGrid');
             
-            // Determine media type
-            const url = data.url || '';
-            const isVideo = url.match(/\.(mp4|webm|mov|avi)$/i) || data.type === 'video';
-            const isImage = url.match(/\.(jpg|jpeg|png|gif|webp)$/i) || data.type === 'image';
+            const isVideo = data.url.match(/\.(mp4|webm|mov|avi|mkv)$/i) || data.type === 'video';
+            const isImage = data.url.match(/\.(jpg|jpeg|png|gif|webp|bmp)$/i) || data.type === 'image';
             
             const mediaItem = document.createElement('div');
             mediaItem.className = 'media-item';
-            mediaItem.dataset.id = docId;
+            mediaItem.dataset.id = id;
             
-            const mediaContent = isVideo ? 
-                `<video class="media-content" controls>
-                    <source src="${url}" type="video/mp4">
-                    Your browser does not support videos.
-                </video>` :
-                `<img class="media-content" src="${url}" alt="${data.title || 'Media'}" loading="lazy">`;
+            let mediaContent = '';
+            if (isVideo) {
+                mediaContent = `
+                    <video class="media-content" controls preload="metadata">
+                        <source src="${data.url}" type="video/mp4">
+                        Your browser does not support video tag.
+                    </video>
+                `;
+            } else if (isImage) {
+                mediaContent = `
+                    <img class="media-content" src="${data.url}" alt="${data.title || 'Media'}" loading="lazy">
+                `;
+            } else {
+                mediaContent = `
+                    <div class="media-content" style="background: #222; display: flex; align-items: center; justify-content: center;">
+                        <a href="${data.url}" target="_blank" style="color: #fff; text-decoration: none; padding: 20px;">VIEW LINK</a>
+                    </div>
+                `;
+            }
             
             mediaItem.innerHTML = `
                 <div class="media-container">
@@ -640,21 +695,27 @@
                     <img src="https://i.postimg.cc/W1Jg7yv0/leakstream-removebg-preview.png" 
                          class="media-logo" alt="Logo">
                     <div class="media-controls">
-                        <button class="control-btn" onclick="downloadMedia('${url}')" title="Download">
-                            <i class="fas fa-download"></i>
+                        <button class="control-btn" onclick="downloadMedia('${id}', '${data.url}')" title="Download">
+                            ↓
                         </button>
-                        <button class="control-btn" onclick="openReportModal('${docId}')" title="Report">
-                            <i class="fas fa-flag"></i>
+                        <button class="control-btn" onclick="openReportModal('${id}')" title="Report">
+                            ⚠
                         </button>
                     </div>
                 </div>
                 <div class="media-info">
-                    <div class="media-title">${data.title || 'Untitled'}</div>
-                    <div class="media-desc">${data.description || 'No description'}</div>
+                    <div class="media-title">${escapeHtml(data.title || 'Untitled')}</div>
+                    <div class="media-desc">${escapeHtml(data.description || 'No description')}</div>
                 </div>
             `;
             
             mediaGrid.appendChild(mediaItem);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // ========== SEARCH FUNCTIONALITY ==========
@@ -662,119 +723,175 @@
             const searchInput = document.getElementById('searchInput');
             const searchResults = document.getElementById('searchResults');
             
-            searchInput.addEventListener('input', debounce(async (e) => {
-                const query = e.target.value.toLowerCase().trim();
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                
+                const query = this.value.toLowerCase().trim();
                 
                 if (query.length < 2) {
                     searchResults.style.display = 'none';
+                    filterMedia('');
                     return;
                 }
                 
-                // Search in titles and descriptions
-                const titleQuery = db.collection('posts')
-                    .orderBy('title_lowercase')
-                    .startAt(query)
-                    .endAt(query + '\uf8ff')
-                    .limit(10)
-                    .get();
-                
-                const descQuery = db.collection('posts')
-                    .orderBy('description_lowercase')
-                    .startAt(query)
-                    .endAt(query + '\uf8ff')
-                    .limit(10)
-                    .get();
-                
-                try {
-                    const [titleSnapshot, descSnapshot] = await Promise.all([titleQuery, descQuery]);
-                    
-                    const results = new Map();
-                    
-                    titleSnapshot.forEach(doc => {
-                        results.set(doc.id, doc.data());
-                    });
-                    
-                    descSnapshot.forEach(doc => {
-                        results.set(doc.id, doc.data());
-                    });
-                    
-                    if (results.size > 0) {
-                        searchResults.innerHTML = '';
-                        results.forEach((data, id) => {
-                            const item = document.createElement('div');
-                            item.className = 'search-item';
-                            item.textContent = data.title || 'Untitled';
-                            item.onclick = () => {
-                                searchInput.value = data.title;
-                                searchResults.style.display = 'none';
-                                filterMediaBySearch(data.title.toLowerCase());
-                            };
-                            searchResults.appendChild(item);
-                        });
-                        searchResults.style.display = 'block';
-                    } else {
-                        searchResults.style.display = 'none';
-                    }
-                } catch (error) {
-                    console.error('Search error:', error);
-                }
-            }, 300));
+                searchTimeout = setTimeout(() => {
+                    performSearch(query);
+                }, 300);
+            });
             
             // Close search results when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-container')) {
                     searchResults.style.display = 'none';
                 }
             });
         }
-        
-        function filterMediaBySearch(query) {
+
+        function performSearch(query) {
+            const searchResults = document.getElementById('searchResults');
+            
+            db.collection('posts')
+                .orderBy('timestamp', 'desc')
+                .get()
+                .then(snapshot => {
+                    const results = [];
+                    
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const title = data.title || '';
+                        const description = data.description || '';
+                        
+                        if (title.toLowerCase().includes(query) || 
+                            description.toLowerCase().includes(query) ||
+                            (data.keywords && data.keywords.some(keyword => 
+                                keyword.toLowerCase().includes(query)))) {
+                            results.push({
+                                id: doc.id,
+                                title: title,
+                                description: description
+                            });
+                        }
+                    });
+                    
+                    if (results.length > 0) {
+                        displaySearchResults(results, query);
+                    } else {
+                        searchResults.style.display = 'none';
+                        filterMedia(query);
+                    }
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    filterMedia(query);
+                });
+        }
+
+        function displaySearchResults(results, query) {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = '';
+            
+            results.slice(0, 10).forEach(result => {
+                const item = document.createElement('div');
+                item.className = 'search-item';
+                item.textContent = result.title || 'Untitled';
+                item.onclick = () => {
+                    searchResults.style.display = 'none';
+                    filterMedia(query);
+                    // Scroll to the specific item if needed
+                    const mediaItem = document.querySelector(`.media-item[data-id="${result.id}"]`);
+                    if (mediaItem) {
+                        mediaItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        mediaItem.style.outline = '1px solid #fff';
+                        setTimeout(() => {
+                            mediaItem.style.outline = 'none';
+                        }, 2000);
+                    }
+                };
+                searchResults.appendChild(item);
+            });
+            
+            searchResults.style.display = 'block';
+        }
+
+        function filterMedia(query) {
             const mediaItems = document.querySelectorAll('.media-item');
+            let visibleCount = 0;
             
             mediaItems.forEach(item => {
                 const title = item.querySelector('.media-title').textContent.toLowerCase();
                 const desc = item.querySelector('.media-desc').textContent.toLowerCase();
                 
-                if (title.includes(query) || desc.includes(query)) {
+                if (!query || title.includes(query) || desc.includes(query)) {
                     item.style.display = 'block';
+                    visibleCount++;
                 } else {
                     item.style.display = 'none';
                 }
             });
-        }
-        
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
+            
+            // Show empty state if no results
+            const mediaGrid = document.getElementById('mediaGrid');
+            if (visibleCount === 0 && query) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <p>No results found for "${query}"</p>
+                    <p>Try different search terms</p>
+                `;
+                
+                // Remove existing empty state if any
+                const existingEmpty = mediaGrid.querySelector('.empty-state');
+                if (existingEmpty) {
+                    existingEmpty.remove();
+                }
+                
+                mediaGrid.appendChild(emptyState);
+            } else {
+                const existingEmpty = mediaGrid.querySelector('.empty-state');
+                if (existingEmpty && existingEmpty.textContent.includes('results')) {
+                    existingEmpty.remove();
+                }
+            }
         }
 
-        // ========== MEDIA CONTROLS ==========
-        function downloadMedia(url) {
-            // Track download attempt
+        // ========== DOWNLOAD FUNCTION ==========
+        function downloadMedia(postId, url) {
+            // Anti-spam check
             const userId = auth.currentUser?.uid || 'anonymous';
-            const key = `download_${userId}_${url}`;
+            const spamKey = `download_${userId}_${postId}`;
             
-            spamCounter[key] = (spamCounter[key] || 0) + 1;
+            let spamCount = parseInt(localStorage.getItem(spamKey) || '0');
+            spamCount++;
+            localStorage.setItem(spamKey, spamCount.toString());
             
-            if (spamCounter[key] >= MAX_SPAM_ATTEMPTS) {
-                showTimeoutScreen();
+            if (spamCount >= MAX_SPAM_ATTEMPTS) {
+                triggerTimeout();
                 return;
             }
             
             // Create download link
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = url.split('/').pop() || 'download';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            try {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = url.split('/').pop().split('?')[0] || 'download';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                // Log download in Firestore
+                db.collection('downloads').add({
+                    postId: postId,
+                    userId: userId,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    ip: 'unknown' // Note: Can't get IP client-side
+                });
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                // Fallback: Open in new tab
+                window.open(url, '_blank');
+            }
         }
 
         // ========== REPORT SYSTEM ==========
@@ -800,13 +917,14 @@
             }
             
             const userId = auth.currentUser?.uid || 'anonymous';
-            const reportKey = `report_${userId}_${currentReportPostId}`;
+            const spamKey = `report_${userId}_${currentReportPostId}`;
             
-            // Anti-spam check
-            spamCounter[reportKey] = (spamCounter[reportKey] || 0) + 1;
+            let spamCount = parseInt(localStorage.getItem(spamKey) || '0');
+            spamCount++;
+            localStorage.setItem(spamKey, spamCount.toString());
             
-            if (spamCounter[reportKey] >= MAX_SPAM_ATTEMPTS) {
-                showTimeoutScreen();
+            if (spamCount >= MAX_SPAM_ATTEMPTS) {
+                triggerTimeout();
                 return;
             }
             
@@ -815,7 +933,8 @@
                 postId: currentReportPostId,
                 reason: reason.value,
                 userId: userId,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                status: 'pending'
             })
             .then(() => {
                 alert('Report submitted successfully');
@@ -827,35 +946,10 @@
             });
         }
 
-        // ========== SPAM DETECTION & TIMEOUT ==========
-        function showTimeoutScreen() {
-            const timeoutScreen = document.getElementById('timeoutScreen');
-            const mainContainer = document.getElementById('mainContainer');
-            
-            mainContainer.style.display = 'none';
-            timeoutScreen.style.display = 'flex';
-            
-            // Save timeout to localStorage
-            localStorage.setItem('timeoutUntil', Date.now() + TIMEOUT_DURATION);
-            
-            // Auto-remove timeout after duration
-            setTimeout(() => {
-                timeoutScreen.style.display = 'none';
-                mainContainer.style.display = 'block';
-                localStorage.removeItem('timeoutUntil');
-            }, TIMEOUT_DURATION);
-        }
+        // ========== INITIAL LOAD ==========
+        document.addEventListener('DOMContentLoaded', checkAgeVerification);
 
-        // Check for existing timeout
-        document.addEventListener('DOMContentLoaded', () => {
-            const timeoutUntil = localStorage.getItem('timeoutUntil');
-            if (timeoutUntil && Date.now() < parseInt(timeoutUntil)) {
-                showTimeoutScreen();
-            }
-        });
-
-        // ========== UTILITY FUNCTIONS ==========
-        // Make functions globally available
+        // ========== GLOBAL FUNCTIONS ==========
         window.verifyAge = verifyAge;
         window.downloadMedia = downloadMedia;
         window.openReportModal = openReportModal;
