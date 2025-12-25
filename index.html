@@ -6,107 +6,256 @@
     <title>LeakStream Viewer</title>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Arial', sans-serif; background: #000; min-height: 100vh; color: #fff; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background: #000; 
+            min-height: 100vh; 
+            color: #fff; 
+            overflow-x: hidden;
+        }
         
         /* Snow effect */
-        .snow { position: fixed; top: -10px; width: 10px; height: 10px; background: #8b0000; border-radius: 50%; 
-                opacity: 0.8; animation: snowfall linear infinite; z-index: 1000; pointer-events: none; }
+        .snow { 
+            position: fixed; 
+            top: -10px; 
+            width: 10px; 
+            height: 10px; 
+            background: #8b0000; 
+            border-radius: 50%; 
+            opacity: 0.8; 
+            animation: snowfall linear infinite; 
+            z-index: 1000; 
+            pointer-events: none; 
+        }
+        
         @keyframes snowfall { 
             0% { transform: translateY(0) translateX(0); opacity: 0.8; }
             100% { transform: translateY(100vh) translateX(20px); opacity: 0; }
         }
         
         /* Age verification */
-        .age-verification { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; 
-                            display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .verification-box { background: rgba(20, 20, 20, 0.95); padding: 50px; border: 3px solid #800; 
-                           text-align: center; max-width: 700px; width: 90%; }
-        .verification-box h1 { color: #fff; margin-bottom: 30px; font-size: 3.5rem; 
-                              font-family: 'UnifrakturMaguntia', cursive; letter-spacing: 5px; }
-        .verification-box p { color: #ccc; margin-bottom: 30px; font-size: 1.3rem; line-height: 1.6; }
-        .warning-text { color: #ff4444 !important; font-weight: bold; font-size: 1.5rem !important; 
-                       margin: 20px 0; font-family: 'Creepster', cursive; }
-        .button-group { display: flex; gap: 30px; justify-content: center; margin-top: 40px; }
-        .age-btn { padding: 20px 40px; font-size: 1.3rem; border: none; border-radius: 0; cursor: pointer; 
-                  transition: all 0.3s; font-family: 'Creepster', cursive; letter-spacing: 2px; 
-                  text-transform: uppercase; }
-        .age-btn.yes { background: #004400; color: #00ff00; border: 2px solid #00ff00; }
-        .age-btn.no { background: #400000; color: #ff0000; border: 2px solid #ff0000; }
-        .age-btn:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3); }
+        .age-verification { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: #000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 10000; 
+        }
+        
+        .verification-box { 
+            background: rgba(20, 20, 20, 0.95); 
+            padding: 30px; 
+            border: 3px solid #800; 
+            text-align: center; 
+            max-width: 90%;
+            width: 500px;
+            border-radius: 0;
+            margin: 20px;
+        }
+        
+        .verification-box h1 { 
+            color: #fff; 
+            margin-bottom: 20px; 
+            font-size: 2.5rem; 
+            font-family: 'UnifrakturMaguntia', cursive; 
+            letter-spacing: 3px;
+        }
+        
+        .verification-box p { 
+            color: #ccc; 
+            margin-bottom: 20px; 
+            font-size: 1.1rem; 
+            line-height: 1.5; 
+        }
+        
+        .warning-text { 
+            color: #ff4444 !important; 
+            font-weight: bold; 
+            font-size: 1.3rem !important; 
+            margin: 15px 0; 
+            font-family: 'Creepster', cursive; 
+        }
+        
+        .button-group { 
+            display: flex; 
+            gap: 20px; 
+            justify-content: center; 
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .age-btn { 
+            padding: 15px 30px; 
+            font-size: 1.1rem; 
+            border: none; 
+            border-radius: 0; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            font-family: 'Creepster', cursive; 
+            letter-spacing: 1px; 
+            text-transform: uppercase;
+            min-width: 200px;
+        }
+        
+        .age-btn.yes { 
+            background: #004400; 
+            color: #00ff00; 
+            border: 2px solid #00ff00; 
+        }
+        
+        .age-btn.no { 
+            background: #400000; 
+            color: #ff0000; 
+            border: 2px solid #ff0000; 
+        }
+        
+        .age-btn:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3); 
+        }
         
         /* Main content */
-        .main-content { display: none; padding: 20px; max-width: 1400px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; 
-                 flex-wrap: wrap; gap: 30px; padding-bottom: 20px; border-bottom: 2px solid #800; }
-        .search-container { flex-grow: 1; max-width: 800px; }
-        #searchBar { width: 100%; padding: 20px; border: 2px solid #800; background: #111; color: #fff; 
-                    font-family: 'Creepster', cursive; letter-spacing: 2px; font-size: 1.2rem; }
-        #searchBar:focus { outline: none; border-color: #f00; box-shadow: 0 0 20px rgba(255, 0, 0, 0.3); }
-        .logo { color: #fff; font-size: 4rem; font-family: 'UnifrakturMaguntia', cursive; 
-               text-transform: uppercase; letter-spacing: 8px; background: linear-gradient(45deg, #800, #400); 
-               padding: 10px 30px; border: 3px solid #800; }
+        .main-content { 
+            display: none; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px;
+            width: 100%;
+        }
         
-        /* Videos grid - UPDATED FOR DIRECT VIEWING */
-        .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
-                      gap: 30px; margin-top: 40px; }
+        /* Header */
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            padding-bottom: 20px; 
+            border-bottom: 2px solid #800; 
+        }
         
-        .content-card { 
+        .logo { 
+            color: #fff; 
+            font-size: 3.5rem; 
+            font-family: 'UnifrakturMaguntia', cursive; 
+            text-transform: uppercase; 
+            letter-spacing: 5px; 
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(255, 0, 0, 0.5);
+            line-height: 1.2;
+        }
+        
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+                letter-spacing: 3px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 2rem;
+                letter-spacing: 2px;
+            }
+        }
+        
+        .search-container { 
+            max-width: 600px; 
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        #searchBar { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #800; 
             background: #111; 
-            border: 2px solid #333; 
+            color: #fff; 
+            font-family: 'Creepster', cursive; 
+            letter-spacing: 1px; 
+            font-size: 1.1rem; 
+            border-radius: 0;
+        }
+        
+        #searchBar:focus { 
+            outline: none; 
+            border-color: #f00; 
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); 
+        }
+        
+        /* Bigger content display - Scrollable */
+        .content-scroll-container {
+            width: 100%;
+            min-height: 500px;
+            margin-bottom: 40px;
+        }
+        
+        .content-item {
+            background: #111;
+            border: 2px solid #333;
+            margin-bottom: 30px;
             transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
+            width: 100%;
         }
         
-        .content-card:hover { 
-            transform: translateY(-10px); 
-            border-color: #800; 
-            box-shadow: 0 15px 40px rgba(255, 0, 0, 0.3); 
+        .content-item:hover {
+            border-color: #800;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
         }
         
-        /* Media container for direct viewing */
+        /* Media container - BIGGER and BETTER */
         .media-container {
             width: 100%;
-            height: 300px;
             background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
             position: relative;
+            overflow: hidden;
         }
         
-        /* Direct video player */
+        /* Video player - FIXED BRIGHTNESS */
         .direct-video {
             width: 100%;
-            height: 100%;
-            object-fit: contain;
+            height: auto;
+            max-height: 600px;
             background: #000;
+            display: block;
+            filter: brightness(1) contrast(1) saturate(1.1);
+            -webkit-filter: brightness(1) contrast(1) saturate(1.1);
         }
         
-        /* Direct image viewer */
+        /* Image viewer - FIXED BRIGHTNESS */
         .direct-image {
             width: 100%;
-            height: 100%;
+            height: auto;
+            max-height: 600px;
             object-fit: contain;
             background: #000;
+            display: block;
+            filter: brightness(1) contrast(1) saturate(1.1);
+            -webkit-filter: brightness(1) contrast(1) saturate(1.1);
         }
         
         /* Link viewer */
         .link-viewer {
             width: 100%;
-            height: 100%;
+            min-height: 400px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background: linear-gradient(45deg, #222, #111);
             color: #800;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-family: 'Creepster', cursive;
             text-align: center;
-            padding: 20px;
+            padding: 40px;
         }
         
         .link-icon {
@@ -119,90 +268,169 @@
             color: #0f0;
             text-decoration: none;
             font-size: 1.2rem;
-            margin-top: 10px;
-            padding: 10px 20px;
-            border: 1px solid #0f0;
+            margin-top: 20px;
+            padding: 12px 25px;
+            border: 2px solid #0f0;
             background: rgba(0, 68, 0, 0.3);
+            transition: all 0.3s;
         }
         
         .link-viewer a:hover {
             background: rgba(0, 68, 0, 0.5);
+            transform: translateY(-3px);
         }
         
         /* Content info */
-        .content-info { padding: 20px; flex-grow: 1; }
-        .content-title { font-size: 1.5rem; margin-bottom: 15px; color: #fff; 
-                      font-family: 'Creepster', cursive; letter-spacing: 1px; }
-        .content-description { color: #999; margin-bottom: 20px; line-height: 1.6; font-size: 1.1rem; }
+        .content-info { 
+            padding: 25px; 
+        }
+        
+        .content-title { 
+            font-size: 2rem; 
+            margin-bottom: 15px; 
+            color: #fff; 
+            font-family: 'Creepster', cursive; 
+            letter-spacing: 1px; 
+            line-height: 1.3;
+        }
+        
+        @media (max-width: 768px) {
+            .content-title {
+                font-size: 1.6rem;
+            }
+        }
+        
+        .content-description { 
+            color: #999; 
+            margin-bottom: 15px; 
+            line-height: 1.6; 
+            font-size: 1.1rem; 
+        }
         
         /* Content actions */
         .content-actions { 
             display: flex; 
             justify-content: space-between; 
             align-items: center;
-            padding: 15px 20px;
+            padding: 20px 25px;
             background: rgba(0, 0, 0, 0.3);
             border-top: 1px solid #333;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
         .source-link {
             background: #004400; 
             color: #0f0; 
-            padding: 10px 20px; 
+            padding: 12px 25px; 
             text-decoration: none; 
-            border: 1px solid #0f0; 
+            border: 2px solid #0f0; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
         }
         
         .source-link:hover {
             background: #006600;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            transform: translateY(-3px);
         }
         
         .report-btn { 
             background: #400000; 
             color: #f00; 
-            border: 1px solid #f00; 
-            padding: 10px 20px; 
+            border: 2px solid #f00; 
+            padding: 12px 25px; 
             cursor: pointer; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
         }
         
         .report-btn:hover {
             background: #660000;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-        }
-        
-        /* Video controls */
-        video::-webkit-media-controls {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-        
-        video::-webkit-media-controls-panel {
-            background-color: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+            transform: translateY(-3px);
         }
         
         /* Fullscreen button */
         .fullscreen-btn {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.7);
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.8);
             color: white;
-            border: 1px solid #800;
-            padding: 5px 10px;
+            border: 2px solid #800;
+            padding: 10px 20px;
             cursor: pointer;
             font-family: 'Creepster', cursive;
             z-index: 10;
-            display: none;
+            font-size: 1rem;
+            transition: all 0.3s;
         }
         
-        .media-container:hover .fullscreen-btn {
-            display: block;
+        .fullscreen-btn:hover {
+            background: rgba(128, 0, 0, 0.8);
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .page-btn {
+            background: #111;
+            color: #ccc;
+            border: 2px solid #800;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-family: 'Creepster', cursive;
+            font-size: 1.2rem;
+            min-width: 50px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .page-btn:hover:not(.disabled) {
+            background: #800;
+            color: #fff;
+            transform: translateY(-3px);
+        }
+        
+        .page-btn.active {
+            background: #800;
+            color: #fff;
+            border-color: #f00;
+        }
+        
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .prev-btn, .next-btn {
+            padding: 12px 30px;
+            min-width: 120px;
+        }
+        
+        .page-numbers {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         
         /* Status messages */
@@ -213,52 +441,190 @@
             font-family: 'Creepster', cursive; 
             letter-spacing: 2px; 
             display: none; 
+            border: 2px solid;
+            background: rgba(20, 20, 20, 0.9);
         }
         
         .error-message { 
-            background: rgba(128, 0, 0, 0.2); 
-            border: 2px solid #f00; 
+            border-color: #f00; 
             color: #f00; 
         }
         
         .success-message { 
-            background: rgba(0, 128, 0, 0.2); 
-            border: 2px solid #0f0; 
+            border-color: #0f0; 
             color: #0f0; 
         }
         
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 12px; }
-        ::-webkit-scrollbar-track { background: #111; }
-        ::-webkit-scrollbar-thumb { background: #800; }
-        ::-webkit-scrollbar-thumb:hover { background: #a00; }
-        
-        /* No results */
-        .no-results {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px;
-            color: #ccc;
-            font-size: 2rem;
-            font-family: 'Creepster', cursive;
-            border: 2px solid #800;
-            background: rgba(20, 20, 20, 0.8);
+        .info-message {
+            border-color: #ffcc00;
+            color: #ffcc00;
         }
         
         /* Search info */
         .search-info {
             color: #ccc;
             font-family: 'Creepster', cursive;
-            margin-top: 10px;
+            margin-top: 15px;
             font-size: 1.1rem;
-            padding: 10px;
+            padding: 15px;
             background: rgba(128, 0, 0, 0.1);
             border: 1px solid #333;
+            text-align: center;
         }
         
         .search-highlight {
             color: #ff4444;
             font-weight: bold;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { 
+            width: 10px; 
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track { 
+            background: #111; 
+        }
+        
+        ::-webkit-scrollbar-thumb { 
+            background: #800; 
+            border-radius: 0;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover { 
+            background: #a00; 
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #800;
+            font-family: 'Creepster', cursive;
+            font-size: 1.5rem;
+        }
+        
+        .spinner {
+            border: 5px solid #333;
+            border-top: 5px solid #800;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .media-container {
+                max-height: 400px;
+            }
+            
+            .direct-video,
+            .direct-image {
+                max-height: 400px;
+            }
+            
+            .link-viewer {
+                min-height: 300px;
+                font-size: 1.5rem;
+                padding: 30px;
+            }
+            
+            .content-actions {
+                flex-direction: column;
+            }
+            
+            .source-link,
+            .report-btn {
+                width: 100%;
+            }
+            
+            .pagination {
+                gap: 10px;
+            }
+            
+            .page-btn {
+                padding: 10px 15px;
+                font-size: 1rem;
+                min-width: 40px;
+            }
+            
+            .prev-btn, .next-btn {
+                min-width: 100px;
+                padding: 10px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .media-container {
+                max-height: 300px;
+            }
+            
+            .direct-video,
+            .direct-image {
+                max-height: 300px;
+            }
+            
+            .link-viewer {
+                min-height: 250px;
+                font-size: 1.3rem;
+                padding: 20px;
+            }
+            
+            .content-title {
+                font-size: 1.4rem;
+            }
+            
+            .content-description {
+                font-size: 1rem;
+            }
+            
+            .logo {
+                font-size: 1.8rem;
+            }
+            
+            .verification-box {
+                padding: 20px;
+            }
+            
+            .verification-box h1 {
+                font-size: 2rem;
+            }
+            
+            .age-btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+                min-width: 150px;
+            }
+        }
+        
+        /* Touch device optimizations */
+        @media (hover: none) {
+            .content-item:hover {
+                transform: none;
+                box-shadow: none;
+            }
+            
+            .fullscreen-btn {
+                display: block;
+                opacity: 0.8;
+            }
+            
+            .source-link:hover,
+            .report-btn:hover,
+            .page-btn:hover,
+            .age-btn:hover {
+                transform: none;
+                box-shadow: none;
+            }
         }
     </style>
 </head>
@@ -280,6 +646,12 @@
     <!-- Status Message -->
     <div id="statusMessage" class="status-message"></div>
 
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        Loading content...
+    </div>
+
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
         <div class="header">
@@ -287,13 +659,19 @@
             <div class="search-container">
                 <input type="text" id="searchBar" placeholder="Search by title...">
                 <div class="search-info" id="searchInfo">
-                    Showing all content. Type to search...
+                    Loading content...
                 </div>
             </div>
         </div>
         
-        <div class="videos-grid" id="videosGrid">
-            <!-- Content loads here directly -->
+        <!-- Content Scroll Container -->
+        <div class="content-scroll-container" id="contentContainer">
+            <!-- Content loads here directly - 5 items per page -->
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+            <!-- Pagination buttons generated by JavaScript -->
         </div>
     </div>
 
@@ -315,7 +693,7 @@
         };
 
         // Show status message
-        function showStatus(message, type = 'error') {
+        function showStatus(message, type = 'info') {
             const statusDiv = document.getElementById('statusMessage');
             statusDiv.textContent = message;
             statusDiv.className = `status-message ${type}-message`;
@@ -324,6 +702,11 @@
             if (type === 'success') {
                 setTimeout(() => statusDiv.style.display = 'none', 3000);
             }
+        }
+
+        // Show/hide loading spinner
+        function showLoading(show) {
+            document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
         }
 
         // Initialize Firebase
@@ -337,24 +720,28 @@
             db = firebase.firestore();
             auth = firebase.auth();
             
-            // Enable offline persistence
-            db.enablePersistence().catch((err) => {
-                console.log("Persistence failed:", err);
-            });
-            
         } catch (error) {
             console.error("Firebase initialization failed:", error);
-            showStatus("Firebase initialization failed. Check console for details.");
+            showStatus("Firebase initialization failed. Check console.", "error");
         }
+
+        // App state
+        let currentPage = 1;
+        let itemsPerPage = 5;
+        let allContent = [];
+        let filteredContent = [];
+        let currentSearchTerm = '';
 
         // Create snow effect
         function createSnow() {
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 80; i++) {
                 let snow = document.createElement('div');
                 snow.className = 'snow';
                 snow.style.left = Math.random() * 100 + 'vw';
                 snow.style.animationDuration = Math.random() * 3 + 2 + 's';
-                snow.style.opacity = Math.random() * 0.8 + 0.2;
+                snow.style.opacity = Math.random() * 0.6 + 0.2;
+                snow.style.width = Math.random() * 8 + 4 + 'px';
+                snow.style.height = snow.style.width;
                 document.body.appendChild(snow);
             }
         }
@@ -369,11 +756,12 @@
             } else {
                 document.body.innerHTML = `
                     <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #000;">
-                        <div style="text-align: center; padding: 40px; border: 3px solid #800; background: #111; color: #fff;">
-                            <h1 style="font-size: 4rem; margin-bottom: 30px; color: #f00; font-family: 'Creepster', cursive;">
+                        <div style="text-align: center; padding: 30px; border: 3px solid #800; background: #111; color: #fff; max-width: 90%;">
+                            <h1 style="font-size: 2.5rem; margin-bottom: 20px; color: #f00; font-family: 'Creepster', cursive;">
                                 Access Denied
                             </h1>
-                            <p style="font-size: 2rem;">You must be 18+ to access this website.</p>
+                            <p style="font-size: 1.5rem; margin-bottom: 20px;">You must be 18+ to access this website.</p>
+                            <p style="font-size: 1.2rem; color: #ccc;">Redirecting to homepage...</p>
                         </div>
                     </div>
                 `;
@@ -385,83 +773,137 @@
         async function initializeApp() {
             try {
                 console.log("Initializing app...");
+                showLoading(true);
                 
                 // Sign in anonymously
                 await auth.signInAnonymously();
                 console.log("Signed in anonymously");
                 
-                // Load initial content
-                await loadContent();
+                // Load all content
+                await loadAllContent();
                 
                 // Setup search
                 setupSearch();
                 
                 showStatus("Connected to database successfully", "success");
+                showLoading(false);
                 
             } catch (error) {
                 console.error("App initialization failed:", error);
-                showStatus("Error connecting to database. Please refresh the page.");
+                showStatus("Error connecting to database. Please refresh the page.", "error");
+                showLoading(false);
             }
         }
 
-        // Load content
-        async function loadContent(searchTerm = '') {
+        // Load all content from database
+        async function loadAllContent() {
             try {
-                console.log("Loading content, search term:", searchTerm);
+                console.log("Loading all content...");
                 
-                let query = db.collection('posts').where('spamReports', '<', 5);
+                const snapshot = await db.collection('posts')
+                    .where('spamReports', '<', 5)
+                    .orderBy('timestamp', 'desc')
+                    .get();
                 
-                const snapshot = await query.get();
-                const contentGrid = document.getElementById('videosGrid');
-                contentGrid.innerHTML = '';
-                
-                if (snapshot.empty) {
-                    contentGrid.innerHTML = '<div class="no-results">No content found</div>';
-                    document.getElementById('searchInfo').textContent = 'No content available';
-                    return;
-                }
-                
-                let visibleCount = 0;
-                let totalCount = 0;
-                
+                allContent = [];
                 snapshot.forEach(doc => {
-                    totalCount++;
-                    const data = doc.data();
-                    
-                    // Filter by search term (title only)
-                    if (searchTerm && !data.title.toLowerCase().includes(searchTerm.toLowerCase())) {
-                        return; // Skip if doesn't match search
-                    }
-                    
-                    visibleCount++;
-                    const contentCard = createContentCard(doc.id, data);
-                    contentGrid.appendChild(contentCard);
+                    allContent.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
                 });
                 
-                // Update search info
-                if (searchTerm) {
-                    document.getElementById('searchInfo').innerHTML = 
-                        `Showing ${visibleCount} of ${totalCount} results matching: <span class="search-highlight">${searchTerm}</span>`;
-                } else {
-                    document.getElementById('searchInfo').textContent = 
-                        `Showing all content (${visibleCount} items). Type to search...`;
-                }
+                console.log(`Loaded ${allContent.length} items`);
                 
-                if (visibleCount === 0) {
-                    contentGrid.innerHTML = `<div class="no-results">No content found matching "${searchTerm}"</div>`;
-                }
+                // Update filtered content (initially same as all content)
+                filteredContent = [...allContent];
+                
+                // Display first page
+                displayCurrentPage();
+                updatePagination();
                 
             } catch (error) {
                 console.error("Error loading content:", error);
-                showStatus("Error loading content. Please try again.");
+                showStatus("Error loading content. Please try again.", "error");
             }
         }
 
-        // Create content card with direct viewing
-        function createContentCard(id, data) {
-            const card = document.createElement('div');
-            card.className = 'content-card';
-            card.dataset.id = id;
+        // Filter content based on search term
+        function filterContent(searchTerm) {
+            currentSearchTerm = searchTerm.toLowerCase().trim();
+            
+            if (!currentSearchTerm) {
+                filteredContent = [...allContent];
+            } else {
+                filteredContent = allContent.filter(item => 
+                    item.title.toLowerCase().includes(currentSearchTerm)
+                );
+            }
+            
+            // Reset to first page when searching
+            currentPage = 1;
+            
+            // Display results
+            displayCurrentPage();
+            updatePagination();
+            
+            // Update search info
+            updateSearchInfo();
+        }
+
+        // Update search info display
+        function updateSearchInfo() {
+            const searchInfo = document.getElementById('searchInfo');
+            const totalItems = filteredContent.length;
+            const startIndex = (currentPage - 1) * itemsPerPage + 1;
+            const endIndex = Math.min(currentPage * itemsPerPage, totalItems);
+            
+            if (currentSearchTerm) {
+                searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} results for: <span class="search-highlight">"${currentSearchTerm}"</span>`;
+            } else {
+                searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} items`;
+            }
+            
+            if (totalItems === 0) {
+                searchInfo.innerHTML = currentSearchTerm ? 
+                    `No results found for: <span class="search-highlight">"${currentSearchTerm}"</span>` :
+                    'No content available';
+            }
+        }
+
+        // Display current page content
+        function displayCurrentPage() {
+            const container = document.getElementById('contentContainer');
+            container.innerHTML = '';
+            
+            if (filteredContent.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px; color: #ccc; font-family: 'Creepster', cursive; font-size: 1.8rem; border: 2px solid #800; background: rgba(20, 20, 20, 0.8);">
+                        No content found
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate slice for current page
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredContent.length);
+            const pageItems = filteredContent.slice(startIndex, endIndex);
+            
+            // Create content items
+            pageItems.forEach(item => {
+                const contentItem = createContentItem(item);
+                container.appendChild(contentItem);
+            });
+            
+            updateSearchInfo();
+        }
+
+        // Create content item with direct viewing
+        function createContentItem(data) {
+            const item = document.createElement('div');
+            item.className = 'content-item';
+            item.dataset.id = data.id;
             
             let mediaContent = '';
             
@@ -469,19 +911,20 @@
             if (data.type === 'video') {
                 mediaContent = `
                     <div class="media-container">
-                        <video class="direct-video" controls controlsList="nodownload">
+                        <video class="direct-video" controls controlsList="nodownload" preload="metadata">
                             <source src="${data.link}" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
-                        <button class="fullscreen-btn" onclick="toggleFullscreen(this)">Fullscreen</button>
+                        <button class="fullscreen-btn" onclick="toggleFullscreen(this)">FULLSCREEN</button>
                     </div>
                 `;
             } else if (data.type === 'image') {
                 mediaContent = `
                     <div class="media-container">
                         <img src="${data.link}" class="direct-image" alt="${data.title}" 
-                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\"><rect width=\"400\" height=\"300\" fill=\"%23222\"/><text x=\"200\" y=\"150\" font-family=\"Arial\" font-size=\"24\" fill=\"%23800\" text-anchor=\"middle\">IMAGE NOT FOUND</text></svg>'">
-                        <button class="fullscreen-btn" onclick="toggleFullscreen(this)">Fullscreen</button>
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"450\"><rect width=\"800\" height=\"450\" fill=\"%23222\"/><text x=\"400\" y=\"225\" font-family=\"Arial\" font-size=\"32\" fill=\"%23800\" text-anchor=\"middle\">IMAGE NOT FOUND</text></svg>'">
+                        <button class="fullscreen-btn" onclick="toggleFullscreen(this)">FULLSCREEN</button>
                     </div>
                 `;
             } else if (data.type === 'link') {
@@ -489,16 +932,16 @@
                     <div class="media-container">
                         <div class="link-viewer">
                             <div class="link-icon">🔗</div>
-                            <div>External Link</div>
+                            <div>EXTERNAL LINK</div>
                             <a href="${data.link}" target="_blank" onclick="event.stopPropagation();">
-                                Open Link in New Tab
+                                OPEN LINK IN NEW TAB
                             </a>
                         </div>
                     </div>
                 `;
             }
             
-            card.innerHTML = `
+            item.innerHTML = `
                 ${mediaContent}
                 <div class="content-info">
                     <h3 class="content-title">${data.title}</h3>
@@ -506,15 +949,96 @@
                 </div>
                 <div class="content-actions">
                     <a href="${data.link}" target="_blank" class="source-link" onclick="event.stopPropagation();">
-                        Open Original Source
+                        OPEN ORIGINAL SOURCE
                     </a>
-                    <button class="report-btn" onclick="event.stopPropagation(); reportPost('${id}')">
-                        Report Content
+                    <button class="report-btn" onclick="event.stopPropagation(); reportPost('${data.id}')">
+                        REPORT CONTENT
                     </button>
                 </div>
             `;
             
-            return card;
+            return item;
+        }
+
+        // Update pagination buttons
+        function updatePagination() {
+            const paginationDiv = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredContent.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                paginationDiv.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = `
+                <button class="page-btn prev-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                        onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    ← PREV
+                </button>
+                <div class="page-numbers">
+            `;
+            
+            // Show page numbers (max 5 page numbers)
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            
+            // Adjust if we're near the end
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHTML += `
+                    <button class="page-btn ${i === currentPage ? 'active' : ''}" 
+                            onclick="changePage(${i})">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            paginationHTML += `
+                </div>
+                <button class="page-btn next-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                        onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    NEXT →
+                </button>
+            `;
+            
+            paginationDiv.innerHTML = paginationHTML;
+        }
+
+        // Change page
+        function changePage(pageNumber) {
+            const totalPages = Math.ceil(filteredContent.length / itemsPerPage);
+            
+            if (pageNumber < 1 || pageNumber > totalPages) {
+                return;
+            }
+            
+            currentPage = pageNumber;
+            displayCurrentPage();
+            updatePagination();
+            
+            // Scroll to top of content
+            document.getElementById('contentContainer').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Setup search with debounce
+        function setupSearch() {
+            const searchBar = document.getElementById('searchBar');
+            let searchTimeout;
+            
+            searchBar.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const searchTerm = this.value;
+                
+                searchTimeout = setTimeout(() => {
+                    filterContent(searchTerm);
+                }, 500);
+            });
         }
 
         // Toggle fullscreen for media
@@ -544,21 +1068,6 @@
                     document.msExitFullscreen();
                 }
             }
-        }
-
-        // Setup search
-        function setupSearch() {
-            const searchBar = document.getElementById('searchBar');
-            let searchTimeout;
-            
-            searchBar.addEventListener('input', function() {
-                clearTimeout(searchTimeout);
-                const searchTerm = this.value.trim();
-                
-                searchTimeout = setTimeout(() => {
-                    loadContent(searchTerm);
-                }, 300);
-            });
         }
 
         // Report post
@@ -591,12 +1100,11 @@
                     if (currentReports + 1 >= 5) {
                         await postRef.delete();
                         alert('Content removed due to multiple reports');
+                        // Reload all content
+                        await loadAllContent();
                     } else {
                         alert('Content reported successfully');
                     }
-                    
-                    // Reload content
-                    loadContent(document.getElementById('searchBar').value);
                 }
                 
             } catch (error) {
@@ -615,13 +1123,43 @@
         document.addEventListener('MSFullscreenChange', handleFullscreenChange);
         
         function handleFullscreenChange() {
-            const fullscreenElement = document.fullscreenElement || 
-                                     document.webkitFullscreenElement || 
-                                     document.mozFullScreenElement || 
-                                     document.msFullscreenElement;
+            // Fullscreen change handler - can add additional logic here
+        }
+
+        // Handle keyboard navigation for pagination
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                changePage(currentPage - 1);
+            } else if (e.key === 'ArrowRight') {
+                changePage(currentPage + 1);
+            }
+        });
+
+        // Handle swipe gestures for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
             
-            if (!fullscreenElement) {
-                // Exit fullscreen - do any cleanup here
+            if (Math.abs(swipeDistance) > swipeThreshold) {
+                if (swipeDistance > 0) {
+                    // Swipe right - go to previous page
+                    changePage(currentPage - 1);
+                } else {
+                    // Swipe left - go to next page
+                    changePage(currentPage + 1);
+                }
             }
         }
     </script>
