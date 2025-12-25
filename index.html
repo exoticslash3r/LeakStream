@@ -262,7 +262,7 @@
         .direct-video {
             width: 100%;
             height: auto;
-            max-height: 700px;
+            max-height: 600px;
             background: #000;
             display: block;
             filter: brightness(1) contrast(1) saturate(1.1);
@@ -273,7 +273,7 @@
         .direct-image {
             width: 100%;
             height: auto;
-            max-height: 700px;
+            max-height: 600px;
             object-fit: contain;
             background: #000;
             display: block;
@@ -284,21 +284,21 @@
         /* Link viewer */
         .link-viewer {
             width: 100%;
-            min-height: 400px;
+            min-height: 300px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background: linear-gradient(45deg, #222, #111);
             color: #800;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-family: 'Creepster', cursive;
             text-align: center;
             padding: 40px;
         }
         
         .link-icon {
-            font-size: 5rem;
+            font-size: 4rem;
             margin-bottom: 20px;
             color: #800;
         }
@@ -306,9 +306,9 @@
         .link-viewer a {
             color: #0f0;
             text-decoration: none;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin-top: 20px;
-            padding: 15px 30px;
+            padding: 12px 25px;
             border: 2px solid #0f0;
             background: rgba(0, 68, 0, 0.3);
             transition: all 0.3s;
@@ -322,12 +322,12 @@
         
         /* Content info */
         .content-info { 
-            padding: 30px; 
+            padding: 25px; 
         }
         
         .content-title { 
-            font-size: 2.2rem; 
-            margin-bottom: 20px; 
+            font-size: 2rem; 
+            margin-bottom: 15px; 
             color: #fff; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px; 
@@ -336,7 +336,7 @@
         
         @media (max-width: 768px) {
             .content-title {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
         }
         
@@ -344,7 +344,7 @@
             color: #999; 
             margin-bottom: 15px; 
             line-height: 1.6; 
-            font-size: 1.2rem; 
+            font-size: 1.1rem; 
         }
         
         /* Content actions */
@@ -352,31 +352,31 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center;
-            padding: 25px 30px;
+            padding: 20px 25px;
             background: rgba(0, 0, 0, 0.3);
             border-top: 1px solid #333;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px;
         }
         
         .source-link {
             background: #004400; 
             color: #0f0; 
-            padding: 15px 30px; 
+            padding: 12px 25px; 
             text-decoration: none; 
             border: 2px solid #0f0; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             transition: all 0.3s;
             text-align: center;
             flex: 1;
-            min-width: 250px;
+            min-width: 200px;
         }
         
         .source-link:hover {
             background: #006600;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
             transform: translateY(-3px);
         }
         
@@ -384,41 +384,41 @@
             background: #400000; 
             color: #f00; 
             border: 2px solid #f00; 
-            padding: 15px 30px; 
+            padding: 12px 25px; 
             cursor: pointer; 
             font-family: 'Creepster', cursive; 
             letter-spacing: 1px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             transition: all 0.3s;
             text-align: center;
             flex: 1;
-            min-width: 250px;
+            min-width: 200px;
         }
         
         .report-btn:hover {
             background: #660000;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
             transform: translateY(-3px);
         }
         
         /* Fullscreen button */
         .fullscreen-btn {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            bottom: 15px;
+            right: 15px;
             background: rgba(0, 0, 0, 0.8);
             color: white;
             border: 2px solid #800;
-            padding: 12px 25px;
+            padding: 10px 20px;
             cursor: pointer;
             font-family: 'Creepster', cursive;
             z-index: 10;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s;
         }
         
         .fullscreen-btn:hover {
-            background: rgba(128, 0, 0, 0.9);
+            background: rgba(128, 0, 0, 0.8);
             box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
         }
         
@@ -436,11 +436,11 @@
             background: #111;
             color: #ccc;
             border: 2px solid #800;
-            padding: 15px 25px;
+            padding: 12px 20px;
             cursor: pointer;
             font-family: 'Creepster', cursive;
-            font-size: 1.3rem;
-            min-width: 60px;
+            font-size: 1.2rem;
+            min-width: 50px;
             text-align: center;
             transition: all 0.3s;
         }
@@ -464,13 +464,13 @@
         }
         
         .prev-btn, .next-btn {
-            padding: 15px 35px;
-            min-width: 140px;
+            padding: 12px 30px;
+            min-width: 120px;
         }
         
         .page-numbers {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -530,7 +530,7 @@
             padding: 80px 20px;
             color: #ccc;
             font-family: 'Creepster', cursive;
-            font-size: 2.2rem;
+            font-size: 2rem;
             border: 3px solid #800;
             background: rgba(20, 20, 20, 0.8);
             margin: 30px 0;
@@ -538,8 +538,8 @@
         
         /* Scrollbar */
         ::-webkit-scrollbar { 
-            width: 12px; 
-            height: 12px;
+            width: 10px; 
+            height: 10px;
         }
         
         ::-webkit-scrollbar-track { 
@@ -559,20 +559,20 @@
         .loading-spinner {
             display: none;
             text-align: center;
-            padding: 60px;
+            padding: 40px;
             color: #800;
             font-family: 'Creepster', cursive;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
         }
         
         .spinner {
-            border: 6px solid #333;
-            border-top: 6px solid #800;
+            border: 5px solid #333;
+            border-top: 5px solid #800;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 30px;
+            margin: 0 auto 20px;
         }
         
         @keyframes spin {
@@ -592,13 +592,13 @@
             }
             
             .link-viewer {
-                min-height: 300px;
-                font-size: 1.8rem;
+                min-height: 250px;
+                font-size: 1.5rem;
                 padding: 30px;
             }
             
             .link-icon {
-                font-size: 4rem;
+                font-size: 3rem;
             }
             
             .content-actions {
@@ -616,14 +616,14 @@
             }
             
             .page-btn {
-                padding: 12px 20px;
-                font-size: 1.1rem;
-                min-width: 50px;
+                padding: 10px 15px;
+                font-size: 1rem;
+                min-width: 40px;
             }
             
             .prev-btn, .next-btn {
-                min-width: 120px;
-                padding: 12px 25px;
+                min-width: 100px;
+                padding: 10px 20px;
             }
         }
         
@@ -638,21 +638,17 @@
             }
             
             .link-viewer {
-                min-height: 250px;
-                font-size: 1.5rem;
+                min-height: 200px;
+                font-size: 1.3rem;
                 padding: 20px;
             }
             
-            .link-icon {
-                font-size: 3rem;
-            }
-            
             .content-title {
-                font-size: 1.6rem;
+                font-size: 1.4rem;
             }
             
             .content-description {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             
             .search-info {
@@ -672,27 +668,6 @@
                 padding: 12px 20px;
                 font-size: 1rem;
                 min-width: 150px;
-            }
-        }
-        
-        /* Touch device optimizations */
-        @media (hover: none) {
-            .content-item:hover {
-                transform: translateY(0);
-                box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
-            }
-            
-            .fullscreen-btn {
-                display: block;
-                opacity: 0.8;
-            }
-            
-            .source-link:hover,
-            .report-btn:hover,
-            .page-btn:hover,
-            .age-btn:hover {
-                transform: translateY(0);
-                box-shadow: none;
             }
         }
     </style>
@@ -725,7 +700,7 @@
     <div class="main-content" id="mainContent">
         <div class="header">
             <div class="logo-container">
-                <img src="https://i.postimg.cc/W1Jg7yv0/leakstream-removebg-preview.png" alt="LeakStream Logo" class="logo-image">
+                <img src="https://i.postimg.cc/W1Jg7yv0/leakstream-removebg-preview.png" alt="LeakStream Logo" class="logo-image" onerror="this.style.display='none'">
                 <div class="logo">LeakStream</div>
             </div>
         </div>
@@ -733,13 +708,13 @@
         <div class="search-container">
             <input type="text" id="searchBar" placeholder="Search videos, images, links... (Type to search in real-time)">
             <div class="search-info" id="searchInfo">
-                Loading content from database...
+                Loading content...
             </div>
         </div>
         
         <!-- Content Scroll Container -->
         <div class="content-scroll-container" id="contentContainer">
-            <!-- Content loads here directly - 5 items per page -->
+            <!-- Content loads here -->
         </div>
         
         <!-- Pagination -->
@@ -765,6 +740,21 @@
             measurementId: "G-RXHE019ZWT"
         };
 
+        // Initialize Firebase
+        let db, auth;
+        try {
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            console.log("Firebase initialized successfully");
+            
+            db = firebase.firestore();
+            auth = firebase.auth();
+            
+        } catch (error) {
+            console.error("Firebase initialization failed:", error);
+            showStatus("Firebase initialization failed. Check console.", "error");
+        }
+
         // Show status message
         function showStatus(message, type = 'info') {
             const statusDiv = document.getElementById('statusMessage');
@@ -782,22 +772,6 @@
             document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
         }
 
-        // Initialize Firebase
-        let db, auth;
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-                console.log("Firebase initialized successfully");
-            }
-            
-            db = firebase.firestore();
-            auth = firebase.auth();
-            
-        } catch (error) {
-            console.error("Firebase initialization failed:", error);
-            showStatus("Firebase initialization failed. Check console.", "error");
-        }
-
         // App state
         let currentPage = 1;
         let itemsPerPage = 5;
@@ -807,7 +781,7 @@
 
         // Create snow effect
         function createSnow() {
-            for (let i = 0; i < 80; i++) {
+            for (let i = 0; i < 50; i++) {
                 let snow = document.createElement('div');
                 snow.className = 'snow';
                 snow.style.left = Math.random() * 100 + 'vw';
@@ -848,15 +822,12 @@
                 console.log("Initializing app...");
                 showLoading(true);
                 
-                // Update search info immediately
+                // Update search info
                 document.getElementById('searchInfo').innerHTML = 'Connecting to database...';
                 
                 // Sign in anonymously
                 await auth.signInAnonymously();
                 console.log("Signed in anonymously");
-                
-                // Update search info
-                document.getElementById('searchInfo').innerHTML = 'Loading content...';
                 
                 // Load all content
                 await loadAllContent();
@@ -869,9 +840,12 @@
                 
             } catch (error) {
                 console.error("App initialization failed:", error);
-                showStatus("Error connecting to database. Please refresh the page.", "error");
-                document.getElementById('searchInfo').innerHTML = 'Error connecting to database';
+                showStatus("Error connecting to database: " + error.message, "error");
+                document.getElementById('searchInfo').innerHTML = 'Error loading content. Please refresh.';
                 showLoading(false);
+                
+                // Show dummy content for testing
+                showDummyContent();
             }
         }
 
@@ -879,10 +853,9 @@
         async function loadAllContent() {
             try {
                 console.log("Loading all content...");
+                document.getElementById('searchInfo').innerHTML = 'Loading posts...';
                 
-                // Show loading in search info
-                document.getElementById('searchInfo').innerHTML = 'Loading posts from database...';
-                
+                // Try to get posts from Firestore
                 const snapshot = await db.collection('posts')
                     .where('spamReports', '<', 5)
                     .orderBy('timestamp', 'desc')
@@ -890,15 +863,26 @@
                 
                 allContent = [];
                 snapshot.forEach(doc => {
+                    const data = doc.data();
                     allContent.push({
                         id: doc.id,
-                        ...doc.data()
+                        title: data.title || 'Untitled',
+                        description: data.description || 'No description',
+                        link: data.link || '#',
+                        type: data.type || 'link',
+                        timestamp: data.timestamp || new Date()
                     });
                 });
                 
-                console.log(`Loaded ${allContent.length} items`);
+                console.log(`Loaded ${allContent.length} items from database`);
                 
-                // Update filtered content (initially same as all content)
+                // If no content in database, show dummy data
+                if (allContent.length === 0) {
+                    console.log("No posts in database, showing sample content");
+                    createSampleContent();
+                }
+                
+                // Update filtered content
                 filteredContent = [...allContent];
                 
                 // Display first page
@@ -906,35 +890,81 @@
                 updatePagination();
                 
             } catch (error) {
-                console.error("Error loading content:", error);
-                showStatus("Error loading content. Please try again.", "error");
-                document.getElementById('searchInfo').innerHTML = 'Error loading content';
+                console.error("Error loading content from Firestore:", error);
+                showStatus("Could not load from database. Showing sample content.", "info");
+                createSampleContent();
             }
         }
 
-        // Filter content based on search term - REAL TIME SEARCH
+        // Create sample content for testing
+        function createSampleContent() {
+            allContent = [
+                {
+                    id: '1',
+                    title: 'Sample Video 1',
+                    description: 'This is a sample video for testing purposes',
+                    link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                    type: 'video',
+                    timestamp: new Date()
+                },
+                {
+                    id: '2',
+                    title: 'Sample Image 1',
+                    description: 'This is a sample image for testing',
+                    link: 'https://images.unsplash.com/photo-1579546929662-711aa81148cf',
+                    type: 'image',
+                    timestamp: new Date(Date.now() - 86400000)
+                },
+                {
+                    id: '3',
+                    title: 'External Link Example',
+                    description: 'This is a sample external link',
+                    link: 'https://github.com',
+                    type: 'link',
+                    timestamp: new Date(Date.now() - 172800000)
+                },
+                {
+                    id: '4',
+                    title: 'Another Video Sample',
+                    description: 'Testing video player functionality',
+                    link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                    type: 'video',
+                    timestamp: new Date(Date.now() - 259200000)
+                },
+                {
+                    id: '5',
+                    title: 'Nature Image',
+                    description: 'Beautiful nature photography',
+                    link: 'https://images.unsplash.com/photo-1501854140801-50d01698950b',
+                    type: 'image',
+                    timestamp: new Date(Date.now() - 345600000)
+                }
+            ];
+            
+            filteredContent = [...allContent];
+            displayCurrentPage();
+            updatePagination();
+        }
+
+        // Filter content based on search term
         function filterContent(searchTerm) {
             currentSearchTerm = searchTerm.toLowerCase().trim();
             
             if (!currentSearchTerm) {
                 filteredContent = [...allContent];
             } else {
-                // Search in title, description, and type
-                filteredContent = allContent.filter(item => 
-                    item.title.toLowerCase().includes(currentSearchTerm) ||
-                    (item.description && item.description.toLowerCase().includes(currentSearchTerm)) ||
-                    (item.type && item.type.toLowerCase().includes(currentSearchTerm))
-                );
+                filteredContent = allContent.filter(item => {
+                    return (
+                        item.title.toLowerCase().includes(currentSearchTerm) ||
+                        (item.description && item.description.toLowerCase().includes(currentSearchTerm)) ||
+                        (item.type && item.type.toLowerCase().includes(currentSearchTerm))
+                    );
+                });
             }
             
-            // Reset to first page when searching
             currentPage = 1;
-            
-            // Display results
             displayCurrentPage();
             updatePagination();
-            
-            // Update search info
             updateSearchInfo();
         }
 
@@ -948,15 +978,9 @@
             if (currentSearchTerm) {
                 searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} results for: <span class="search-highlight">"${currentSearchTerm}"</span>`;
             } else {
-                if (totalItems > 0) {
-                    searchInfo.innerHTML = `Showing ${startIndex}-${endIndex} of ${totalItems} posts`;
-                } else {
-                    searchInfo.innerHTML = 'No posts available. Check back later!';
-                }
-            }
-            
-            if (totalItems === 0 && currentSearchTerm) {
-                searchInfo.innerHTML = `No results found for: <span class="search-highlight">"${currentSearchTerm}"</span>`;
+                searchInfo.innerHTML = totalItems > 0 
+                    ? `Showing ${startIndex}-${endIndex} of ${totalItems} posts`
+                    : 'No posts available. Check back later!';
             }
         }
 
@@ -970,7 +994,7 @@
                     container.innerHTML = `
                         <div class="no-content">
                             No posts found for "${currentSearchTerm}"<br>
-                            <span style="font-size: 1.5rem; color: #999; margin-top: 20px; display: block;">
+                            <span style="font-size: 1.2rem; color: #999; margin-top: 15px; display: block;">
                                 Try a different search term
                             </span>
                         </div>
@@ -979,7 +1003,7 @@
                     container.innerHTML = `
                         <div class="no-content">
                             No posts available yet<br>
-                            <span style="font-size: 1.5rem; color: #999; margin-top: 20px; display: block;">
+                            <span style="font-size: 1.2rem; color: #999; margin-top: 15px; display: block;">
                                 Check back later for new content
                             </span>
                         </div>
@@ -988,12 +1012,10 @@
                 return;
             }
             
-            // Calculate slice for current page
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, filteredContent.length);
             const pageItems = filteredContent.slice(startIndex, endIndex);
             
-            // Create content items
             pageItems.forEach(item => {
                 const contentItem = createContentItem(item);
                 container.appendChild(contentItem);
@@ -1002,7 +1024,7 @@
             updateSearchInfo();
         }
 
-        // Create content item with direct viewing
+        // Create content item
         function createContentItem(data) {
             const item = document.createElement('div');
             item.className = 'content-item';
@@ -1010,7 +1032,6 @@
             
             let mediaContent = '';
             
-            // Different media types
             if (data.type === 'video') {
                 mediaContent = `
                     <div class="media-container">
@@ -1026,11 +1047,11 @@
                     <div class="media-container">
                         <img src="${data.link}" class="direct-image" alt="${data.title}" 
                              loading="lazy"
-                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"450\"><rect width=\"800\" height=\"450\" fill=\"%23222\"/><text x=\"400\" y=\"225\" font-family=\"Arial\" font-size=\"32\" fill=\"%23800\" text-anchor=\"middle\">IMAGE NOT FOUND</text></svg>'">
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"450\"><rect width=\"800\" height=\"450\" fill=\"%23222\"/><text x=\"400\" y=\"225\" font-family=\"Arial\" font-size=\"32\" fill=\"%23800\" text-anchor=\"middle\">Image Load Error</text></svg>'">
                         <button class="fullscreen-btn" onclick="toggleFullscreen(this)">FULLSCREEN</button>
                     </div>
                 `;
-            } else if (data.type === 'link') {
+            } else {
                 mediaContent = `
                     <div class="media-container">
                         <div class="link-viewer">
@@ -1048,7 +1069,7 @@
                 ${mediaContent}
                 <div class="content-info">
                     <h3 class="content-title">${data.title}</h3>
-                    <p class="content-description">${data.description || 'No description provided'}</p>
+                    <p class="content-description">${data.description}</p>
                 </div>
                 <div class="content-actions">
                     <a href="${data.link}" target="_blank" class="source-link" onclick="event.stopPropagation();">
@@ -1063,7 +1084,7 @@
             return item;
         }
 
-        // Update pagination buttons
+        // Update pagination
         function updatePagination() {
             const paginationDiv = document.getElementById('pagination');
             const totalPages = Math.ceil(filteredContent.length / itemsPerPage);
@@ -1081,11 +1102,9 @@
                 <div class="page-numbers">
             `;
             
-            // Show page numbers (max 5 page numbers)
             let startPage = Math.max(1, currentPage - 2);
             let endPage = Math.min(totalPages, startPage + 4);
             
-            // Adjust if we're near the end
             if (endPage - startPage < 4) {
                 startPage = Math.max(1, endPage - 4);
             }
@@ -1114,77 +1133,48 @@
         function changePage(pageNumber) {
             const totalPages = Math.ceil(filteredContent.length / itemsPerPage);
             
-            if (pageNumber < 1 || pageNumber > totalPages) {
-                return;
-            }
+            if (pageNumber < 1 || pageNumber > totalPages) return;
             
             currentPage = pageNumber;
             displayCurrentPage();
             updatePagination();
             
-            // Scroll to top of content
-            document.getElementById('contentContainer').scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
             });
         }
 
-        // Setup search with immediate real-time filtering
+        // Setup search
         function setupSearch() {
             const searchBar = document.getElementById('searchBar');
             let searchTimeout;
             
-            // Clear placeholder on focus
-            searchBar.addEventListener('focus', function() {
-                this.placeholder = 'Searching in real-time...';
-            });
-            
-            searchBar.addEventListener('blur', function() {
-                this.placeholder = 'Search videos, images, links... (Type to search in real-time)';
-            });
-            
-            // Real-time search on every key press
             searchBar.addEventListener('input', function() {
                 clearTimeout(searchTimeout);
                 const searchTerm = this.value;
                 
-                // Show searching message
-                if (searchTerm.trim()) {
-                    document.getElementById('searchInfo').innerHTML = `Searching for: <span class="search-highlight">"${searchTerm}"</span>`;
-                }
-                
-                // Filter immediately for real-time feel
                 searchTimeout = setTimeout(() => {
                     filterContent(searchTerm);
-                }, 100); // Reduced to 100ms for real-time feel
+                }, 300);
             });
         }
 
-        // Toggle fullscreen for media
+        // Toggle fullscreen
         function toggleFullscreen(button) {
-            event.stopPropagation();
             const mediaContainer = button.parentElement;
-            const mediaElement = mediaContainer.querySelector('video, img');
             
             if (!document.fullscreenElement) {
                 if (mediaContainer.requestFullscreen) {
                     mediaContainer.requestFullscreen();
-                } else if (mediaContainer.mozRequestFullScreen) {
-                    mediaContainer.mozRequestFullScreen();
                 } else if (mediaContainer.webkitRequestFullscreen) {
                     mediaContainer.webkitRequestFullscreen();
-                } else if (mediaContainer.msRequestFullscreen) {
-                    mediaContainer.msRequestFullscreen();
                 }
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
                 } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
                 }
             }
         }
@@ -1196,31 +1186,30 @@
                 
                 const user = auth.currentUser;
                 const postRef = db.collection('posts').doc(postId);
-                const postDoc = await postRef.get();
                 
+                // Add to reports collection
+                await db.collection('reports').add({
+                    postId: postId,
+                    userId: user ? user.uid : 'anonymous',
+                    timestamp: new Date(),
+                    reason: 'user_report'
+                });
+                
+                // Increment spamReports count
+                const postDoc = await postRef.get();
                 if (postDoc.exists) {
-                    const data = postDoc.data();
-                    const currentReports = data.spamReports || 0;
-                    
-                    // Add report
-                    await db.collection('reports').add({
-                        postId: postId,
-                        userId: user.uid,
-                        timestamp: new Date(),
-                        reason: 'inappropriate'
-                    });
-                    
-                    // Update report count
+                    const currentReports = postDoc.data().spamReports || 0;
                     await postRef.update({
                         spamReports: currentReports + 1
                     });
                     
-                    // Delete if 5+ reports
+                    // Remove from local array if 5+ reports
                     if (currentReports + 1 >= 5) {
-                        await postRef.delete();
-                        alert('Content removed due to multiple reports');
-                        // Reload all content
-                        await loadAllContent();
+                        allContent = allContent.filter(item => item.id !== postId);
+                        filteredContent = filteredContent.filter(item => item.id !== postId);
+                        displayCurrentPage();
+                        updatePagination();
+                        alert('Content removed due to reports');
                     } else {
                         alert('Content reported successfully');
                     }
@@ -1232,20 +1221,18 @@
             }
         }
 
-        // Start snow animation
-        window.addEventListener('load', createSnow);
-        
-        // Handle fullscreen changes
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-        
-        function handleFullscreenChange() {
-            // Fullscreen change handler - can add additional logic here
+        // Show dummy content for testing
+        function showDummyContent() {
+            createSampleContent();
+            showStatus("Showing sample content. Database may not be accessible.", "info");
         }
 
-        // Handle keyboard navigation for pagination
+        // Handle fullscreen changes
+        document.addEventListener('fullscreenchange', function() {
+            // Add any fullscreen change logic here
+        });
+
+        // Handle keyboard navigation
         document.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowLeft') {
                 changePage(currentPage - 1);
@@ -1254,31 +1241,30 @@
             }
         });
 
-        // Handle swipe gestures for mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        document.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        });
-        
-        document.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        });
-        
-        function handleSwipe() {
-            const swipeThreshold = 50;
-            const swipeDistance = touchEndX - touchStartX;
+        // Initialize on load
+        window.addEventListener('load', function() {
+            // Snow effect starts immediately
+            createSnow();
             
-            if (Math.abs(swipeDistance) > swipeThreshold) {
-                if (swipeDistance > 0) {
-                    // Swipe right - go to previous page
-                    changePage(currentPage - 1);
-                } else {
-                    // Swipe left - go to next page
-                    changePage(currentPage + 1);
-                }
+            // Check if already verified (for page refresh)
+            const isVerified = localStorage.getItem('ageVerified');
+            if (isVerified === 'true') {
+                document.querySelector('.age-verification').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                initializeApp();
+            }
+        });
+
+        // Update verifyAge to store in localStorage
+        function verifyAge(isAdult) {
+            if (isAdult) {
+                localStorage.setItem('ageVerified', 'true');
+                document.querySelector('.age-verification').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                createSnow();
+                initializeApp();
+            } else {
+                window.location.href = 'https://www.google.com';
             }
         }
     </script>
